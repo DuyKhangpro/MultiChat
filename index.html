@@ -14,9 +14,11 @@ button,select,textarea,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 aside{width:260px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px;gap:8px;flex-shrink:0;transition:transform .2s,width .2s}
-.logo{font-size:22px;font-weight:700;letter-spacing:-.5px;padding:4px 8px 12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px}
+.logo{font-size:22px;font-weight:700;letter-spacing:-.5px;padding:4px 8px}
 .logo span{color:var(--acc)}
-.mini{display:none}
+#tog{width:34px;height:34px;border:1px solid var(--line);background:var(--panel);border-radius:8px;font-weight:700;flex-shrink:0}
+#tog:hover{border-color:var(--acc)}
 #provs{flex-shrink:0}
 .prov{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:1px solid transparent;border-radius:10px;background:transparent;text-align:left;font-weight:600}
 .prov:hover{background:var(--panel)}
@@ -48,20 +50,39 @@ header select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);ba
 .msg.user{align-self:flex-end;background:var(--user);color:var(--userink);border-bottom-right-radius:4px;white-space:pre-wrap}
 .msg.bot{align-self:flex-start;background:var(--bot);border:1px solid var(--line);border-bottom-left-radius:4px}
 .msg.err{border-color:#d9534f;color:#d9534f}
+.msg a{color:var(--acc)}
 .msg pre{background:var(--code);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
 .msg code{font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--code);padding:1px 5px;border-radius:4px}
 .msg pre code{padding:0;background:none}
+.imgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.imgs img{max-height:160px;max-width:100%;border-radius:10px;display:block}
+.imgn{margin-top:6px;font-size:13px;opacity:.85}
 .who{font-size:12px;color:var(--mute);margin-bottom:4px;font-weight:600}
 .empty{margin:auto;text-align:center;color:var(--mute);max-width:360px;line-height:1.6}
 .empty b{display:block;color:var(--ink);font-size:20px;margin-bottom:6px}
-.empty button{margin-top:12px;padding:9px 16px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-weight:600}
+.empty button{margin-top:12px;padding:9px 16px;border-radius:10px;border:0;background:var(--acc);color:var(--bg);font-weight:600}
 .typing span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--mute);animation:b 1s infinite}
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
 @keyframes b{0%,80%,100%{opacity:.3}40%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.typing span{animation:none}#log{scroll-behavior:auto}aside{transition:none}}
-form{display:flex;gap:10px;padding:14px 20px 18px;background:var(--panel);border-top:1px solid var(--line)}
+footer{background:var(--panel);border-top:1px solid var(--line)}
+#prev{display:flex;gap:10px;padding:12px 20px 0;flex-wrap:wrap}
+#prev:empty{display:none}
+.th{position:relative}
+.th img{height:56px;border-radius:8px;border:1px solid var(--line);display:block}
+.th button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:0;background:#d9534f;color:#fff;font-size:12px;line-height:1;padding:0}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 20px 0}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.chip:hover:not(:disabled){border-color:var(--acc)}
+.chip.on{border-color:var(--acc);color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.effg{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:var(--mute);font-weight:600}
+.seg2{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg2 button{border:0;background:var(--bg);padding:6px 11px;font-size:13px;font-weight:600}
+.seg2 button.on{background:var(--acc);color:var(--bg)}
+form{display:flex;gap:10px;padding:10px 20px 18px}
 textarea{flex:1;resize:none;max-height:180px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);line-height:1.5}
-#send{padding:0 20px;border:0;border-radius:12px;background:var(--acc);color:#fff;font-weight:700}
+#send{padding:0 20px;border:0;border-radius:12px;background:var(--acc);color:var(--bg);font-weight:700}
 #send:disabled{opacity:.5;cursor:not-allowed}
 .modal{position:fixed;inset:0;background:rgba(10,14,25,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
 .modal.show{display:flex}
@@ -77,15 +98,14 @@ textarea{flex:1;resize:none;max-height:180px;padding:12px 14px;border-radius:12p
 .row{display:flex;gap:10px;align-items:center;margin-top:16px}
 .row .grow{flex:1}
 .row button{padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:600}
-.row .pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.row .pri{background:var(--acc);border-color:var(--acc);color:var(--bg)}
 #warn{color:#d9534f;display:none}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:20;font-weight:600}
 #toast.show{opacity:1;transform:translateX(-50%)}
 @media(min-width:761px){
 body.collapsed aside{width:68px;padding:16px 10px}
-body.collapsed .full,body.collapsed .nm,body.collapsed .prov small,body.collapsed .lbl,body.collapsed .lh,body.collapsed #convs{display:none}
-body.collapsed .mini{display:block}
-body.collapsed .logo{text-align:center;padding:4px 0 12px}
+body.collapsed .logo,body.collapsed .nm,body.collapsed .prov small,body.collapsed .lbl,body.collapsed .lh,body.collapsed #convs{display:none}
+body.collapsed .top{justify-content:center;padding-bottom:12px}
 body.collapsed .prov{justify-content:center;padding:11px 0}
 }
 @media(max-width:760px){
@@ -93,13 +113,17 @@ aside{position:fixed;inset:0 auto 0 0;z-index:5;transform:translateX(-100%)}
 aside.open{transform:none;box-shadow:var(--shadow)}
 .msg{max-width:94%}
 .t{display:none}
+.effg{margin-left:0}
 }
 </style>
 </head>
 <body>
 
 <aside id="side">
-  <div class="logo"><b class="full">Multi<span>Chat</span></b><b class="mini">M<span>C</span></b></div>
+  <div class="top">
+    <div class="logo">Multi<span>Chat</span></div>
+    <button id="tog" aria-label="Thu gọn hoặc mở rộng thanh bên">«</button>
+  </div>
   <div id="provs"></div>
   <div class="lh">Cuộc trò chuyện</div>
   <div id="convs"></div>
@@ -117,10 +141,27 @@ aside.open{transform:none;box-shadow:var(--shadow)}
     </div>
   </header>
   <div id="log"></div>
-  <form id="form">
-    <textarea id="input" rows="1" placeholder="Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng)"></textarea>
-    <button id="send" type="submit">Gửi</button>
-  </form>
+  <footer>
+    <div id="prev"></div>
+    <div class="tools">
+      <button type="button" class="chip" id="attach" title="Đính kèm ảnh (tối đa 4)">📎 Ảnh</button>
+      <button type="button" class="chip" id="srch">🌐 Tìm kiếm</button>
+      <div class="effg" title="Mức suy luận của AI. Model nào không hỗ trợ sẽ bỏ qua hoặc báo lỗi từ nhà cung cấp.">
+        <span>Effort</span>
+        <div class="seg2" id="eff">
+          <button type="button" data-e="auto">Auto</button>
+          <button type="button" data-e="low">Low</button>
+          <button type="button" data-e="medium">Medium</button>
+          <button type="button" data-e="high">High</button>
+        </div>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+    </div>
+    <form id="form">
+      <textarea id="input" rows="1" placeholder="Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng, dán ảnh được)"></textarea>
+      <button id="send" type="submit">Gửi</button>
+    </form>
+  </footer>
 </main>
 
 <div class="modal" id="modal">
@@ -132,8 +173,8 @@ aside.open{transform:none;box-shadow:var(--shadow)}
       <button data-t="dark">Tối</button>
     </div>
     <h3>API Key</h3>
-    <p class="hint">Key tự động lưu trong trình duyệt ngay khi bạn nhập, F5 không bị mất. Key chỉ được gửi trực tiếp tới nhà cung cấp AI tương ứng.</p>
-    <p class="hint" id="warn">Trình duyệt đang chặn lưu dữ liệu nên key sẽ mất khi F5. Hãy mở file trực tiếp bằng Chrome, Edge hoặc Firefox (không mở trong cửa sổ xem trước).</p>
+    <p class="hint">Key được mã hóa AES-GCM trước khi lưu vào trình duyệt, tự lưu khi bạn nhập nên F5 không bị mất. Đây là mã hóa phía trình duyệt, không thay thế việc giữ máy và trình duyệt của bạn an toàn.</p>
+    <p class="hint" id="warn">Trình duyệt đang chặn lưu hoặc mã hóa dữ liệu nên key sẽ mất khi F5. Hãy mở file trực tiếp bằng Chrome, Edge hoặc Firefox (không mở trong cửa sổ xem trước).</p>
     <div id="keys"></div>
     <label class="hint"><input type="checkbox" id="show"> Hiện API key</label>
     <div class="row">
@@ -152,14 +193,14 @@ const PROVIDERS = {
   claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
   gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-argon", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
   grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4", "grok-3", "grok-3-mini", "grok-code-fast-1"] },
-  groq:    { name: "Groq",    color: "#f55036", models: [ "whisper-large-v3-turbo", "whisper-large-v3", "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] }
+  groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] }
 };
 /* ============================================================================= */
 
 const $ = id => document.getElementById(id);
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
-  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
 };
 store.ok = (() => { try { localStorage.setItem("mc_t", "1"); localStorage.removeItem("mc_t"); return true; } catch(e){ return false; } })();
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -169,11 +210,56 @@ const S = {
   model: store.get("mc_model", {}),
   convs: store.get("mc_convs", {}),
   cur: store.get("mc_cur", {}),
-  keys: store.get("mc_keys", {}),
+  keys: {},
   theme: store.get("mc_theme", "light"),
+  eff: store.get("mc_eff", "auto"),
+  search: store.get("mc_search", false),
+  pending: [],
+  vaultErr: false,
   busy: false
 };
 if (!PROVIDERS[S.p]) S.p = ids[0];
+
+/* ====== Mã hóa API key: AES-GCM 256, khóa không-xuất-được lưu trong IndexedDB ====== */
+const Vault = {
+  async key(){
+    if (this.k) return this.k;
+    const db = await new Promise((res, rej) => { const r = indexedDB.open("mc_vault", 1); r.onupgradeneeded = () => r.result.createObjectStore("k"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    let k = await new Promise((res, rej) => { const q = db.transaction("k").objectStore("k").get("main"); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+    if (!k){
+      k = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+      await new Promise((res, rej) => { const tx = db.transaction("k", "readwrite"); tx.objectStore("k").put(k, "main"); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+    }
+    return this.k = k;
+  },
+  async enc(obj){
+    const k = await this.key(), iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, new TextEncoder().encode(JSON.stringify(obj))));
+    const b = new Uint8Array(12 + ct.length); b.set(iv); b.set(ct, 12);
+    return btoa(String.fromCharCode(...b));
+  },
+  async dec(s){
+    const k = await this.key(), b = Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, k, b.slice(12))));
+  }
+};
+let kq = Promise.resolve();
+function saveKeys(){
+  const snap = { ...S.keys };
+  kq = kq.then(async () => {
+    try { if (!store.set("mc_keys_enc", await Vault.enc(snap))) throw 0; try { localStorage.removeItem("mc_keys"); } catch(e){} S.vaultErr = false; return true; }
+    catch(e){ S.vaultErr = true; return false; }
+  });
+  return kq;
+}
+async function loadKeys(){
+  try {
+    const e = store.get("mc_keys_enc", null);
+    if (e) S.keys = await Vault.dec(e);
+    else { const o = store.get("mc_keys", null); if (o){ S.keys = o; await saveKeys(); } }
+  } catch(e){ S.keys = {}; if (store.get("mc_keys_enc", null)) toast("Không giải mã được API key đã lưu, hãy nhập lại"); else S.vaultErr = true; }
+}
+
 /* chuyển dữ liệu chat cũ (bản trước) sang dạng nhiều cuộc trò chuyện */
 const old = store.get("mc_chats", null);
 if (old){
@@ -182,21 +268,40 @@ if (old){
 }
 ids.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; });
 const getConv = p => S.convs[p].find(c => c.id === S.cur[p]) || null;
-const persist = () => { store.set("mc_convs", S.convs); store.set("mc_cur", S.cur); };
+function persist(){
+  store.set("mc_cur", S.cur);
+  if (store.set("mc_convs", S.convs)) return;
+  /* đầy bộ nhớ: lưu bản không kèm ảnh */
+  const lite = {};
+  ids.forEach(i => lite[i] = S.convs[i].map(c => ({ ...c, msgs: c.msgs.map(m => m.imgs ? { role: m.role, content: m.content, imgN: m.imgs.length } : m) })));
+  store.set("mc_convs", lite);
+}
 
-function esc(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function esc(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function md(t){
   t = esc(t);
   t = t.replace(/```\w*\n?([\s\S]*?)```/g, (_, c) => "<pre><code>" + c.replace(/\n$/,"") + "</code></pre>");
   t = t.replace(/`([^`\n]+)`/g, "<code>$1</code>");
   t = t.replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>");
+  t = t.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  t = t.replace(/(?<!["'>=])(https?:\/\/[^\s<]+[^\s<.,;:!?)])/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   return t.replace(/\n/g, "<br>").replace(/(<pre><code>[\s\S]*?<\/code><\/pre>)/g, m => m.replace(/<br>/g, "\n"));
 }
-function toast(t){ const e = $("toast"); e.textContent = t; e.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("show"), 1800); }
+function toast(t){ const e = $("toast"); e.textContent = t; e.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("show"), 2200); }
 
 function setTheme(t){
   S.theme = t; document.documentElement.dataset.theme = t; store.set("mc_theme", t);
   document.querySelectorAll("#themeSeg button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+}
+
+/* ====== Hỗ trợ tính năng theo nhà cung cấp ====== */
+const REASON = /^(o\d|gpt-[56])/;
+const canSearch = (p, model) => p === "groq" ? /gpt-oss|compound/.test(model) : true;
+function updateTools(){
+  const ok = canSearch(S.p, S.model[S.p]), b = $("srch");
+  b.disabled = !ok; b.classList.toggle("on", S.search && ok);
+  b.title = ok ? "Cho AI tìm kiếm trên web (Search Grounding)" : "Model này không hỗ trợ tìm kiếm";
+  document.querySelectorAll("#eff button").forEach(x => x.classList.toggle("on", x.dataset.e === S.eff));
 }
 
 function renderProvs(){
@@ -216,6 +321,7 @@ function renderModels(){
   sel.innerHTML = P.models.map(m => '<option value="' + m + '">' + m + "</option>").join("");
   if (!P.models.includes(S.model[S.p])) S.model[S.p] = P.models[0];
   sel.value = S.model[S.p];
+  updateTools();
 }
 function renderConvs(){
   const box = $("convs"), list = [...S.convs[S.p]].sort((a, b) => b.t - a.t);
@@ -239,10 +345,22 @@ function renderConvs(){
     box.appendChild(d);
   });
 }
-function bubble(role, html, cls){
+const du = i => "data:" + i.m + ";base64," + i.d;
+function bubble(role, html, cls, imgs, imgN){
   const d = document.createElement("div");
   d.className = "msg " + role + (cls ? " " + cls : "");
-  if (role === "bot") d.innerHTML = '<div class="who">' + PROVIDERS[S.p].name + "</div>" + html; else d.textContent = html;
+  if (role === "bot") d.innerHTML = '<div class="who">' + PROVIDERS[S.p].name + "</div>" + html;
+  else {
+    d.textContent = html;
+    if (imgs && imgs.length){
+      const w = document.createElement("div"); w.className = "imgs";
+      imgs.forEach(i => { const im = document.createElement("img"); im.src = du(i); im.alt = "Ảnh đính kèm"; w.appendChild(im); });
+      d.appendChild(w);
+    } else if (imgN){
+      const n = document.createElement("div"); n.className = "imgn";
+      n.textContent = "🖼 " + imgN + " ảnh đã đính kèm (không lưu lại sau khi tải lại trang)"; d.appendChild(n);
+    }
+  }
   $("log").appendChild(d); $("log").scrollTop = $("log").scrollHeight; return d;
 }
 function renderLog(){
@@ -255,52 +373,126 @@ function renderLog(){
     if (noKey) $("goSet").onclick = openSet;
     return;
   }
-  chat.forEach(m => m.role === "user" ? bubble("user", m.content) : bubble("bot", md(m.content), m.err ? "err" : ""));
+  chat.forEach(m => m.role === "user" ? bubble("user", m.content, "", m.imgs, m.imgN) : bubble("bot", md(m.content), m.err ? "err" : ""));
 }
 function renderAll(){ renderProvs(); renderModels(); renderConvs(); renderLog(); }
 
-const URLS = { chatgpt: "https://api.openai.com/v1/chat/completions", grok: "https://api.x.ai/v1/chat/completions", groq: "https://api.groq.com/openai/v1/chat/completions" };
-async function callAPI(p, model, msgs, key){
-  let url, opt, pick;
-  const ok = msgs.filter(m => !m.err).map(m => ({ role: m.role, content: m.content }));
-  if (URLS[p]){
-    url = URLS[p];
-    opt = { headers: { "Content-Type": "application/json", Authorization: "Bearer " + key }, body: { model, messages: ok } };
-    pick = j => j.choices[0].message.content;
+/* ====== Ảnh đính kèm ====== */
+function shrink(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1280 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res({ m: "image/jpeg", d: c.toDataURL("image/jpeg", .85).split(",")[1] });
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(); };
+    im.src = url;
+  });
+}
+async function addFiles(files){
+  for (const f of files){
+    if (!f.type.startsWith("image/")) continue;
+    if (S.pending.length >= 4){ toast("Tối đa 4 ảnh mỗi tin nhắn"); break; }
+    try { S.pending.push(await shrink(f)); } catch(e){ toast("Không đọc được ảnh"); }
+  }
+  renderPrev();
+}
+function renderPrev(){
+  const box = $("prev"); box.innerHTML = "";
+  S.pending.forEach((i, n) => {
+    const d = document.createElement("div"); d.className = "th";
+    d.innerHTML = '<img alt="Ảnh sẽ gửi"><button type="button" aria-label="Bỏ ảnh">×</button>';
+    d.querySelector("img").src = du(i);
+    d.querySelector("button").onclick = () => { S.pending.splice(n, 1); renderPrev(); };
+    box.appendChild(d);
+  });
+}
+
+/* ====== Gọi API ====== */
+const BASE = { chatgpt: "https://api.openai.com/v1", grok: "https://api.x.ai/v1", groq: "https://api.groq.com/openai/v1" };
+const hasImg = m => m.imgs && m.imgs.length;
+const toOAI = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "image_url", image_url: { url: du(i) } }))] } : { role: m.role, content: m.content };
+const toResp = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "input_text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "input_image", image_url: du(i) }))] } : { role: m.role, content: m.content };
+const toClaude = m => hasImg(m) ? { role: m.role, content: [...m.imgs.map(i => ({ type: "image", source: { type: "base64", media_type: i.m, data: i.d } })), ...(m.content ? [{ type: "text", text: m.content }] : [])] } : { role: m.role, content: m.content };
+
+async function callAPI(p, model, msgs, key, eff, search){
+  const ms = msgs.filter(m => !m.err);
+  const headers = { "Content-Type": "application/json" };
+  let url, body, pick;
+  if (p === "chatgpt" || p === "grok" || p === "groq"){
+    headers.Authorization = "Bearer " + key;
+    if (search && p !== "groq"){            /* ChatGPT & Grok: Responses API + web_search */
+      url = BASE[p] + "/responses";
+      body = { model, input: ms.map(toResp), tools: [{ type: "web_search" }] };
+      if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: eff };
+      pick = j => j.output_text || (j.output || []).filter(o => o.type === "message").flatMap(o => o.content || []).map(c => c.text || "").join("");
+    } else {
+      url = BASE[p] + "/chat/completions";
+      body = { model, messages: ms.map(toOAI) };
+      if (eff !== "auto"){
+        if (p === "chatgpt" && REASON.test(model)) body.reasoning_effort = eff;
+        if (p === "grok" && /grok-3-mini/.test(model)) body.reasoning_effort = eff === "high" ? "high" : "low";
+        if (p === "groq" && /gpt-oss/.test(model)) body.reasoning_effort = eff;
+      }
+      if (search && p === "groq" && /gpt-oss/.test(model)) body.tools = [{ type: "browser_search" }];
+      pick = j => j.choices[0].message.content;
+    }
   } else if (p === "claude"){
     url = "https://api.anthropic.com/v1/messages";
-    opt = { headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: { model, max_tokens: 4096, messages: ok } };
-    pick = j => j.content.map(c => c.text || "").join("");
+    headers["x-api-key"] = key; headers["anthropic-version"] = "2023-06-01"; headers["anthropic-dangerous-direct-browser-access"] = "true";
+    const bud = { low: 1024, medium: 4096, high: 12000 }[eff];
+    body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(toClaude) };
+    if (bud) body.thinking = { type: "enabled", budget_tokens: bud };
+    if (search) body.tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }];
+    pick = j => j.content.filter(c => c.type === "text").map(c => c.text).join("");
   } else {
     url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
-    opt = { headers: { "Content-Type": "application/json", "x-goog-api-key": key }, body: { contents: ok.map(m => ({ role: m.role === "user" ? "user" : "model", parts: [{ text: m.content }] })) } };
-    pick = j => j.candidates[0].content.parts.map(x => x.text || "").join("");
+    headers["x-goog-api-key"] = key;
+    body = { contents: ms.map(m => ({ role: m.role === "user" ? "user" : "model", parts: [...(m.imgs || []).map(i => ({ inline_data: { mime_type: i.m, data: i.d } })), ...(m.content ? [{ text: m.content }] : [])] })) };
+    if (eff !== "auto"){
+      if (/gemini-(3|4)/.test(model)) body.generationConfig = { thinkingConfig: { thinkingLevel: (/pro/.test(model) && eff === "medium") ? "high" : eff } };
+      else if (/gemini-2\.5/.test(model)) body.generationConfig = { thinkingConfig: { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[eff] } };
+    }
+    if (search) body.tools = [{ google_search: {} }];
+    pick = j => {
+      const c = j.candidates[0];
+      let t = c.content.parts.map(x => x.text || "").join("");
+      const gc = ((c.groundingMetadata || {}).groundingChunks || []).filter(x => x.web);
+      if (gc.length) t += "\n\n**Nguồn**\n" + gc.map(x => "- " + x.web.title + ": " + x.web.uri).join("\n");
+      return t;
+    };
   }
-  const r = await fetch(url, { method: "POST", headers: opt.headers, body: JSON.stringify(opt.body) });
+  const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error((j.error && (j.error.message || j.error)) || ("Lỗi " + r.status));
-  return pick(j) || "(Model không trả về nội dung)";
+  let out = ""; try { out = pick(j); } catch(e){}
+  return out || "(Model không trả về nội dung)";
 }
 
 async function send(){
-  const ta = $("input"), text = ta.value.trim();
-  if (!text || S.busy) return;
+  const ta = $("input"), text = ta.value.trim(), imgs = S.pending;
+  if ((!text && !imgs.length) || S.busy) return;
   const p = S.p, key = S.keys[p];
   if (!key){ toast("Hãy nhập API key của " + PROVIDERS[p].name); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
-    conv = { id: uid(), title: text.length > 40 ? text.slice(0, 40) + "…" : text, msgs: [], t: Date.now() };
+    const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : "Hình ảnh";
+    conv = { id: uid(), title: ti, msgs: [], t: Date.now() };
     S.convs[p].unshift(conv); S.cur[p] = conv.id;
   }
-  conv.msgs.push({ role: "user", content: text }); conv.t = Date.now();
+  const um = { role: "user", content: text }; if (imgs.length) um.imgs = imgs;
+  conv.msgs.push(um); conv.t = Date.now();
+  S.pending = []; renderPrev();
   ta.value = ""; ta.style.height = "auto";
   if (conv.msgs.length === 1) $("log").innerHTML = "";
-  bubble("user", text);
+  bubble("user", text, "", um.imgs);
   const wait = bubble("bot", '<span class="typing"><span></span><span></span><span></span></span>');
   S.busy = true; $("send").disabled = true; persist(); renderConvs();
   let out, isErr = false;
   try {
-    out = await callAPI(p, S.model[p], conv.msgs, key);
+    out = await callAPI(p, S.model[p], conv.msgs, key, S.eff, S.search && canSearch(p, S.model[p]));
   } catch (e){
     isErr = true;
     out = "Lỗi: " + (e.message === "Failed to fetch" ? "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt." : String(e.message));
@@ -312,41 +504,55 @@ async function send(){
   persist(); ta.focus();
 }
 
+/* ====== Cài đặt & giao diện ====== */
 function openSet(){
   ids.forEach(i => { $("k_" + i).value = S.keys[i] || ""; });
-  $("warn").style.display = store.ok ? "none" : "block";
+  $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block";
   setTheme(S.theme); $("modal").classList.add("show");
 }
 function closeSet(){ $("modal").classList.remove("show"); renderAll(); }
+function syncTog(){
+  const c = document.body.classList.contains("collapsed") && !matchMedia("(max-width:760px)").matches;
+  $("tog").textContent = c ? "»" : "«"; $("tog").setAttribute("aria-expanded", String(!c)); $("tog").title = c ? "Mở rộng thanh bên" : "Thu gọn thanh bên";
+}
+function toggleSide(){
+  if (matchMedia("(max-width:760px)").matches) $("side").classList.toggle("open");
+  else store.set("mc_col", document.body.classList.toggle("collapsed"));
+  syncTog();
+}
 
 $("keys").innerHTML = ids.map(i => '<label class="key">' + PROVIDERS[i].name + ' API key<input type="password" id="k_' + i + '" placeholder="Dán API key của ' + PROVIDERS[i].name + '" autocomplete="off" spellcheck="false"></label>').join("");
 ids.forEach(i => $("k_" + i).addEventListener("input", () => {
   const v = $("k_" + i).value.trim();
   if (v) S.keys[i] = v; else delete S.keys[i];
-  store.set("mc_keys", S.keys);
+  saveKeys().then(() => { $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block"; });
 }));
 $("show").onchange = e => ids.forEach(i => { $("k_" + i).type = e.target.checked ? "text" : "password"; });
 document.querySelectorAll("#themeSeg button").forEach(b => b.onclick = () => setTheme(b.dataset.t));
-$("apply").onclick = () => { store.set("mc_keys", S.keys); closeSet(); toast("Đã lưu cài đặt"); };
+$("apply").onclick = async () => { await saveKeys(); closeSet(); toast(S.vaultErr ? "Không lưu được key vào trình duyệt" : "Đã lưu cài đặt"); };
 $("close").onclick = closeSet;
 $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("modal").classList.contains("show")) closeSet(); });
-$("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); };
+$("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); updateTools(); };
 $("newc").onclick = () => { S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
-$("menu").onclick = e => {
-  e.stopPropagation();
-  if (matchMedia("(max-width:760px)").matches) $("side").classList.toggle("open");
-  else store.set("mc_col", document.body.classList.toggle("collapsed"));
-};
+$("tog").onclick = toggleSide;
+$("menu").onclick = e => { e.stopPropagation(); toggleSide(); };
+window.addEventListener("resize", syncTog);
 document.querySelector("main").addEventListener("click", () => $("side").classList.remove("open"));
+$("attach").onclick = () => $("file").click();
+$("file").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
+$("srch").onclick = () => { S.search = !S.search; store.set("mc_search", S.search); updateTools(); };
+document.querySelectorAll("#eff button").forEach(b => b.onclick = () => { S.eff = b.dataset.e; store.set("mc_eff", S.eff); updateTools(); });
 $("form").onsubmit = e => { e.preventDefault(); send(); };
 $("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); send(); } });
 $("input").addEventListener("input", e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 180) + "px"; });
+$("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].filter(x => x.type.startsWith("image/")); if (f.length){ e.preventDefault(); addFiles(f); } });
 
 if (store.get("mc_col", false)) document.body.classList.add("collapsed");
-setTheme(S.theme);
+setTheme(S.theme); syncTog();
 renderAll();
+loadKeys().then(renderAll);
 </script>
 </body>
 </html>
