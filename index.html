@@ -171,6 +171,25 @@ html[data-ui=new] .seg button.on{background:color-mix(in srgb,var(--acc) 12%,tra
 html[data-ui=new] #toast{border-radius:999px;transition:.35s cubic-bezier(.2,.8,.2,1)}
 @media(max-width:760px){html[data-ui=new] aside{margin:0;border-radius:0 22px 22px 0}html[data-ui=new] header{margin:8px 8px 0}html[data-ui=new] footer{width:calc(100% - 16px);margin-bottom:8px}}
 @media(prefers-reduced-motion:reduce){html[data-ui=new] *,html[data-ui=new] *::before{animation:none!important;transition:none!important}}
+[hidden]{display:none!important}
+.prov.team{margin-top:10px;border:1px dashed var(--line)}
+.prov.team.on{border-style:solid}
+#teambar{display:flex;gap:10px;flex-wrap:wrap;padding:10px 20px 0}
+.tcard{display:flex;align-items:center;gap:6px;flex:1 1 300px;min-width:0;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--panel)}
+.tcard b{font-size:13px;white-space:nowrap}
+.tcard select{flex:1;min-width:0;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+.tcard select:disabled,header select:disabled{opacity:.6}
+.think{margin:2px 0 8px;border:1px dashed var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--mute)}
+.think summary{cursor:pointer;font-weight:600}
+.think .tt{margin-top:6px;white-space:pre-wrap;max-height:220px;overflow-y:auto;line-height:1.5}
+.meta{margin-top:8px;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.meta:empty{display:none}
+.msg.note{align-self:center;max-width:94%;background:transparent;border:1px dashed var(--line);color:var(--mute);font-size:13px;padding:6px 14px;border-radius:999px;text-align:center}
+#send.stop{background:#d9534f;color:#fff}
+html[data-ui=new] #send.stop{background:#d9534f}
+html[data-ui=new] .tcard{border-radius:16px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-ui=new] .think{border-radius:12px;background:var(--code);border-style:solid}
+html[data-ui=new] .msg.note{border-radius:999px;box-shadow:none}
 </style>
 </head>
 <body>
@@ -196,6 +215,7 @@ html[data-ui=new] #toast{border-radius:999px;transition:.35s cubic-bezier(.2,.8,
       <select id="model" aria-label="Chọn model"></select>
     </div>
   </header>
+  <div id="teambar" hidden></div>
   <div id="log"></div>
   <footer>
     <div id="prev"></div>
@@ -252,11 +272,11 @@ html[data-ui=new] #toast{border-radius:999px;transition:.35s cubic-bezier(.2,.8,
 /* ====== DANH SÁCH MODEL — thêm model mới ở đây, mỗi model là 1 chuỗi ID ====== */
 const PROVIDERS = {
   chatgpt: { name: "ChatGPT", color: "#10a37f", models: [ "gpt-6-luna","gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-5.6-sol","gpt-5.6-terra","gpt-5.6-luna", "gpt-5.5-pro-2026-04-23", "gpt-5.2-pro-2025-12-11", "gpt-5.2-2025-12-11", "gpt-5.4-mini-2026-03-17", "gpt-5.4-pro-2026-03-05", "gpt-5.5-2026-04-23", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4o", "o4-mini"] },
-  claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
-  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-argon", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
+  claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-2", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
+  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-carbon", "gemini-4-argon", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
   grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4", "grok-3", "grok-3-mini", "grok-code-fast-1"] },
   groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] },
-  openrouter: { name: "OpenRouter", color: "#6467f2", models: [ "openrouter/auto", "openai/gpt-6.1-sol-pro", "anthropic/claude-fable-5.2", "anthropic/claude-fable-5.2:batch", "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3.5-embed-8b:free", "nvidia/nemotron-3.5-embed-1b:free", "openai/gpt-5", "openai/gpt-5-mini", "anthropic/claude-sonnet-4.5", "anthropic/claude-opus-4.1", "google/gemini-2.5-pro", "google/gemini-2.5-flash", "x-ai/grok-4", "deepseek/deepseek-chat-v3.1", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen3-235b-a22b", "moonshotai/kimi-k2", "mistralai/mistral-large", "openai/gpt-oss-120b", "openai/gpt-oss-20b:free", "meta-llama/llama-3.3-70b-instruct:free"] }
+  openrouter: { name: "OpenRouter", color: "#6467f2", models: [ "openrouter/auto", "google/gemini-4-carbon", "openai/gpt-6.1-sol-pro", "anthropic/claude-fable-5.2", "anthropic/claude-fable-5.2:batch", "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3.5-embed-8b:free", "nvidia/nemotron-3.5-embed-1b:free", "openai/gpt-5", "openai/gpt-5-mini", "anthropic/claude-sonnet-4.5", "anthropic/claude-opus-4.1", "google/gemini-2.5-pro", "google/gemini-2.5-flash", "x-ai/grok-4", "deepseek/deepseek-chat-v3.1", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen3-235b-a22b", "moonshotai/kimi-k2", "mistralai/mistral-large", "openai/gpt-oss-120b", "openai/gpt-oss-20b:free", "meta-llama/llama-3.3-70b-instruct:free"] }
 };
 /* ============================================================================= */
 
@@ -267,7 +287,7 @@ const store = {
 };
 store.ok = (() => { try { localStorage.setItem("mc_t", "1"); localStorage.removeItem("mc_t"); return true; } catch(e){ return false; } })();
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const ids = Object.keys(PROVIDERS);
+const ids = Object.keys(PROVIDERS), ALL = [...ids, "team"];
 const S = {
   p: store.get("mc_p", "chatgpt"),
   model: store.get("mc_model", {}),
@@ -282,7 +302,13 @@ const S = {
   vaultErr: false,
   busy: false
 };
-if (!PROVIDERS[S.p]) S.p = ids[0];
+if (!PROVIDERS[S.p] && S.p !== "team") S.p = ids[0];
+S.team = store.get("mc_team", null) || {};
+["a", "b"].forEach((k, n) => {
+  const t = S.team[k] = S.team[k] || {};
+  if (!PROVIDERS[t.p]) t.p = ids[Math.min(n + 1, ids.length - 1)];
+  if (!PROVIDERS[t.p].models.includes(t.m)) t.m = PROVIDERS[t.p].models[0];
+});
 
 /* ====== Mã hóa API key: AES-GCM 256, khóa không-xuất-được lưu trong IndexedDB ====== */
 const Vault = {
@@ -330,14 +356,14 @@ if (old){
   ids.forEach(i => { if (Array.isArray(old[i]) && old[i].length && !(S.convs[i] || []).length) S.convs[i] = [{ id: uid(), title: String(old[i][0].content).slice(0, 40), msgs: old[i], t: Date.now() }]; });
   store.set("mc_convs", S.convs); try { localStorage.removeItem("mc_chats"); } catch(e){}
 }
-ids.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; });
+ALL.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; });
 const getConv = p => S.convs[p].find(c => c.id === S.cur[p]) || null;
 function persist(){
   store.set("mc_cur", S.cur);
   if (store.set("mc_convs", S.convs)) return;
-  /* đầy bộ nhớ: lưu bản không kèm ảnh */
+  /* đầy bộ nhớ: lưu bản không kèm ảnh và phần suy nghĩ */
   const lite = {};
-  ids.forEach(i => lite[i] = S.convs[i].map(c => ({ ...c, msgs: c.msgs.map(m => m.imgs ? { role: m.role, content: m.content, imgN: m.imgs.length } : m) })));
+  ALL.forEach(i => lite[i] = S.convs[i].map(c => ({ ...c, msgs: c.msgs.map(m => { const r = { ...m }; delete r.think; if (m.imgs){ delete r.imgs; r.imgN = m.imgs.length; } return r; }) })));
   store.set("mc_convs", lite);
 }
 
@@ -367,29 +393,50 @@ function setUI(u){
 const REASON = /^(o\d|gpt-[56])/;
 const canSearch = (p, model) => p === "groq" ? /gpt-oss|compound/.test(model) : true;
 function updateTools(){
-  const ok = canSearch(S.p, S.model[S.p]), b = $("srch");
-  b.disabled = !ok; b.classList.toggle("on", S.search && ok);
-  b.title = ok ? "Cho AI tìm kiếm trên web (Search Grounding)" : "Model này không hỗ trợ tìm kiếm";
+  const sup = S.p === "team" ? (canSearch(S.team.a.p, S.team.a.m) || canSearch(S.team.b.p, S.team.b.m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
+  b.disabled = !sup; b.classList.toggle("on", S.search && sup);
+  b.title = sup ? "Cho AI tìm kiếm trên web (Search Grounding)" : "Model này không hỗ trợ tìm kiếm";
   document.querySelectorAll("#eff button").forEach(x => x.classList.toggle("on", x.dataset.e === S.eff));
 }
+const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : PROVIDERS[i];
+function busyGuard(){ if (S.busy){ toast("AI đang trả lời, hãy bấm Dừng hoặc chờ xong"); return true; } return false; }
 
 function renderProvs(){
   $("provs").innerHTML = "";
-  ids.forEach(i => {
-    const b = document.createElement("button");
-    b.className = "prov" + (i === S.p ? " on" : "");
-    b.title = PROVIDERS[i].name; b.style.setProperty("--pc", PROVIDERS[i].color);
-    b.innerHTML = '<span class="dot" style="background:' + PROVIDERS[i].color + '"></span><span class="nm">' + PROVIDERS[i].name + "</span>" + (S.keys[i] ? "" : "<small>chưa có key</small>");
-    b.onclick = () => { S.p = i; store.set("mc_p", i); $("side").classList.remove("open"); renderAll(); };
+  ALL.forEach(i => {
+    const M = META(i), tm = i === "team", b = document.createElement("button");
+    b.className = "prov" + (i === S.p ? " on" : "") + (tm ? " team" : "");
+    b.title = M.name; b.style.setProperty("--pc", M.color);
+    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + M.name + "</span>" + ((tm || S.keys[i]) ? "" : "<small>chưa có key</small>");
+    b.onclick = () => { if (busyGuard()) return; S.p = i; store.set("mc_p", i); $("side").classList.remove("open"); renderAll(); };
     $("provs").appendChild(b);
   });
 }
+function fillModels(sel, p, cur){
+  sel.innerHTML = PROVIDERS[p].models.map(m => '<option value="' + m + '">' + m + "</option>").join("");
+  if (!PROVIDERS[p].models.includes(cur)) cur = PROVIDERS[p].models[0];
+  sel.value = cur; return cur;
+}
+function renderTeam(){
+  const bar = $("teambar"); bar.innerHTML = "";
+  ["a", "b"].forEach(k => {
+    const T = S.team[k], d = document.createElement("div");
+    d.className = "tcard";
+    d.innerHTML = '<b></b><select class="tp" aria-label="Nhà cung cấp"></select><select class="tm" aria-label="Model"></select>';
+    d.querySelector("b").textContent = k === "a" ? "AI-1" : "AI-2";
+    const sp = d.querySelector(".tp"), sm = d.querySelector(".tm");
+    sp.innerHTML = ids.map(i => '<option value="' + i + '">' + PROVIDERS[i].name + "</option>").join(""); sp.value = T.p;
+    T.m = fillModels(sm, T.p, T.m);
+    sp.onchange = () => { T.p = sp.value; T.m = fillModels(sm, T.p, ""); store.set("mc_team", S.team); updateTools(); };
+    sm.onchange = () => { T.m = sm.value; store.set("mc_team", S.team); updateTools(); };
+    bar.appendChild(d);
+  });
+}
 function renderModels(){
-  const P = PROVIDERS[S.p], sel = $("model");
-  $("title").textContent = P.name;
-  sel.innerHTML = P.models.map(m => '<option value="' + m + '">' + m + "</option>").join("");
-  if (!P.models.includes(S.model[S.p])) S.model[S.p] = P.models[0];
-  sel.value = S.model[S.p];
+  const sel = $("model"), team = S.p === "team";
+  sel.hidden = team; $("teambar").hidden = !team;
+  $("title").textContent = META(S.p).name;
+  if (team) renderTeam(); else S.model[S.p] = fillModels(sel, S.p, S.model[S.p]);
   updateTools();
 }
 function renderConvs(){
@@ -401,12 +448,12 @@ function renderConvs(){
     d.tabIndex = 0; d.setAttribute("role", "button");
     d.innerHTML = '<span class="ct"></span><button class="x" aria-label="Xóa cuộc trò chuyện" title="Xóa">×</button>';
     d.querySelector(".ct").textContent = c.title; d.title = c.title;
-    const open = () => { S.cur[S.p] = c.id; persist(); $("side").classList.remove("open"); renderConvs(); renderLog(); };
+    const open = () => { if (busyGuard()) return; S.cur[S.p] = c.id; persist(); $("side").classList.remove("open"); renderConvs(); renderLog(); };
     d.onclick = open;
     d.onkeydown = e => { if (e.target === d && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); open(); } };
     d.querySelector(".x").onclick = e => {
       e.stopPropagation();
-      if (!confirm("Xóa cuộc trò chuyện này?")) return;
+      if (busyGuard() || !confirm("Xóa cuộc trò chuyện này?")) return;
       S.convs[S.p] = S.convs[S.p].filter(x => x.id !== c.id);
       if (S.cur[S.p] === c.id) S.cur[S.p] = null;
       persist(); renderConvs(); renderLog();
@@ -415,34 +462,60 @@ function renderConvs(){
   });
 }
 const du = i => "data:" + i.m + ";base64," + i.d;
-function bubble(role, html, cls, imgs, imgN){
+const fmtT = ms => (ms / 1000).toFixed(1) + " giây";
+const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? " · bắt đầu trả lời sau " + fmtT(m.ttft) : "") : "";
+function nearBottom(){ const l = $("log"); return l.scrollHeight - l.scrollTop - l.clientHeight < 90; }
+function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và ghi chú */
   const d = document.createElement("div");
   d.className = "msg " + role + (cls ? " " + cls : "");
-  if (role === "bot"){ d.style.setProperty("--pc", PROVIDERS[S.p].color); d.innerHTML = '<div class="who">' + PROVIDERS[S.p].name + "</div>" + html; }
-  else {
-    d.textContent = html;
-    if (imgs && imgs.length){
-      const w = document.createElement("div"); w.className = "imgs";
-      imgs.forEach(i => { const im = document.createElement("img"); im.src = du(i); im.alt = "Ảnh đính kèm"; w.appendChild(im); });
-      d.appendChild(w);
-    } else if (imgN){
-      const n = document.createElement("div"); n.className = "imgn";
-      n.textContent = "🖼 " + imgN + " ảnh đã đính kèm (không lưu lại sau khi tải lại trang)"; d.appendChild(n);
-    }
+  d.textContent = text;
+  if (imgs && imgs.length){
+    const w = document.createElement("div"); w.className = "imgs";
+    imgs.forEach(i => { const im = document.createElement("img"); im.src = du(i); im.alt = "Ảnh đính kèm"; w.appendChild(im); });
+    d.appendChild(w);
+  } else if (imgN){
+    const n = document.createElement("div"); n.className = "imgn";
+    n.textContent = "🖼 " + imgN + " ảnh đã đính kèm (không lưu lại sau khi tải lại trang)"; d.appendChild(n);
   }
   $("log").appendChild(d); $("log").scrollTop = $("log").scrollHeight; return d;
 }
+function botBubble(name, color, cls){
+  const d = document.createElement("div"); d.className = "msg bot" + (cls ? " " + cls : ""); d.style.setProperty("--pc", color);
+  d.innerHTML = '<div class="who"></div><details class="think" hidden><summary>💭 Suy nghĩ</summary><div class="tt"></div></details><div class="bd"></div><div class="meta"></div>';
+  d.querySelector(".who").textContent = name;
+  const th = d.querySelector(".think"), tt = d.querySelector(".tt"), bd = d.querySelector(".bd"), mt = d.querySelector(".meta");
+  const stick0 = nearBottom(); $("log").appendChild(d); if (stick0) $("log").scrollTop = $("log").scrollHeight;
+  let pend = false, T = "", R = "", opened = false, closed = false;
+  const paint = () => {
+    pend = false; const stick = nearBottom();
+    if (R){ th.hidden = false; tt.textContent = R; if (!opened){ th.open = true; opened = true; } tt.scrollTop = tt.scrollHeight; }
+    if (T && R && !closed){ th.open = false; closed = true; }
+    bd.innerHTML = (T || R) ? md(T) : '<span class="typing"><span></span><span></span><span></span></span>';
+    if (stick) $("log").scrollTop = $("log").scrollHeight;
+  };
+  return {
+    el: d,
+    set(t, r){ T = t; R = r || ""; if (!pend){ pend = true; requestAnimationFrame(paint); } },
+    flush(t, r){ T = t; R = r || ""; opened = true; closed = true; paint(); th.open = !T && !!R; },
+    meta(s){ mt.textContent = s; }
+  };
+}
 function renderLog(){
   const log = $("log"); log.innerHTML = "";
-  const conv = getConv(S.p), chat = conv ? conv.msgs : [];
+  const conv = getConv(S.p), chat = conv ? conv.msgs : [], team = S.p === "team";
   if (!chat.length){
-    const noKey = !S.keys[S.p];
-    log.innerHTML = '<div class="empty"><b>Trò chuyện với ' + PROVIDERS[S.p].name + "</b>" +
-      (noKey ? "Bạn cần nhập API key của " + PROVIDERS[S.p].name + " trước khi bắt đầu.<br><button id='goSet'>Nhập API key</button>" : "Chọn model ở góc trên bên phải rồi gõ tin nhắn bên dưới.") + "</div>";
+    const noKey = team ? !(S.keys[S.team.a.p] && S.keys[S.team.b.p]) : !S.keys[S.p];
+    log.innerHTML = '<div class="empty"><b>' + (team ? "Team: 2 AI cùng làm một việc" : "Trò chuyện với " + PROVIDERS[S.p].name) + "</b>" +
+      (noKey ? "Bạn cần nhập API key của " + (team ? "cả 2 AI đã chọn" : PROVIDERS[S.p].name) + " trước khi bắt đầu.<br><button id='goSet'>Nhập API key</button>"
+             : (team ? "Chọn 2 AI ở trên rồi nhập yêu cầu bên dưới. Hai AI sẽ tự giới thiệu, chia việc và trao đổi cho tới khi cả hai cùng nói “Đã Xong”." : "Chọn model ở góc trên bên phải rồi gõ tin nhắn bên dưới.")) + "</div>";
     if (noKey) $("goSet").onclick = openSet;
     return;
   }
-  chat.forEach(m => m.role === "user" ? bubble("user", m.content, "", m.imgs, m.imgN) : bubble("bot", md(m.content), m.err ? "err" : ""));
+  chat.forEach(m => {
+    if (m.role === "user") bubble("user", m.content, "", m.imgs, m.imgN);
+    else if (m.role === "note") bubble("note", m.content);
+    else { const M = META(S.p), b = botBubble(m.lbl || M.name, m.col || M.color, m.err ? "err" : ""); b.flush(m.content, m.think); b.meta(metaText(m)); }
+  });
 }
 function renderAll(){ renderProvs(); renderModels(); renderConvs(); renderLog(); }
 
@@ -486,20 +559,56 @@ const toOAI = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type
 const toResp = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "input_text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "input_image", image_url: du(i) }))] } : { role: m.role, content: m.content };
 const toClaude = m => hasImg(m) ? { role: m.role, content: [...m.imgs.map(i => ({ type: "image", source: { type: "base64", media_type: i.m, data: i.d } })), ...(m.content ? [{ type: "text", text: m.content }] : [])] } : { role: m.role, content: m.content };
 
-async function callAPI(p, model, msgs, key, eff, search){
-  const ms = msgs.filter(m => !m.err);
+const TEAM_MAX = 12;                       /* tối đa số lượt của cả 2 AI cho mỗi yêu cầu */
+const DONE = /(đã|da)\s*xong/i;
+
+async function readSSE(res, fn){
+  const rd = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+  for (;;){
+    const { done, value } = await rd.read(); if (done) break;
+    buf += dec.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0){
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      const data = block.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
+      if (!data || data === "[DONE]") continue;
+      let j; try { j = JSON.parse(data); } catch(e){ continue; }
+      fn(j);
+    }
+  }
+}
+function splitThink(raw){      /* một số model (qwen, deepseek…) trả suy nghĩ trong thẻ <think> */
+  const m = raw.match(/<think>([\s\S]*?)(<\/think>|$)/);
+  return m ? { think: m[1], text: raw.replace(m[0], "").replace(/^\s+/, "") } : { think: "", text: raw };
+}
+
+/* Gọi API dạng stream. on(text, think) được gọi liên tục khi có chữ mới. */
+async function callAPI(o){
+  const { p, model, key, eff, search, sys, signal, on } = o, ms = o.msgs.filter(m => !m.err);
   const headers = { "Content-Type": "application/json" };
-  let url, body, pick;
+  let url, body, ev, fb = null, raw = "", rs = "", aborted = false;
+  const src = [], addSrc = (u, t) => { if (u && !src.some(s => s.u === u)) src.push({ u, t: t || u }); };
+  const emit = () => { const s = splitThink(raw); on(s.text, (rs + s.think).trim()); };
+  const T = d => { raw += d; emit(); }, R = d => { rs += d; emit(); };
   if (BASE[p]){
     headers.Authorization = "Bearer " + key;
     if (search && (p === "chatgpt" || p === "grok")){            /* ChatGPT & Grok: Responses API + web_search */
       url = BASE[p] + "/responses";
-      body = { model, input: ms.map(toResp), tools: [{ type: "web_search" }] };
+      body = { model, input: ms.map(toResp), tools: [{ type: "web_search" }], stream: true };
+      if (sys) body.instructions = sys;
       if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: eff };
-      pick = j => j.output_text || (j.output || []).filter(o => o.type === "message").flatMap(o => o.content || []).map(c => c.text || "").join("");
+      fb = j => j.output_text || (j.output || []).filter(x => x.type === "message").flatMap(x => x.content || []).map(c => c.text || "").join("");
+      ev = j => {
+        const t = j.type || "";
+        if (t === "response.output_text.delta") T(j.delta);
+        else if (/reasoning(_summary)?_text\.delta$/.test(t)) R(j.delta);
+        else if (t === "response.output_text.annotation.added" && j.annotation && j.annotation.url) addSrc(j.annotation.url, j.annotation.title);
+        else if (t === "error") throw new Error(j.message || (j.error && j.error.message) || "Lỗi");
+        else if (t === "response.failed") throw new Error((j.response && j.response.error && j.response.error.message) || "Thất bại");
+      };
     } else {
       url = BASE[p] + "/chat/completions";
-      body = { model, messages: ms.map(toOAI) };
+      body = { model, messages: [...(sys ? [{ role: "system", content: sys }] : []), ...ms.map(toOAI)], stream: true };
       if (eff !== "auto"){
         if (p === "chatgpt" && REASON.test(model)) body.reasoning_effort = eff;
         if (p === "grok" && /grok-3-mini/.test(model)) body.reasoning_effort = eff === "high" ? "high" : "low";
@@ -508,51 +617,145 @@ async function callAPI(p, model, msgs, key, eff, search){
       }
       if (search && p === "groq" && /gpt-oss/.test(model)) body.tools = [{ type: "browser_search" }];
       if (search && p === "openrouter") body.plugins = [{ id: "web" }];
-      pick = j => {
-        const m = j.choices[0].message, seen = new Set();
-        let t = m.content || "";
-        const src = (m.annotations || []).filter(a => a.type === "url_citation" && a.url_citation && !seen.has(a.url_citation.url) && seen.add(a.url_citation.url));
-        if (src.length) t += "\n\n**Nguồn**\n" + src.map(a => "- " + (a.url_citation.title || "Link") + ": " + a.url_citation.url).join("\n");
-        return t;
+      fb = j => (j.choices[0].message.content || "");
+      ev = j => {
+        if (j.error) throw new Error(j.error.message || "Lỗi");
+        const c = j.choices && j.choices[0]; if (!c) return;
+        const d = c.delta || {}, rr = d.reasoning_content || (typeof d.reasoning === "string" ? d.reasoning : "");
+        if (rr) R(rr);
+        if (d.content) T(d.content);
+        (d.annotations || []).forEach(a => a.url_citation && addSrc(a.url_citation.url, a.url_citation.title));
       };
     }
   } else if (p === "claude"){
     url = "https://api.anthropic.com/v1/messages";
     headers["x-api-key"] = key; headers["anthropic-version"] = "2023-06-01"; headers["anthropic-dangerous-direct-browser-access"] = "true";
     const bud = { low: 1024, medium: 4096, high: 12000 }[eff];
-    body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(toClaude) };
+    body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(toClaude), stream: true };
+    if (sys) body.system = sys;
     if (bud) body.thinking = { type: "enabled", budget_tokens: bud };
     if (search) body.tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }];
-    pick = j => j.content.filter(c => c.type === "text").map(c => c.text).join("");
+    ev = j => {
+      if (j.type === "content_block_delta"){ const d = j.delta || {}; if (d.type === "text_delta") T(d.text); else if (d.type === "thinking_delta") R(d.thinking); }
+      else if (j.type === "content_block_start" && j.content_block && Array.isArray(j.content_block.content)) j.content_block.content.forEach(x => x.url && addSrc(x.url, x.title));
+      else if (j.type === "error") throw new Error((j.error && j.error.message) || "Lỗi");
+    };
   } else {
-    url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
+    url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":streamGenerateContent?alt=sse";
     headers["x-goog-api-key"] = key;
     body = { contents: ms.map(m => ({ role: m.role === "user" ? "user" : "model", parts: [...(m.imgs || []).map(i => ({ inline_data: { mime_type: i.m, data: i.d } })), ...(m.content ? [{ text: m.content }] : [])] })) };
+    if (sys) body.systemInstruction = { parts: [{ text: sys }] };
+    const tc = {};
+    if (/gemini-(2\.5|3|4)/.test(model)) tc.includeThoughts = true;
     if (eff !== "auto"){
-      if (/gemini-(3|4)/.test(model)) body.generationConfig = { thinkingConfig: { thinkingLevel: (/pro/.test(model) && eff === "medium") ? "high" : eff } };
-      else if (/gemini-2\.5/.test(model)) body.generationConfig = { thinkingConfig: { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[eff] } };
+      if (/gemini-(3|4)/.test(model)) tc.thinkingLevel = (/pro/.test(model) && eff === "medium") ? "high" : eff;
+      else if (/gemini-2\.5/.test(model)) tc.thinkingBudget = { low: 1024, medium: 8192, high: 24576 }[eff];
     }
+    if (Object.keys(tc).length) body.generationConfig = { thinkingConfig: tc };
     if (search) body.tools = [{ google_search: {} }];
-    pick = j => {
-      const c = j.candidates[0];
-      let t = c.content.parts.map(x => x.text || "").join("");
-      const gc = ((c.groundingMetadata || {}).groundingChunks || []).filter(x => x.web);
-      if (gc.length) t += "\n\n**Nguồn**\n" + gc.map(x => "- " + x.web.title + ": " + x.web.uri).join("\n");
-      return t;
+    ev = j => {
+      if (j.error) throw new Error(j.error.message || "Lỗi");
+      const c = j.candidates && j.candidates[0]; if (!c) return;
+      ((c.content && c.content.parts) || []).forEach(x => { if (x.text) (x.thought ? R(x.text) : T(x.text)); });
+      ((c.groundingMetadata || {}).groundingChunks || []).forEach(x => x.web && addSrc(x.web.uri, x.web.title));
     };
   }
-  const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error((j.error && (j.error.message || j.error)) || ("Lỗi " + r.status));
-  let out = ""; try { out = pick(j); } catch(e){}
-  return out || "(Model không trả về nội dung)";
+  const go = () => fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal });
+  const fail = async r => { const j = await r.json().catch(() => ({})), e = Array.isArray(j) ? j[0] : j; return new Error((e && e.error && (e.error.message || e.error)) || ("Lỗi " + r.status)); };
+  try {
+    let r = await go();
+    if (!r.ok){
+      const er = await fail(r);
+      if (!fb || !/stream/i.test(er.message)) throw er;          /* model không cho stream: chuyển sang không-stream */
+      delete body.stream; r = await go();
+      if (!r.ok) throw await fail(r);
+      T(fb(await r.json()));
+    } else await readSSE(r, ev);
+  } catch(e){ if (e.name === "AbortError") aborted = true; else throw e; }
+  const s = splitThink(raw);
+  let text = s.text;
+  if (src.length) text += "\n\n**Nguồn**\n" + src.map(x => "- " + x.t + ": " + x.u).join("\n");
+  return { text, think: (rs + s.think).trim(), aborted };
 }
 
+/* Một lượt trả lời: hiện bong bóng, đếm giờ, hiện phần suy nghĩ khi có */
+async function turn(o){
+  const { p, model, msgs, sys, label, color, ctl } = o, b = botBubble(label, color);
+  const t0 = performance.now(); let ttft = null;
+  const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? " · đang chờ phản hồi…" : "")), 100);
+  let r, err = null;
+  try {
+    r = await callAPI({ p, model, msgs, key: S.keys[p], eff: S.eff, search: S.search && canSearch(p, model), sys, signal: ctl.signal,
+      on: (t, th) => { if (ttft == null && (t || th)) ttft = performance.now() - t0; b.set(t, th); } });
+  } catch(e){ err = e; }
+  clearInterval(tick);
+  const m = { role: "assistant", content: "", ms: Math.round(performance.now() - t0), ttft: ttft == null ? null : Math.round(ttft) };
+  if (err){
+    m.err = true; m.content = "Lỗi: " + (err.message === "Failed to fetch" ? "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt." : String(err.message));
+    b.el.classList.add("err");
+  } else {
+    m.content = r.text || (r.aborted ? "" : "(Model không trả về nội dung)");
+    if (r.think) m.think = r.think;
+    if (r.aborted){ m.aborted = true; m.content = (m.content ? m.content + "\n\n" : "") + "(đã dừng)"; }
+  }
+  b.flush(m.content, m.think); b.meta(metaText(m));
+  return m;
+}
+
+/* ====== Team: 2 AI cùng làm một việc ====== */
+const sn = k => k === "a" ? "AI-1" : "AI-2";
+const tname = k => sn(k) + " · " + PROVIDERS[S.team[k].p].name + " · " + S.team[k].m;
+function teamSys(me, other){
+  const A = S.team[me], B = S.team[other];
+  return "Bạn là " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). Bạn đang làm việc nhóm với " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") để cùng hoàn thành một nhiệm vụ do người dùng giao. Hai bạn nhắn qua lại theo lượt, mỗi lượt một người. Tin của đồng đội và của người dùng sẽ hiện dạng [Tên]: nội dung (đừng tự viết tiền tố này trong tin của bạn).\n" +
+    "Quy tắc:\n" +
+    "1. Trong tin nhắn đầu tiên của bạn, hãy tự giới thiệu ngắn gọn (bạn là AI nào, model gì, điểm mạnh) để đồng đội biết bạn, rồi vào việc luôn.\n" +
+    "2. Thống nhất cách chia việc, mỗi người làm phần của mình, đọc và góp ý, sửa cho nhau. Giữ tin nhắn gọn, không lặp lại điều đã nói.\n" +
+    "3. Kết quả cuối cùng phải được viết đầy đủ trong tin nhắn, vì người dùng chỉ đọc cuộc trò chuyện này.\n" +
+    "4. Khi bạn thấy nhiệm vụ đã hoàn thành tốt và đồng ý với kết quả hiện tại, hãy kết thúc tin nhắn bằng đúng cụm “Đã Xong”. Chỉ viết cụm này khi bạn thật sự hài lòng; còn thiếu hoặc còn sai thì tiếp tục làm và không viết cụm này. Cuộc trò chuyện chỉ dừng khi cả hai cùng nói “Đã Xong”.\n" +
+    "5. Trả lời bằng ngôn ngữ của người dùng.";
+}
+function teamView(conv, k){      /* cuộc trò chuyện nhìn từ phía AI k, gộp các tin cùng vai */
+  const out = [];
+  conv.msgs.forEach(m => {
+    if (m.err || m.role === "note") return;
+    let role, content;
+    if (m.role === "user"){ role = "user"; content = "[Người dùng]: " + m.content; }
+    else if (m.who === k){ role = "assistant"; content = m.content; }
+    else { role = "user"; content = "[" + sn(m.who) + "]: " + m.content; }
+    const last = out[out.length - 1];
+    if (last && last.role === role){ last.content += "\n\n" + content; if (m.imgs) last.imgs = (last.imgs || []).concat(m.imgs); }
+    else out.push({ role, content, imgs: m.imgs ? [...m.imgs] : undefined });
+  });
+  return out;
+}
+async function runTeam(conv, ctl){
+  const flag = { a: false, b: false }; let n = 0, ok = false;
+  for (; n < TEAM_MAX && !ctl.signal.aborted; n++){
+    const k = n % 2 ? "b" : "a", o = k === "a" ? "b" : "a", T = S.team[k];
+    const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, k), sys: teamSys(k, o), label: tname(k), color: PROVIDERS[T.p].color, ctl });
+    m.who = k; m.lbl = tname(k); m.col = PROVIDERS[T.p].color;
+    conv.msgs.push(m); conv.t = Date.now(); persist();
+    if (m.err) return;
+    flag[k] = !m.aborted && DONE.test(m.content.normalize("NFC"));
+    if (flag.a && flag.b){ ok = true; break; }
+  }
+  const note = ok ? "✅ Cả hai AI đã nói “Đã Xong”." : ctl.signal.aborted ? "⏹ Đã dừng." : "⚠️ Đã đạt giới hạn " + TEAM_MAX + " lượt mà chưa đủ cả hai cùng nói “Đã Xong”. Bạn có thể nhắn thêm để hai AI làm tiếp.";
+  conv.msgs.push({ role: "note", content: note }); persist(); bubble("note", note);
+}
+
+function setBusy(b){
+  S.busy = b; const s = $("send"); s.textContent = b ? "Dừng" : "Gửi"; s.classList.toggle("stop", b);
+  document.querySelectorAll("#teambar select,#model").forEach(x => x.disabled = b);
+}
 async function send(){
   const ta = $("input"), text = ta.value.trim(), imgs = S.pending;
   if ((!text && !imgs.length) || S.busy) return;
-  const p = S.p, key = S.keys[p];
-  if (!key){ toast("Hãy nhập API key của " + PROVIDERS[p].name); openSet(); return; }
+  const p = S.p, team = p === "team";
+  if (team){
+    const { a, b } = S.team;
+    if (!S.keys[a.p] || !S.keys[b.p]){ toast("Cần nhập API key cho cả 2 AI (" + PROVIDERS[a.p].name + ", " + PROVIDERS[b.p].name + ")"); openSet(); return; }
+  } else if (!S.keys[p]){ toast("Hãy nhập API key của " + PROVIDERS[p].name); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
     const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : "Hình ảnh";
@@ -565,20 +768,11 @@ async function send(){
   ta.value = ""; ta.style.height = "auto";
   if (conv.msgs.length === 1) $("log").innerHTML = "";
   bubble("user", text, "", um.imgs);
-  const wait = bubble("bot", '<span class="typing"><span></span><span></span><span></span></span>');
-  S.busy = true; $("send").disabled = true; persist(); renderConvs();
-  let out, isErr = false;
+  const ctl = new AbortController(); S.abort = ctl; setBusy(true); persist(); renderConvs();
   try {
-    out = await callAPI(p, S.model[p], conv.msgs, key, S.eff, S.search && canSearch(p, S.model[p]));
-  } catch (e){
-    isErr = true;
-    out = "Lỗi: " + (e.message === "Failed to fetch" ? "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt." : String(e.message));
-  }
-  conv.msgs.push(isErr ? { role: "assistant", content: out, err: true } : { role: "assistant", content: out });
-  wait.remove();
-  if (S.p === p && S.cur[p] === conv.id) bubble("bot", md(out), isErr ? "err" : "");
-  S.busy = false; $("send").disabled = false;
-  persist(); ta.focus();
+    if (team) await runTeam(conv, ctl);
+    else conv.msgs.push(await turn({ p, model: S.model[p], msgs: conv.msgs, sys: "", label: PROVIDERS[p].name, color: PROVIDERS[p].color, ctl }));
+  } finally { setBusy(false); S.abort = null; persist(); ta.focus(); }
 }
 
 /* ====== Cài đặt & giao diện ====== */
@@ -587,7 +781,7 @@ function openSet(){
   $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block";
   setTheme(S.theme); setUI(S.ui); $("modal").classList.add("show");
 }
-function closeSet(){ $("modal").classList.remove("show"); renderAll(); }
+function closeSet(){ $("modal").classList.remove("show"); if (S.busy) renderProvs(); else renderAll(); }
 function syncTog(){
   const c = document.body.classList.contains("collapsed") && !matchMedia("(max-width:760px)").matches;
   $("tog").textContent = c ? "»" : "«"; $("tog").setAttribute("aria-expanded", String(!c)); $("tog").title = c ? "Mở rộng thanh bên" : "Thu gọn thanh bên";
@@ -613,7 +807,7 @@ $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("modal").classList.contains("show")) closeSet(); });
 $("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); updateTools(); };
-$("newc").onclick = () => { S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
+$("newc").onclick = () => { if (busyGuard()) return; S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
 $("tog").onclick = toggleSide;
 $("menu").onclick = e => { e.stopPropagation(); toggleSide(); };
 window.addEventListener("resize", syncTog);
@@ -622,7 +816,7 @@ $("attach").onclick = () => $("file").click();
 $("file").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
 $("srch").onclick = () => { S.search = !S.search; store.set("mc_search", S.search); updateTools(); };
 document.querySelectorAll("#eff button").forEach(b => b.onclick = () => { S.eff = b.dataset.e; store.set("mc_eff", S.eff); updateTools(); });
-$("form").onsubmit = e => { e.preventDefault(); send(); };
+$("form").onsubmit = e => { e.preventDefault(); if (S.busy){ if (S.abort) S.abort.abort(); return; } send(); };
 $("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); send(); } });
 $("input").addEventListener("input", e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 180) + "px"; });
 $("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].filter(x => x.type.startsWith("image/")); if (f.length){ e.preventDefault(); addFiles(f); } });
