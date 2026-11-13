@@ -190,6 +190,45 @@ html[data-ui=new] #send.stop{background:#d9534f}
 html[data-ui=new] .tcard{border-radius:16px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 html[data-ui=new] .think{border-radius:12px;background:var(--code);border-style:solid}
 html[data-ui=new] .msg.note{border-radius:999px;box-shadow:none}
+.tabs{margin:12px 0 4px}
+.sw{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:8px 0}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.sl{width:42px;height:24px;border-radius:999px;background:color-mix(in srgb,var(--mute) 55%,var(--bg));position:relative;flex-shrink:0;transition:background .2s}
+.sl::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw input:checked+.sl{background:var(--acc)}
+.sw input:checked+.sl::after{transform:translateX(18px)}
+.sw input:focus-visible+.sl{outline:2px solid var(--acc);outline-offset:2px}
+.st{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.st small{color:var(--mute);font-size:13px}
+.sub{padding:0 0 4px 54px;font-size:13px;color:var(--mute)}
+.sub select{margin-left:6px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+.hint.bad{color:#d9534f}
+header,#teambar{position:relative;z-index:25}
+.modal{z-index:60}
+#toast{z-index:70}
+@media(max-width:760px){aside{z-index:40}}
+.dd{position:relative;min-width:0;display:none}
+html[data-ui=new] .dd{display:block}
+html[data-ui=new] select.has-dd{display:none}
+.dd-btn{display:flex;align-items:center;gap:8px;width:100%;min-width:0;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:600;text-align:left}
+.dd-btn:hover:not(:disabled){border-color:var(--acc)}
+.dd-btn:disabled{opacity:.6;cursor:not-allowed}
+.dd-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-c{font-size:11px;color:var(--mute);transition:transform .2s}
+.dd.open .dd-c{transform:rotate(180deg)}
+.dd-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block}
+.dd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;width:max-content;max-width:min(420px,90vw);max-height:min(340px,52vh);overflow-y:auto;padding:6px;border-radius:14px;border:1px solid var(--line);background:var(--solid,var(--panel));box-shadow:var(--shadow);z-index:30;animation:ddIn .16s cubic-bezier(.2,.8,.2,1)}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.hr .dd{max-width:46vw}
+.hr .dd-btn{min-width:150px}
+.hr .dd-menu{left:auto;right:0}
+.tcard .dd-p{flex:0 1 40%}
+.tcard .dd-m{flex:1}
+.dd-o{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;font-size:14px;cursor:pointer}
+.dd-o span{flex:1;min-width:0;overflow-wrap:anywhere}
+.dd-o:hover,.dd-o.act{background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.dd-o.sel{font-weight:700;color:var(--acc)}
+.dd-ck{font-size:12px}
 </style>
 </head>
 <body>
@@ -242,7 +281,12 @@ html[data-ui=new] .msg.note{border-radius:999px;box-shadow:none}
 
 <div class="modal" id="modal">
   <div class="box" role="dialog" aria-labelledby="mt">
-    <h2 id="mt">Cài đặt · Web</h2>
+    <h2 id="mt">Cài đặt</h2>
+    <div class="seg tabs" id="setTabs" role="tablist" aria-label="Mục cài đặt">
+      <button type="button" role="tab" data-tab="web" class="on">Web</button>
+      <button type="button" role="tab" data-tab="chat">Chat</button>
+    </div>
+    <div id="tab-web">
     <h3>Chế độ màu</h3>
     <div class="seg" id="themeSeg">
       <button data-t="light">Sáng</button>
@@ -259,6 +303,15 @@ html[data-ui=new] .msg.note{border-radius:999px;box-shadow:none}
     <p class="hint" id="warn">Trình duyệt đang chặn lưu hoặc mã hóa dữ liệu nên key sẽ mất khi F5. Hãy mở file trực tiếp bằng Chrome, Edge hoặc Firefox (không mở trong cửa sổ xem trước).</p>
     <div id="keys"></div>
     <label class="hint"><input type="checkbox" id="show"> Hiện API key</label>
+    </div>
+    <div id="tab-chat" hidden>
+      <h3>Thông báo</h3>
+      <label class="sw"><input type="checkbox" id="c_notify"><span class="sl"></span><span class="st"><b>Thông báo khi AI trả lời xong</b><small>Chỉ hiện khi bạn đang ở tab hoặc cửa sổ khác. Cần cấp quyền thông báo cho trình duyệt.</small></span></label>
+      <p class="hint bad" id="notiWarn" hidden>Trình duyệt không cấp quyền thông báo. Hãy cho phép thông báo cho trang này trong cài đặt trình duyệt. Nếu bạn mở file trực tiếp (file://), Chrome thường chặn thông báo; khi đó hãy chạy qua máy chủ cục bộ như http://localhost.</p>
+      <h3>Tự đổi model</h3>
+      <label class="sw"><input type="checkbox" id="c_auto"><span class="sl"></span><span class="st"><b>Tự đổi sang model kế bên khi bị lỗi nhiều</b><small>Cùng một AI, chuyển xuống model tiếp theo trong danh sách. Mặc định tắt.</small></span></label>
+      <div class="sub" id="c_n_row" hidden><label>Số lần lỗi liên tiếp trước khi đổi <select id="c_n"><option>2</option><option>3</option><option>4</option><option>5</option></select></label></div>
+    </div>
     <div class="row">
       <span class="grow"></span>
       <button id="close">Đóng</button>
@@ -273,7 +326,7 @@ html[data-ui=new] .msg.note{border-radius:999px;box-shadow:none}
 const PROVIDERS = {
   chatgpt: { name: "ChatGPT", color: "#10a37f", models: [ "gpt-6-luna","gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-5.6-sol","gpt-5.6-terra","gpt-5.6-luna", "gpt-5.5-pro-2026-04-23", "gpt-5.2-pro-2025-12-11", "gpt-5.2-2025-12-11", "gpt-5.4-mini-2026-03-17", "gpt-5.4-pro-2026-03-05", "gpt-5.5-2026-04-23", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4o", "o4-mini"] },
   claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-2", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
-  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-carbon", "gemini-4-argon", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
+  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-carbon", "gemini-4-argon", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
   grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4", "grok-3", "grok-3-mini", "grok-code-fast-1"] },
   groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] },
   openrouter: { name: "OpenRouter", color: "#6467f2", models: [ "openrouter/auto", "google/gemini-4-carbon", "openai/gpt-6.1-sol-pro", "anthropic/claude-fable-5.2", "anthropic/claude-fable-5.2:batch", "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3.5-embed-8b:free", "nvidia/nemotron-3.5-embed-1b:free", "openai/gpt-5", "openai/gpt-5-mini", "anthropic/claude-sonnet-4.5", "anthropic/claude-opus-4.1", "google/gemini-2.5-pro", "google/gemini-2.5-flash", "x-ai/grok-4", "deepseek/deepseek-chat-v3.1", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen3-235b-a22b", "moonshotai/kimi-k2", "mistralai/mistral-large", "openai/gpt-oss-120b", "openai/gpt-oss-20b:free", "meta-llama/llama-3.3-70b-instruct:free"] }
@@ -304,6 +357,7 @@ const S = {
 };
 if (!PROVIDERS[S.p] && S.p !== "team") S.p = ids[0];
 S.team = store.get("mc_team", null) || {};
+S.chat = { notify: false, auto: false, n: 3, ...store.get("mc_chat", {}) };
 ["a", "b"].forEach((k, n) => {
   const t = S.team[k] = S.team[k] || {};
   if (!PROVIDERS[t.p]) t.p = ids[Math.min(n + 1, ids.length - 1)];
@@ -415,7 +469,7 @@ function renderProvs(){
 function fillModels(sel, p, cur){
   sel.innerHTML = PROVIDERS[p].models.map(m => '<option value="' + m + '">' + m + "</option>").join("");
   if (!PROVIDERS[p].models.includes(cur)) cur = PROVIDERS[p].models[0];
-  sel.value = cur; return cur;
+  sel.value = cur; dd(sel); return cur;
 }
 function renderTeam(){
   const bar = $("teambar"); bar.innerHTML = "";
@@ -425,7 +479,7 @@ function renderTeam(){
     d.innerHTML = '<b></b><select class="tp" aria-label="Nhà cung cấp"></select><select class="tm" aria-label="Model"></select>';
     d.querySelector("b").textContent = k === "a" ? "AI-1" : "AI-2";
     const sp = d.querySelector(".tp"), sm = d.querySelector(".tm");
-    sp.innerHTML = ids.map(i => '<option value="' + i + '">' + PROVIDERS[i].name + "</option>").join(""); sp.value = T.p;
+    sp.innerHTML = ids.map(i => '<option value="' + i + '">' + PROVIDERS[i].name + "</option>").join(""); sp.value = T.p; dd(sp);
     T.m = fillModels(sm, T.p, T.m);
     sp.onchange = () => { T.p = sp.value; T.m = fillModels(sm, T.p, ""); store.set("mc_team", S.team); updateTools(); };
     sm.onchange = () => { T.m = sm.value; store.set("mc_team", S.team); updateTools(); };
@@ -437,8 +491,78 @@ function renderModels(){
   sel.hidden = team; $("teambar").hidden = !team;
   $("title").textContent = META(S.p).name;
   if (team) renderTeam(); else S.model[S.p] = fillModels(sel, S.p, S.model[S.p]);
+  if (sel._dd) sel._dd.hidden = team;
   updateTools();
 }
+/* ====== Mục Chat: thông báo & tự đổi model ====== */
+const notifOK = () => "Notification" in window && Notification.permission === "granted";
+function notifyDone(title, text){
+  if (!S.chat.notify || !notifOK()) return;
+  if (document.hasFocus() && !document.hidden) return;      /* đang xem trang thì không cần báo */
+  try { const n = new Notification(title, { body: String(text).replace(/\s+/g, " ").slice(0, 140), tag: "multichat" }); n.onclick = () => { window.focus(); n.close(); }; } catch(e){}
+}
+function setTab(t){
+  ["web", "chat"].forEach(x => { $("tab-" + x).hidden = x !== t; });
+  document.querySelectorAll("#setTabs button").forEach(b => { b.classList.toggle("on", b.dataset.tab === t); b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
+}
+function syncChat(){
+  $("c_notify").checked = S.chat.notify && notifOK(); $("c_auto").checked = S.chat.auto;
+  $("c_n").value = String(S.chat.n); $("c_n_row").hidden = !S.chat.auto; $("notiWarn").hidden = true;
+}
+function lockUI(b){      /* khóa ô chọn AI/model khi AI đang trả lời */
+  document.querySelectorAll("#teambar select,#model").forEach(x => { x.disabled = b; if (x._dd) x._dd.querySelector(".dd-btn").disabled = b; });
+}
+
+/* ====== Custom Dropdown: chỉ hiện ở giao diện New, Classic dùng select mặc định ====== */
+function ddClose(w){ w.classList.remove("open"); w.querySelector(".dd-menu").hidden = true; w.querySelector(".dd-btn").setAttribute("aria-expanded", "false"); }
+function ddCloseAll(except){ document.querySelectorAll(".dd.open").forEach(x => { if (x !== except) ddClose(x); }); }
+function ddAct(m, el){ m.querySelectorAll(".act").forEach(x => x.classList.remove("act")); if (el){ el.classList.add("act"); el.scrollIntoView({ block: "nearest" }); } }
+function ddOpen(w){
+  ddCloseAll(w); w.classList.add("open");
+  const m = w.querySelector(".dd-menu"); m.hidden = false; w.querySelector(".dd-btn").setAttribute("aria-expanded", "true");
+  ddAct(m, m.querySelector(".sel") || m.firstChild);
+}
+function ddKey(e, w){
+  const open = w.classList.contains("open"), m = w.querySelector(".dd-menu"), os = [...m.children], i = os.findIndex(x => x.classList.contains("act"));
+  if (!open){ if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)){ e.preventDefault(); ddOpen(w); } return; }
+  if (e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); ddClose(w); }
+  else if (e.key === "ArrowDown"){ e.preventDefault(); ddAct(m, os[Math.min(i + 1, os.length - 1)]); }
+  else if (e.key === "ArrowUp"){ e.preventDefault(); ddAct(m, os[Math.max(i - 1, 0)]); }
+  else if (e.key === "Home"){ e.preventDefault(); ddAct(m, os[0]); }
+  else if (e.key === "End"){ e.preventDefault(); ddAct(m, os[os.length - 1]); }
+  else if (e.key === "Enter" || e.key === " "){ e.preventDefault(); if (os[i]) os[i].click(); }
+  else if (e.key === "Tab") ddClose(w);
+}
+function dd(sel){
+  let w = sel._dd;
+  const prov = sel.classList.contains("tp"), col = v => (prov && PROVIDERS[v]) ? PROVIDERS[v].color : "";
+  if (!w){
+    w = document.createElement("div"); w.className = "dd " + (prov ? "dd-p" : "dd-m");
+    w.innerHTML = '<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><i class="dd-dot"></i><span class="dd-l"></span><span class="dd-c" aria-hidden="true">▾</span></button><div class="dd-menu" role="listbox" hidden></div>';
+    sel.after(w); sel._dd = w; sel.classList.add("has-dd");
+    const btn = w.querySelector(".dd-btn");
+    btn.onclick = e => { e.stopPropagation(); if (w.classList.contains("open")) ddClose(w); else ddOpen(w); };
+    btn.onkeydown = e => ddKey(e, w);
+  }
+  const btn = w.querySelector(".dd-btn"), menu = w.querySelector(".dd-menu"), cur = sel.options[sel.selectedIndex];
+  w.querySelector(".dd-l").textContent = cur ? cur.textContent : "";
+  const dot = w.querySelector(".dd-btn .dd-dot"); dot.hidden = !prov; if (prov && cur) dot.style.background = col(cur.value);
+  btn.setAttribute("aria-label", sel.getAttribute("aria-label") || ""); btn.disabled = sel.disabled;
+  menu.innerHTML = "";
+  [...sel.options].forEach(o => {
+    const on = o.value === sel.value, it = document.createElement("div");
+    it.className = "dd-o" + (on ? " sel" : ""); it.setAttribute("role", "option"); it.setAttribute("aria-selected", String(on));
+    it.innerHTML = (prov ? '<i class="dd-dot" style="background:' + col(o.value) + '"></i>' : "") + "<span></span>" + (on ? '<b class="dd-ck">✓</b>' : "");
+    it.querySelector("span").textContent = o.textContent;
+    it.onclick = e => {
+      e.stopPropagation(); ddClose(w);
+      if (sel.value !== o.value){ sel.value = o.value; sel.dispatchEvent(new Event("change", { bubbles: true })); }
+      dd(sel); btn.focus();
+    };
+    menu.appendChild(it);
+  });
+}
+
 function renderConvs(){
   const box = $("convs"), list = [...S.convs[S.p]].sort((a, b) => b.t - a.t);
   box.innerHTML = list.length ? "" : '<div class="none">Chưa có cuộc trò chuyện nào.</div>';
@@ -463,7 +587,7 @@ function renderConvs(){
 }
 const du = i => "data:" + i.m + ";base64," + i.d;
 const fmtT = ms => (ms / 1000).toFixed(1) + " giây";
-const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? " · bắt đầu trả lời sau " + fmtT(m.ttft) : "") : "";
+const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? " · bắt đầu trả lời sau " + fmtT(m.ttft) : "") + (m.sw ? " · 🔁 đã đổi model: " + m.sw : "") : "";
 function nearBottom(){ const l = $("log"); return l.scrollHeight - l.scrollTop - l.clientHeight < 90; }
 function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và ghi chú */
   const d = document.createElement("div");
@@ -678,25 +802,45 @@ async function callAPI(o){
   return { text, think: (rs + s.think).trim(), aborted };
 }
 
-/* Một lượt trả lời: hiện bong bóng, đếm giờ, hiện phần suy nghĩ khi có */
+const AUTO_HOPS = 3;                       /* tự đổi tối đa bấy nhiêu model cho mỗi yêu cầu */
+const FATAL = /incorrect api key|invalid.{0,12}api.?key|api key not valid|unauthori[sz]ed|authentication/i;
+const sleep = (ms, sig) => new Promise(res => { const t = setTimeout(res, ms); if (sig) sig.addEventListener("abort", () => { clearTimeout(t); res(); }, { once: true }); });
+
+/* Một lượt trả lời: hiện bong bóng, đếm giờ, hiện phần suy nghĩ; nếu bật "Tự đổi model" thì thử lại rồi đổi sang model kế bên khi lỗi */
 async function turn(o){
-  const { p, model, msgs, sys, label, color, ctl } = o, b = botBubble(label, color);
-  const t0 = performance.now(); let ttft = null;
-  const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? " · đang chờ phản hồi…" : "")), 100);
-  let r, err = null;
-  try {
-    r = await callAPI({ p, model, msgs, key: S.keys[p], eff: S.eff, search: S.search && canSearch(p, model), sys, signal: ctl.signal,
-      on: (t, th) => { if (ttft == null && (t || th)) ttft = performance.now() - t0; b.set(t, th); } });
-  } catch(e){ err = e; }
+  const { p, msgs, sys, label, color, ctl } = o, cfg = S.chat, list = PROVIDERS[p].models, N = cfg.auto ? cfg.n : 1;
+  let model = o.model; const b = botBubble(label, color);
+  let t0 = performance.now(), ttft = null, info = "";
+  const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? " · đang chờ phản hồi…" : "") + info), 100);
+  let r, err, tries = 0, hops = 0;
+  for (;;){
+    err = null; t0 = performance.now(); ttft = null;
+    try {
+      r = await callAPI({ p, model, msgs, key: S.keys[p], eff: S.eff, search: S.search && canSearch(p, model), sys, signal: ctl.signal,
+        on: (t, th) => { if (ttft == null && (t || th)) ttft = performance.now() - t0; b.set(t, th); } });
+    } catch(e){ err = e; }
+    if (!err || ctl.signal.aborted || !cfg.auto || FATAL.test(String(err.message))) break;
+    tries++; b.set("", "");
+    if (tries < N){ info = " · ⚠️ lỗi (" + tries + "/" + N + "), thử lại…"; await sleep(800 * tries, ctl.signal); continue; }
+    if (hops >= AUTO_HOPS || list.length < 2) break;
+    model = list[(list.indexOf(model) + 1) % list.length]; hops++; tries = 0;
+    info = " · 🔁 đổi sang " + model + "…";
+  }
   clearInterval(tick);
   const m = { role: "assistant", content: "", ms: Math.round(performance.now() - t0), ttft: ttft == null ? null : Math.round(ttft) };
   if (err){
     m.err = true; m.content = "Lỗi: " + (err.message === "Failed to fetch" ? "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt." : String(err.message));
+    if (cfg.auto && (hops > 0 || tries > 1)) m.content += "\n\n(Đã tự thử lại" + (hops ? " và đổi model" : "") + " nhưng vẫn lỗi.)";
     b.el.classList.add("err");
   } else {
     m.content = r.text || (r.aborted ? "" : "(Model không trả về nội dung)");
     if (r.think) m.think = r.think;
     if (r.aborted){ m.aborted = true; m.content = (m.content ? m.content + "\n\n" : "") + "(đã dừng)"; }
+    if (model !== o.model){
+      m.sw = o.model + " → " + model;
+      if (o.onSwitch) o.onSwitch(model);
+      toast("Đã tự đổi model: " + m.sw);
+    }
   }
   b.flush(m.content, m.think); b.meta(metaText(m));
   return m;
@@ -733,20 +877,22 @@ async function runTeam(conv, ctl){
   const flag = { a: false, b: false }; let n = 0, ok = false;
   for (; n < TEAM_MAX && !ctl.signal.aborted; n++){
     const k = n % 2 ? "b" : "a", o = k === "a" ? "b" : "a", T = S.team[k];
-    const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, k), sys: teamSys(k, o), label: tname(k), color: PROVIDERS[T.p].color, ctl });
+    const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, k), sys: teamSys(k, o), label: tname(k), color: PROVIDERS[T.p].color, ctl,
+      onSwitch: nm => { T.m = nm; store.set("mc_team", S.team); renderTeam(); lockUI(true); } });
     m.who = k; m.lbl = tname(k); m.col = PROVIDERS[T.p].color;
     conv.msgs.push(m); conv.t = Date.now(); persist();
-    if (m.err) return;
+    if (m.err){ if (!ctl.signal.aborted) notifyDone("Team gặp lỗi", m.content); return; }
     flag[k] = !m.aborted && DONE.test(m.content.normalize("NFC"));
     if (flag.a && flag.b){ ok = true; break; }
   }
   const note = ok ? "✅ Cả hai AI đã nói “Đã Xong”." : ctl.signal.aborted ? "⏹ Đã dừng." : "⚠️ Đã đạt giới hạn " + TEAM_MAX + " lượt mà chưa đủ cả hai cùng nói “Đã Xong”. Bạn có thể nhắn thêm để hai AI làm tiếp.";
   conv.msgs.push({ role: "note", content: note }); persist(); bubble("note", note);
+  if (!ctl.signal.aborted) notifyDone("Team", note);
 }
 
 function setBusy(b){
   S.busy = b; const s = $("send"); s.textContent = b ? "Dừng" : "Gửi"; s.classList.toggle("stop", b);
-  document.querySelectorAll("#teambar select,#model").forEach(x => x.disabled = b);
+  lockUI(b);
 }
 async function send(){
   const ta = $("input"), text = ta.value.trim(), imgs = S.pending;
@@ -771,7 +917,12 @@ async function send(){
   const ctl = new AbortController(); S.abort = ctl; setBusy(true); persist(); renderConvs();
   try {
     if (team) await runTeam(conv, ctl);
-    else conv.msgs.push(await turn({ p, model: S.model[p], msgs: conv.msgs, sys: "", label: PROVIDERS[p].name, color: PROVIDERS[p].color, ctl }));
+    else {
+      const m = await turn({ p, model: S.model[p], msgs: conv.msgs, sys: "", label: PROVIDERS[p].name, color: PROVIDERS[p].color, ctl,
+        onSwitch: nm => { S.model[p] = nm; store.set("mc_model", S.model); if (S.p === p){ renderModels(); lockUI(true); } } });
+      conv.msgs.push(m);
+      if (!ctl.signal.aborted) notifyDone(PROVIDERS[p].name + (m.err ? " gặp lỗi" : " đã trả lời xong"), m.content);
+    }
   } finally { setBusy(false); S.abort = null; persist(); ta.focus(); }
 }
 
@@ -779,7 +930,7 @@ async function send(){
 function openSet(){
   ids.forEach(i => { $("k_" + i).value = S.keys[i] || ""; });
   $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block";
-  setTheme(S.theme); setUI(S.ui); $("modal").classList.add("show");
+  setTheme(S.theme); setUI(S.ui); setTab("web"); syncChat(); $("modal").classList.add("show");
 }
 function closeSet(){ $("modal").classList.remove("show"); if (S.busy) renderProvs(); else renderAll(); }
 function syncTog(){
@@ -809,6 +960,22 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && $("modal")
 $("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); updateTools(); };
 $("newc").onclick = () => { if (busyGuard()) return; S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
 $("tog").onclick = toggleSide;
+const saveChat = () => store.set("mc_chat", S.chat);
+document.querySelectorAll("#setTabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+$("c_notify").onchange = async e => {
+  const el = e.target;
+  if (el.checked){
+    if (!("Notification" in window)){ el.checked = false; toast("Trình duyệt này không hỗ trợ thông báo"); return; }
+    let perm = Notification.permission;
+    if (perm === "default"){ try { perm = await Notification.requestPermission(); } catch(x){ perm = "denied"; } }
+    if (perm !== "granted"){ el.checked = false; S.chat.notify = false; saveChat(); $("notiWarn").hidden = false; return; }
+    try { new Notification("MultiChat", { body: "Thông báo đã được bật." }); } catch(x){}
+  }
+  S.chat.notify = el.checked; saveChat(); if (el.checked) $("notiWarn").hidden = true;
+};
+$("c_auto").onchange = e => { S.chat.auto = e.target.checked; $("c_n_row").hidden = !S.chat.auto; saveChat(); };
+$("c_n").onchange = e => { S.chat.n = +e.target.value; saveChat(); };
+document.addEventListener("click", () => ddCloseAll());
 $("menu").onclick = e => { e.stopPropagation(); toggleSide(); };
 window.addEventListener("resize", syncTog);
 document.querySelector("main").addEventListener("click", () => $("side").classList.remove("open"));
