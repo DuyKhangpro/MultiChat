@@ -229,6 +229,14 @@ html[data-ui=new] select.has-dd{display:none}
 .dd-o:hover,.dd-o.act{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 .dd-o.sel{font-weight:700;color:var(--acc)}
 .dd-ck{font-size:12px}
+.t,.lbl{margin-left:.35em}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.ot{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.ot small{color:var(--mute);font-size:13px}
+.opt select{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+.opt .dd{min-width:92px;flex-shrink:0}
+.opt .dd-menu{left:auto;right:0}
+.dd.up .dd-menu{top:auto;bottom:calc(100% + 6px)}
 </style>
 </head>
 <body>
@@ -236,22 +244,22 @@ html[data-ui=new] select.has-dd{display:none}
 <aside id="side">
   <div class="top">
     <div class="logo">Multi<span>Chat</span></div>
-    <button id="tog" aria-label="Thu gọn hoặc mở rộng thanh bên">«</button>
+    <button id="tog" data-ia="togAria">«</button>
   </div>
   <div id="provs"></div>
-  <div class="lh">Cuộc trò chuyện</div>
+  <div class="lh" data-i="convs"></div>
   <div id="convs"></div>
   <div class="sp"></div>
-  <button class="sbtn" id="openSet" title="Cài đặt">⚙<span class="lbl"> Cài đặt</span></button>
+  <button class="sbtn" id="openSet" data-it="settings">⚙<span class="lbl" data-i="settings"></span></button>
 </aside>
 
 <main>
   <header>
-    <button id="menu" aria-label="Thu gọn hoặc mở thanh bên" title="Thu gọn / mở thanh bên">☰</button>
+    <button id="menu" data-ia="menuT" data-it="menuT">☰</button>
     <div id="title"></div>
     <div class="hr">
-      <button id="newc" title="Cuộc trò chuyện mới">＋<span class="t"> Cuộc trò chuyện mới</span></button>
-      <select id="model" aria-label="Chọn model"></select>
+      <button id="newc" data-it="newcT">＋<span class="t" data-i="newcT"></span></button>
+      <select id="model" data-ia="pickModel"></select>
     </div>
   </header>
   <div id="teambar" hidden></div>
@@ -259,9 +267,9 @@ html[data-ui=new] select.has-dd{display:none}
   <footer>
     <div id="prev"></div>
     <div class="tools">
-      <button type="button" class="chip" id="attach" title="Đính kèm ảnh (tối đa 4)">📎 Ảnh</button>
-      <button type="button" class="chip" id="srch">🌐 Tìm kiếm</button>
-      <div class="effg" title="Mức suy luận của AI. Model nào không hỗ trợ sẽ bỏ qua hoặc báo lỗi từ nhà cung cấp.">
+      <button type="button" class="chip" id="attach" data-it="attachT" data-i="attach"></button>
+      <button type="button" class="chip" id="srch" data-i="search"></button>
+      <div class="effg" data-it="effT">
         <span>Effort</span>
         <div class="seg2" id="eff">
           <button type="button" data-e="auto">Auto</button>
@@ -273,49 +281,58 @@ html[data-ui=new] select.has-dd{display:none}
       <input type="file" id="file" accept="image/*" multiple hidden>
     </div>
     <form id="form">
-      <textarea id="input" rows="1" placeholder="Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng, dán ảnh được)"></textarea>
-      <button id="send" type="submit">Gửi</button>
+      <textarea id="input" rows="1" data-ip="ph"></textarea>
+      <button id="send" type="submit"></button>
     </form>
   </footer>
 </main>
 
 <div class="modal" id="modal">
   <div class="box" role="dialog" aria-labelledby="mt">
-    <h2 id="mt">Cài đặt</h2>
-    <div class="seg tabs" id="setTabs" role="tablist" aria-label="Mục cài đặt">
+    <h2 id="mt" data-i="settings"></h2>
+    <div class="seg tabs" id="setTabs" role="tablist" data-ia="tabsAria">
       <button type="button" role="tab" data-tab="web" class="on">Web</button>
       <button type="button" role="tab" data-tab="chat">Chat</button>
     </div>
     <div id="tab-web">
-    <h3>Chế độ màu</h3>
+    <h3 data-i="hColor"></h3>
     <div class="seg" id="themeSeg">
-      <button data-t="light">Sáng</button>
-      <button data-t="dark">Tối</button>
+      <button data-t="light" data-i="light"></button>
+      <button data-t="dark" data-i="dark"></button>
     </div>
-    <h3>Chế độ UI</h3>
+    <h3 data-i="hUI"></h3>
     <div class="seg" id="uiSeg">
       <button data-u="classic">Classic</button>
       <button data-u="new">New</button>
     </div>
-    <p class="hint" style="margin-top:8px">Classic: giao diện cũ, không hiệu ứng. New: giao diện mới hiện đại, có hiệu ứng.</p>
+    <p class="hint" style="margin-top:8px" data-i="uiHint"></p>
+    <h3 data-i="hLang"></h3>
+    <div class="seg" id="langSeg">
+      <button type="button" data-l="en">English</button>
+      <button type="button" data-l="vi">Tiếng Việt</button>
+    </div>
     <h3>API Key</h3>
-    <p class="hint">Key được mã hóa AES-GCM trước khi lưu vào trình duyệt, tự lưu khi bạn nhập nên F5 không bị mất. Đây là mã hóa phía trình duyệt, không thay thế việc giữ máy và trình duyệt của bạn an toàn.</p>
-    <p class="hint" id="warn">Trình duyệt đang chặn lưu hoặc mã hóa dữ liệu nên key sẽ mất khi F5. Hãy mở file trực tiếp bằng Chrome, Edge hoặc Firefox (không mở trong cửa sổ xem trước).</p>
+    <p class="hint" data-i="keysHint"></p>
+    <p class="hint" id="warn" data-i="warn"></p>
     <div id="keys"></div>
-    <label class="hint"><input type="checkbox" id="show"> Hiện API key</label>
+    <label class="hint"><input type="checkbox" id="show"> <span data-i="showKeys"></span></label>
     </div>
     <div id="tab-chat" hidden>
-      <h3>Thông báo</h3>
-      <label class="sw"><input type="checkbox" id="c_notify"><span class="sl"></span><span class="st"><b>Thông báo khi AI trả lời xong</b><small>Chỉ hiện khi bạn đang ở tab hoặc cửa sổ khác. Cần cấp quyền thông báo cho trình duyệt.</small></span></label>
-      <p class="hint bad" id="notiWarn" hidden>Trình duyệt không cấp quyền thông báo. Hãy cho phép thông báo cho trang này trong cài đặt trình duyệt. Nếu bạn mở file trực tiếp (file://), Chrome thường chặn thông báo; khi đó hãy chạy qua máy chủ cục bộ như http://localhost.</p>
-      <h3>Tự đổi model</h3>
-      <label class="sw"><input type="checkbox" id="c_auto"><span class="sl"></span><span class="st"><b>Tự đổi sang model kế bên khi bị lỗi nhiều</b><small>Cùng một AI, chuyển xuống model tiếp theo trong danh sách. Mặc định tắt.</small></span></label>
-      <div class="sub" id="c_n_row" hidden><label>Số lần lỗi liên tiếp trước khi đổi <select id="c_n"><option>2</option><option>3</option><option>4</option><option>5</option></select></label></div>
+      <h3 data-i="hNotif"></h3>
+      <label class="sw"><input type="checkbox" id="c_notify"><span class="sl"></span><span class="st"><b data-i="notifT"></b><small data-i="notifS"></small></span></label>
+      <p class="hint bad" id="notiWarn" data-i="notiWarn" hidden></p>
+      <h3 data-i="hAuto"></h3>
+      <label class="sw"><input type="checkbox" id="c_auto"><span class="sl"></span><span class="st"><b data-i="autoT"></b><small data-i="autoS"></small></span></label>
+      <div class="opt sub" id="c_n_row" hidden><span class="ot" data-i="autoN"></span><select id="c_n" data-ia="autoN"><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <h3 data-i="hTeam"></h3>
+      <div class="opt"><span class="ot"><b data-i="tmaxT"></b><small data-i="tmaxS"></small></span><select id="c_tmax" data-ia="tmaxT"><option>4</option><option>8</option><option>12</option><option>16</option><option>20</option><option>24</option></select></div>
+      <h3 data-i="hSaver"></h3>
+      <label class="sw"><input type="checkbox" id="c_saver"><span class="sl"></span><span class="st"><b data-i="saverT"></b><small data-i="saverS"></small></span></label>
     </div>
     <div class="row">
       <span class="grow"></span>
-      <button id="close">Đóng</button>
-      <button id="apply" class="pri">Áp dụng</button>
+      <button id="close" data-i="close"></button>
+      <button id="apply" class="pri" data-i="apply"></button>
     </div>
   </div>
 </div>
@@ -357,12 +374,105 @@ const S = {
 };
 if (!PROVIDERS[S.p] && S.p !== "team") S.p = ids[0];
 S.team = store.get("mc_team", null) || {};
-S.chat = { notify: false, auto: false, n: 3, ...store.get("mc_chat", {}) };
+S.chat = { notify: false, auto: false, n: 3, tmax: 12, saver: false, ...store.get("mc_chat", {}) };
+if (![4, 8, 12, 16, 20, 24].includes(S.chat.tmax)) S.chat.tmax = 12;
+S.lang = store.get("mc_lang", "en"); if (S.lang !== "en" && S.lang !== "vi") S.lang = "en";
 ["a", "b"].forEach((k, n) => {
   const t = S.team[k] = S.team[k] || {};
   if (!PROVIDERS[t.p]) t.p = ids[Math.min(n + 1, ids.length - 1)];
   if (!PROVIDERS[t.p].models.includes(t.m)) t.m = PROVIDERS[t.p].models[0];
 });
+
+/* ====== Ngôn ngữ / Language: thêm hoặc sửa chữ ở đây ====== */
+const I18N = {
+  en: {
+    convs: "Conversations", settings: "Settings", togAria: "Collapse or expand the sidebar", togCollapse: "Collapse sidebar", togExpand: "Expand sidebar", menuT: "Collapse / open sidebar",
+    newcT: "New conversation", pickModel: "Choose model", attachT: "Attach images (up to 4)", attach: "📎 Images", search: "🌐 Search",
+    effT: "AI reasoning level. Models that don't support it ignore it or return an error from the provider.",
+    ph: "Type a message… (Enter to send, Shift+Enter for a new line, paste images)", send: "Send", stop: "Stop",
+    tabsAria: "Settings sections", hColor: "Color mode", light: "Light", dark: "Dark", hUI: "UI mode",
+    uiHint: "Classic: the original look, no animations. New: a modern look with animations.", hLang: "Language",
+    keysHint: "Keys are encrypted with AES-GCM before being stored in the browser and saved as you type, so F5 won't lose them. This is browser-side encryption; it doesn't replace keeping your device and browser secure.",
+    warn: "The browser is blocking storage or encryption, so keys will be lost on F5. Open the file directly in Chrome, Edge or Firefox (not in a preview window).",
+    showKeys: "Show API keys", close: "Close", apply: "Apply",
+    hNotif: "Notifications", notifT: "Notify when the AI finishes replying", notifS: "Only shown when you're on another tab or window. Requires notification permission from the browser.",
+    notiWarn: "The browser didn't grant notification permission. Allow notifications for this page in your browser settings. If you opened the file directly (file://), Chrome usually blocks notifications; run it through a local server such as http://localhost instead.",
+    hAuto: "Auto-switch model", autoT: "Switch to the next model when a model keeps failing", autoS: "Same AI, moves down to the next model in its list. Off by default.", autoN: "Consecutive errors before switching",
+    hTeam: "Team", tmaxT: "Turn limit", tmaxS: "Maximum number of alternating messages between the two AIs per request. Default 12.",
+    hSaver: "Token saving", saverT: "Token saver mode", saverS: "Adds a hidden instruction asking the AI to think less and answer more briefly.",
+    srchOn: "Let the AI search the web (Search Grounding)", srchOff: "This model doesn't support search",
+    busy: "The AI is replying. Press Stop or wait until it finishes.", noKey: "no key", provider: "Provider", model: "Model",
+    noConvs: "No conversations yet.", delAria: "Delete conversation", del: "Delete", delConfirm: "Delete this conversation?",
+    sec: " s", ttft: " · started replying after ", swapped: " · 🔁 model switched: ",
+    imgAlt: "Attached image", imgN: n => "🖼 " + n + (n === 1 ? " image" : " images") + " attached (not kept after the page is reloaded)", think: "💭 Thinking",
+    emptyTitle: n => "Chat with " + n, emptyTeamTitle: "Team: 2 AIs working on one task", needKeyHint: w => "You need to enter the API key for " + w + " before starting.", bothAIs: "both selected AIs", goKey: "Enter API key",
+    emptyHint: "Pick a model at the top right, then type a message below.",
+    emptyTeamHint: "Pick 2 AIs above, then type your request below. The two AIs will introduce themselves, split the work and talk until both say “Đã Xong” (Vietnamese for “Done”).",
+    maxImgs: "Up to 4 images per message", imgFail: "Couldn't read the image", prevAlt: "Image to send", rmImg: "Remove image",
+    err: "Error", failed: "Failed", sources: "Sources",
+    waiting: " · waiting for a response…", retry: (i, n) => " · ⚠️ error (" + i + "/" + n + "), retrying…", switching: m => " · 🔁 switching to " + m + "…",
+    errPrefix: "Error: ", netErr: "Couldn't connect. Check your network and API key, or the provider may block access from the browser.",
+    retried: sw => "(Retried automatically" + (sw ? " and switched model" : "") + " but it still failed.)", stopped: "(stopped)", emptyReply: "(The model returned no content)", switched: s => "Model switched automatically: " + s,
+    userTag: "User", noteDone: "✅ Both AIs said “Đã Xong”.", noteStop: "⏹ Stopped.",
+    noteMax: n => "⚠️ Reached the limit of " + n + " turns without both AIs saying “Đã Xong”. Send another message to let them continue.",
+    notifTeam: "Team", notifTeamErr: "Team hit an error", notifDone: n => n + " finished replying", notifErr: n => n + " hit an error",
+    needKeys: (a, b) => "API keys are needed for both AIs (" + a + ", " + b + ")", needKey: n => "Please enter the API key for " + n, imageTitle: "Image",
+    decErr: "Couldn't decrypt the saved API keys, please enter them again", saveFail: "Couldn't save the keys in the browser", saved: "Settings saved",
+    notifUnsupported: "This browser doesn't support notifications", notifOn: "Notifications are on.", pasteKey: n => "Paste your " + n + " API key"
+  },
+  vi: {
+    convs: "Cuộc trò chuyện", settings: "Cài đặt", togAria: "Thu gọn hoặc mở rộng thanh bên", togCollapse: "Thu gọn thanh bên", togExpand: "Mở rộng thanh bên", menuT: "Thu gọn / mở thanh bên",
+    newcT: "Cuộc trò chuyện mới", pickModel: "Chọn model", attachT: "Đính kèm ảnh (tối đa 4)", attach: "📎 Ảnh", search: "🌐 Tìm kiếm",
+    effT: "Mức suy luận của AI. Model nào không hỗ trợ sẽ bỏ qua hoặc báo lỗi từ nhà cung cấp.",
+    ph: "Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng, dán ảnh được)", send: "Gửi", stop: "Dừng",
+    tabsAria: "Mục cài đặt", hColor: "Chế độ màu", light: "Sáng", dark: "Tối", hUI: "Chế độ UI",
+    uiHint: "Classic: giao diện cũ, không hiệu ứng. New: giao diện mới hiện đại, có hiệu ứng.", hLang: "Ngôn ngữ",
+    keysHint: "Key được mã hóa AES-GCM trước khi lưu vào trình duyệt, tự lưu khi bạn nhập nên F5 không bị mất. Đây là mã hóa phía trình duyệt, không thay thế việc giữ máy và trình duyệt của bạn an toàn.",
+    warn: "Trình duyệt đang chặn lưu hoặc mã hóa dữ liệu nên key sẽ mất khi F5. Hãy mở file trực tiếp bằng Chrome, Edge hoặc Firefox (không mở trong cửa sổ xem trước).",
+    showKeys: "Hiện API key", close: "Đóng", apply: "Áp dụng",
+    hNotif: "Thông báo", notifT: "Thông báo khi AI trả lời xong", notifS: "Chỉ hiện khi bạn đang ở tab hoặc cửa sổ khác. Cần cấp quyền thông báo cho trình duyệt.",
+    notiWarn: "Trình duyệt không cấp quyền thông báo. Hãy cho phép thông báo cho trang này trong cài đặt trình duyệt. Nếu bạn mở file trực tiếp (file://), Chrome thường chặn thông báo; khi đó hãy chạy qua máy chủ cục bộ như http://localhost.",
+    hAuto: "Tự đổi model", autoT: "Tự đổi sang model kế bên khi bị lỗi nhiều", autoS: "Cùng một AI, chuyển xuống model tiếp theo trong danh sách. Mặc định tắt.", autoN: "Số lần lỗi liên tiếp trước khi đổi",
+    hTeam: "Team", tmaxT: "Giới hạn số lần chat lần lượt", tmaxS: "Số tin nhắn tối đa hai AI thay phiên nhau cho mỗi yêu cầu. Mặc định 12.",
+    hSaver: "Tiết kiệm token", saverT: "Chế độ tiết kiệm token", saverS: "Thêm một chỉ dẫn ẩn để AI suy nghĩ ít và trả lời ngắn gọn hơn.",
+    srchOn: "Cho AI tìm kiếm trên web (Search Grounding)", srchOff: "Model này không hỗ trợ tìm kiếm",
+    busy: "AI đang trả lời, hãy bấm Dừng hoặc chờ xong", noKey: "chưa có key", provider: "Nhà cung cấp", model: "Model",
+    noConvs: "Chưa có cuộc trò chuyện nào.", delAria: "Xóa cuộc trò chuyện", del: "Xóa", delConfirm: "Xóa cuộc trò chuyện này?",
+    sec: " giây", ttft: " · bắt đầu trả lời sau ", swapped: " · 🔁 đã đổi model: ",
+    imgAlt: "Ảnh đính kèm", imgN: n => "🖼 " + n + " ảnh đã đính kèm (không lưu lại sau khi tải lại trang)", think: "💭 Suy nghĩ",
+    emptyTitle: n => "Trò chuyện với " + n, emptyTeamTitle: "Team: 2 AI cùng làm một việc", needKeyHint: w => "Bạn cần nhập API key của " + w + " trước khi bắt đầu.", bothAIs: "cả 2 AI đã chọn", goKey: "Nhập API key",
+    emptyHint: "Chọn model ở góc trên bên phải rồi gõ tin nhắn bên dưới.",
+    emptyTeamHint: "Chọn 2 AI ở trên rồi nhập yêu cầu bên dưới. Hai AI sẽ tự giới thiệu, chia việc và trao đổi cho tới khi cả hai cùng nói “Đã Xong”.",
+    maxImgs: "Tối đa 4 ảnh mỗi tin nhắn", imgFail: "Không đọc được ảnh", prevAlt: "Ảnh sẽ gửi", rmImg: "Bỏ ảnh",
+    err: "Lỗi", failed: "Thất bại", sources: "Nguồn",
+    waiting: " · đang chờ phản hồi…", retry: (i, n) => " · ⚠️ lỗi (" + i + "/" + n + "), thử lại…", switching: m => " · 🔁 đổi sang " + m + "…",
+    errPrefix: "Lỗi: ", netErr: "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt.",
+    retried: sw => "(Đã tự thử lại" + (sw ? " và đổi model" : "") + " nhưng vẫn lỗi.)", stopped: "(đã dừng)", emptyReply: "(Model không trả về nội dung)", switched: s => "Đã tự đổi model: " + s,
+    userTag: "Người dùng", noteDone: "✅ Cả hai AI đã nói “Đã Xong”.", noteStop: "⏹ Đã dừng.",
+    noteMax: n => "⚠️ Đã đạt giới hạn " + n + " lượt mà chưa đủ cả hai cùng nói “Đã Xong”. Bạn có thể nhắn thêm để hai AI làm tiếp.",
+    notifTeam: "Team", notifTeamErr: "Team gặp lỗi", notifDone: n => n + " đã trả lời xong", notifErr: n => n + " gặp lỗi",
+    needKeys: (a, b) => "Cần nhập API key cho cả 2 AI (" + a + ", " + b + ")", needKey: n => "Hãy nhập API key của " + n, imageTitle: "Hình ảnh",
+    decErr: "Không giải mã được API key đã lưu, hãy nhập lại", saveFail: "Không lưu được key vào trình duyệt", saved: "Đã lưu cài đặt",
+    notifUnsupported: "Trình duyệt này không hỗ trợ thông báo", notifOn: "Thông báo đã được bật.", pasteKey: n => "Dán API key của " + n
+  }
+};
+function t(k, ...a){ const v = (I18N[S.lang] && I18N[S.lang][k] !== undefined) ? I18N[S.lang][k] : I18N.en[k]; return typeof v === "function" ? v(...a) : v; }
+function applyLang(){
+  document.documentElement.lang = S.lang;
+  document.querySelectorAll("[data-i]").forEach(e => { e.textContent = t(e.dataset.i); });
+  document.querySelectorAll("[data-ip]").forEach(e => { e.placeholder = t(e.dataset.ip); });
+  document.querySelectorAll("[data-it]").forEach(e => { e.title = t(e.dataset.it); });
+  document.querySelectorAll("[data-ia]").forEach(e => { e.setAttribute("aria-label", t(e.dataset.ia)); });
+  ids.forEach(i => { $("k_" + i).placeholder = t("pasteKey", PROVIDERS[i].name); });
+  $("send").textContent = S.busy ? t("stop") : t("send");
+  document.querySelectorAll("#langSeg button").forEach(b => b.classList.toggle("on", b.dataset.l === S.lang));
+  document.querySelectorAll("select.has-dd").forEach(dd);
+  syncTog(); updateTools();
+}
+function setLang(l){
+  S.lang = l; store.set("mc_lang", l); applyLang();
+  if (S.busy) renderProvs(); else renderAll();
+}
 
 /* ====== Mã hóa API key: AES-GCM 256, khóa không-xuất-được lưu trong IndexedDB ====== */
 const Vault = {
@@ -401,7 +511,7 @@ async function loadKeys(){
     const e = store.get("mc_keys_enc", null);
     if (e) S.keys = await Vault.dec(e);
     else { const o = store.get("mc_keys", null); if (o){ S.keys = o; await saveKeys(); } }
-  } catch(e){ S.keys = {}; if (store.get("mc_keys_enc", null)) toast("Không giải mã được API key đã lưu, hãy nhập lại"); else S.vaultErr = true; }
+  } catch(e){ S.keys = {}; if (store.get("mc_keys_enc", null)) toast(t("decErr")); else S.vaultErr = true; }
 }
 
 /* chuyển dữ liệu chat cũ (bản trước) sang dạng nhiều cuộc trò chuyện */
@@ -449,11 +559,11 @@ const canSearch = (p, model) => p === "groq" ? /gpt-oss|compound/.test(model) : 
 function updateTools(){
   const sup = S.p === "team" ? (canSearch(S.team.a.p, S.team.a.m) || canSearch(S.team.b.p, S.team.b.m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
   b.disabled = !sup; b.classList.toggle("on", S.search && sup);
-  b.title = sup ? "Cho AI tìm kiếm trên web (Search Grounding)" : "Model này không hỗ trợ tìm kiếm";
+  b.title = sup ? t("srchOn") : t("srchOff");
   document.querySelectorAll("#eff button").forEach(x => x.classList.toggle("on", x.dataset.e === S.eff));
 }
 const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : PROVIDERS[i];
-function busyGuard(){ if (S.busy){ toast("AI đang trả lời, hãy bấm Dừng hoặc chờ xong"); return true; } return false; }
+function busyGuard(){ if (S.busy){ toast(t("busy")); return true; } return false; }
 
 function renderProvs(){
   $("provs").innerHTML = "";
@@ -461,7 +571,7 @@ function renderProvs(){
     const M = META(i), tm = i === "team", b = document.createElement("button");
     b.className = "prov" + (i === S.p ? " on" : "") + (tm ? " team" : "");
     b.title = M.name; b.style.setProperty("--pc", M.color);
-    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + M.name + "</span>" + ((tm || S.keys[i]) ? "" : "<small>chưa có key</small>");
+    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + M.name + "</span>" + ((tm || S.keys[i]) ? "" : "<small>" + t("noKey") + "</small>");
     b.onclick = () => { if (busyGuard()) return; S.p = i; store.set("mc_p", i); $("side").classList.remove("open"); renderAll(); };
     $("provs").appendChild(b);
   });
@@ -476,7 +586,7 @@ function renderTeam(){
   ["a", "b"].forEach(k => {
     const T = S.team[k], d = document.createElement("div");
     d.className = "tcard";
-    d.innerHTML = '<b></b><select class="tp" aria-label="Nhà cung cấp"></select><select class="tm" aria-label="Model"></select>';
+    d.innerHTML = '<b></b><select class="tp" aria-label="' + t("provider") + '"></select><select class="tm" aria-label="' + t("model") + '"></select>';
     d.querySelector("b").textContent = k === "a" ? "AI-1" : "AI-2";
     const sp = d.querySelector(".tp"), sm = d.querySelector(".tm");
     sp.innerHTML = ids.map(i => '<option value="' + i + '">' + PROVIDERS[i].name + "</option>").join(""); sp.value = T.p; dd(sp);
@@ -506,20 +616,23 @@ function setTab(t){
   document.querySelectorAll("#setTabs button").forEach(b => { b.classList.toggle("on", b.dataset.tab === t); b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
 }
 function syncChat(){
-  $("c_notify").checked = S.chat.notify && notifOK(); $("c_auto").checked = S.chat.auto;
-  $("c_n").value = String(S.chat.n); $("c_n_row").hidden = !S.chat.auto; $("notiWarn").hidden = true;
+  $("c_notify").checked = S.chat.notify && notifOK(); $("c_auto").checked = S.chat.auto; $("c_saver").checked = S.chat.saver;
+  $("c_n").value = String(S.chat.n); dd($("c_n")); $("c_tmax").value = String(S.chat.tmax); dd($("c_tmax"));
+  $("c_n_row").hidden = !S.chat.auto; $("notiWarn").hidden = true;
 }
 function lockUI(b){      /* khóa ô chọn AI/model khi AI đang trả lời */
   document.querySelectorAll("#teambar select,#model").forEach(x => { x.disabled = b; if (x._dd) x._dd.querySelector(".dd-btn").disabled = b; });
 }
 
 /* ====== Custom Dropdown: chỉ hiện ở giao diện New, Classic dùng select mặc định ====== */
-function ddClose(w){ w.classList.remove("open"); w.querySelector(".dd-menu").hidden = true; w.querySelector(".dd-btn").setAttribute("aria-expanded", "false"); }
+function ddClose(w){ w.classList.remove("open", "up"); w.querySelector(".dd-menu").hidden = true; w.querySelector(".dd-btn").setAttribute("aria-expanded", "false"); }
 function ddCloseAll(except){ document.querySelectorAll(".dd.open").forEach(x => { if (x !== except) ddClose(x); }); }
 function ddAct(m, el){ m.querySelectorAll(".act").forEach(x => x.classList.remove("act")); if (el){ el.classList.add("act"); el.scrollIntoView({ block: "nearest" }); } }
 function ddOpen(w){
   ddCloseAll(w); w.classList.add("open");
   const m = w.querySelector(".dd-menu"); m.hidden = false; w.querySelector(".dd-btn").setAttribute("aria-expanded", "true");
+  const r = w.getBoundingClientRect(), bx = w.closest(".box"), lo = bx ? bx.getBoundingClientRect() : { top: 0, bottom: innerHeight }, mh = m.offsetHeight + 12;
+  if (lo.bottom - r.bottom < mh && r.top - lo.top > mh) w.classList.add("up");
   ddAct(m, m.querySelector(".sel") || m.firstChild);
 }
 function ddKey(e, w){
@@ -565,19 +678,19 @@ function dd(sel){
 
 function renderConvs(){
   const box = $("convs"), list = [...S.convs[S.p]].sort((a, b) => b.t - a.t);
-  box.innerHTML = list.length ? "" : '<div class="none">Chưa có cuộc trò chuyện nào.</div>';
+  box.innerHTML = list.length ? "" : '<div class="none">' + t("noConvs") + "</div>";
   list.forEach(c => {
     const d = document.createElement("div");
     d.className = "cv" + (c.id === S.cur[S.p] ? " on" : "");
     d.tabIndex = 0; d.setAttribute("role", "button");
-    d.innerHTML = '<span class="ct"></span><button class="x" aria-label="Xóa cuộc trò chuyện" title="Xóa">×</button>';
+    d.innerHTML = '<span class="ct"></span><button class="x" aria-label="' + t("delAria") + '" title="' + t("del") + '">×</button>';
     d.querySelector(".ct").textContent = c.title; d.title = c.title;
     const open = () => { if (busyGuard()) return; S.cur[S.p] = c.id; persist(); $("side").classList.remove("open"); renderConvs(); renderLog(); };
     d.onclick = open;
     d.onkeydown = e => { if (e.target === d && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); open(); } };
     d.querySelector(".x").onclick = e => {
       e.stopPropagation();
-      if (busyGuard() || !confirm("Xóa cuộc trò chuyện này?")) return;
+      if (busyGuard() || !confirm(t("delConfirm"))) return;
       S.convs[S.p] = S.convs[S.p].filter(x => x.id !== c.id);
       if (S.cur[S.p] === c.id) S.cur[S.p] = null;
       persist(); renderConvs(); renderLog();
@@ -586,8 +699,8 @@ function renderConvs(){
   });
 }
 const du = i => "data:" + i.m + ";base64," + i.d;
-const fmtT = ms => (ms / 1000).toFixed(1) + " giây";
-const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? " · bắt đầu trả lời sau " + fmtT(m.ttft) : "") + (m.sw ? " · 🔁 đã đổi model: " + m.sw : "") : "";
+const fmtT = ms => (ms / 1000).toFixed(1) + t("sec");
+const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? t("ttft") + fmtT(m.ttft) : "") + (m.sw ? t("swapped") + m.sw : "") : "";
 function nearBottom(){ const l = $("log"); return l.scrollHeight - l.scrollTop - l.clientHeight < 90; }
 function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và ghi chú */
   const d = document.createElement("div");
@@ -595,17 +708,17 @@ function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và
   d.textContent = text;
   if (imgs && imgs.length){
     const w = document.createElement("div"); w.className = "imgs";
-    imgs.forEach(i => { const im = document.createElement("img"); im.src = du(i); im.alt = "Ảnh đính kèm"; w.appendChild(im); });
+    imgs.forEach(i => { const im = document.createElement("img"); im.src = du(i); im.alt = t("imgAlt"); w.appendChild(im); });
     d.appendChild(w);
   } else if (imgN){
     const n = document.createElement("div"); n.className = "imgn";
-    n.textContent = "🖼 " + imgN + " ảnh đã đính kèm (không lưu lại sau khi tải lại trang)"; d.appendChild(n);
+    n.textContent = t("imgN", imgN); d.appendChild(n);
   }
   $("log").appendChild(d); $("log").scrollTop = $("log").scrollHeight; return d;
 }
 function botBubble(name, color, cls){
   const d = document.createElement("div"); d.className = "msg bot" + (cls ? " " + cls : ""); d.style.setProperty("--pc", color);
-  d.innerHTML = '<div class="who"></div><details class="think" hidden><summary>💭 Suy nghĩ</summary><div class="tt"></div></details><div class="bd"></div><div class="meta"></div>';
+  d.innerHTML = '<div class="who"></div><details class="think" hidden><summary>' + t("think") + '</summary><div class="tt"></div></details><div class="bd"></div><div class="meta"></div>';
   d.querySelector(".who").textContent = name;
   const th = d.querySelector(".think"), tt = d.querySelector(".tt"), bd = d.querySelector(".bd"), mt = d.querySelector(".meta");
   const stick0 = nearBottom(); $("log").appendChild(d); if (stick0) $("log").scrollTop = $("log").scrollHeight;
@@ -629,15 +742,15 @@ function renderLog(){
   const conv = getConv(S.p), chat = conv ? conv.msgs : [], team = S.p === "team";
   if (!chat.length){
     const noKey = team ? !(S.keys[S.team.a.p] && S.keys[S.team.b.p]) : !S.keys[S.p];
-    log.innerHTML = '<div class="empty"><b>' + (team ? "Team: 2 AI cùng làm một việc" : "Trò chuyện với " + PROVIDERS[S.p].name) + "</b>" +
-      (noKey ? "Bạn cần nhập API key của " + (team ? "cả 2 AI đã chọn" : PROVIDERS[S.p].name) + " trước khi bắt đầu.<br><button id='goSet'>Nhập API key</button>"
-             : (team ? "Chọn 2 AI ở trên rồi nhập yêu cầu bên dưới. Hai AI sẽ tự giới thiệu, chia việc và trao đổi cho tới khi cả hai cùng nói “Đã Xong”." : "Chọn model ở góc trên bên phải rồi gõ tin nhắn bên dưới.")) + "</div>";
+    log.innerHTML = '<div class="empty"><b>' + (team ? t("emptyTeamTitle") : t("emptyTitle", PROVIDERS[S.p].name)) + "</b>" +
+      (noKey ? t("needKeyHint", team ? t("bothAIs") : PROVIDERS[S.p].name) + "<br><button id='goSet'>" + t("goKey") + "</button>"
+             : (team ? t("emptyTeamHint") : t("emptyHint"))) + "</div>";
     if (noKey) $("goSet").onclick = openSet;
     return;
   }
   chat.forEach(m => {
     if (m.role === "user") bubble("user", m.content, "", m.imgs, m.imgN);
-    else if (m.role === "note") bubble("note", m.content);
+    else if (m.role === "note") bubble("note", m.nk ? t(m.nk, ...(m.np || [])) : m.content);
     else { const M = META(S.p), b = botBubble(m.lbl || M.name, m.col || M.color, m.err ? "err" : ""); b.flush(m.content, m.think); b.meta(metaText(m)); }
   });
 }
@@ -660,8 +773,8 @@ function shrink(file){
 async function addFiles(files){
   for (const f of files){
     if (!f.type.startsWith("image/")) continue;
-    if (S.pending.length >= 4){ toast("Tối đa 4 ảnh mỗi tin nhắn"); break; }
-    try { S.pending.push(await shrink(f)); } catch(e){ toast("Không đọc được ảnh"); }
+    if (S.pending.length >= 4){ toast(t("maxImgs")); break; }
+    try { S.pending.push(await shrink(f)); } catch(e){ toast(t("imgFail")); }
   }
   renderPrev();
 }
@@ -669,7 +782,7 @@ function renderPrev(){
   const box = $("prev"); box.innerHTML = "";
   S.pending.forEach((i, n) => {
     const d = document.createElement("div"); d.className = "th";
-    d.innerHTML = '<img alt="Ảnh sẽ gửi"><button type="button" aria-label="Bỏ ảnh">×</button>';
+    d.innerHTML = '<img alt="' + t("prevAlt") + '"><button type="button" aria-label="' + t("rmImg") + '">×</button>';
     d.querySelector("img").src = du(i);
     d.querySelector("button").onclick = () => { S.pending.splice(n, 1); renderPrev(); };
     box.appendChild(d);
@@ -683,7 +796,7 @@ const toOAI = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type
 const toResp = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "input_text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "input_image", image_url: du(i) }))] } : { role: m.role, content: m.content };
 const toClaude = m => hasImg(m) ? { role: m.role, content: [...m.imgs.map(i => ({ type: "image", source: { type: "base64", media_type: i.m, data: i.d } })), ...(m.content ? [{ type: "text", text: m.content }] : [])] } : { role: m.role, content: m.content };
 
-const TEAM_MAX = 12;                       /* tối đa số lượt của cả 2 AI cho mỗi yêu cầu */
+/* giới hạn lượt của Team: S.chat.tmax (chọn trong Cài đặt > Chat) */
 const DONE = /(đã|da)\s*xong/i;
 
 async function readSSE(res, fn){
@@ -723,12 +836,12 @@ async function callAPI(o){
       if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: eff };
       fb = j => j.output_text || (j.output || []).filter(x => x.type === "message").flatMap(x => x.content || []).map(c => c.text || "").join("");
       ev = j => {
-        const t = j.type || "";
-        if (t === "response.output_text.delta") T(j.delta);
-        else if (/reasoning(_summary)?_text\.delta$/.test(t)) R(j.delta);
-        else if (t === "response.output_text.annotation.added" && j.annotation && j.annotation.url) addSrc(j.annotation.url, j.annotation.title);
-        else if (t === "error") throw new Error(j.message || (j.error && j.error.message) || "Lỗi");
-        else if (t === "response.failed") throw new Error((j.response && j.response.error && j.response.error.message) || "Thất bại");
+        const ty = j.type || "";
+        if (ty === "response.output_text.delta") T(j.delta);
+        else if (/reasoning(_summary)?_text\.delta$/.test(ty)) R(j.delta);
+        else if (ty === "response.output_text.annotation.added" && j.annotation && j.annotation.url) addSrc(j.annotation.url, j.annotation.title);
+        else if (ty === "error") throw new Error(j.message || (j.error && j.error.message) || t("err"));
+        else if (ty === "response.failed") throw new Error((j.response && j.response.error && j.response.error.message) || t("failed"));
       };
     } else {
       url = BASE[p] + "/chat/completions";
@@ -743,7 +856,7 @@ async function callAPI(o){
       if (search && p === "openrouter") body.plugins = [{ id: "web" }];
       fb = j => (j.choices[0].message.content || "");
       ev = j => {
-        if (j.error) throw new Error(j.error.message || "Lỗi");
+        if (j.error) throw new Error(j.error.message || t("err"));
         const c = j.choices && j.choices[0]; if (!c) return;
         const d = c.delta || {}, rr = d.reasoning_content || (typeof d.reasoning === "string" ? d.reasoning : "");
         if (rr) R(rr);
@@ -762,7 +875,7 @@ async function callAPI(o){
     ev = j => {
       if (j.type === "content_block_delta"){ const d = j.delta || {}; if (d.type === "text_delta") T(d.text); else if (d.type === "thinking_delta") R(d.thinking); }
       else if (j.type === "content_block_start" && j.content_block && Array.isArray(j.content_block.content)) j.content_block.content.forEach(x => x.url && addSrc(x.url, x.title));
-      else if (j.type === "error") throw new Error((j.error && j.error.message) || "Lỗi");
+      else if (j.type === "error") throw new Error((j.error && j.error.message) || t("err"));
     };
   } else {
     url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":streamGenerateContent?alt=sse";
@@ -778,14 +891,14 @@ async function callAPI(o){
     if (Object.keys(tc).length) body.generationConfig = { thinkingConfig: tc };
     if (search) body.tools = [{ google_search: {} }];
     ev = j => {
-      if (j.error) throw new Error(j.error.message || "Lỗi");
+      if (j.error) throw new Error(j.error.message || t("err"));
       const c = j.candidates && j.candidates[0]; if (!c) return;
       ((c.content && c.content.parts) || []).forEach(x => { if (x.text) (x.thought ? R(x.text) : T(x.text)); });
       ((c.groundingMetadata || {}).groundingChunks || []).forEach(x => x.web && addSrc(x.web.uri, x.web.title));
     };
   }
   const go = () => fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal });
-  const fail = async r => { const j = await r.json().catch(() => ({})), e = Array.isArray(j) ? j[0] : j; return new Error((e && e.error && (e.error.message || e.error)) || ("Lỗi " + r.status)); };
+  const fail = async r => { const j = await r.json().catch(() => ({})), e = Array.isArray(j) ? j[0] : j; return new Error((e && e.error && (e.error.message || e.error)) || (t("err") + " " + r.status)); };
   try {
     let r = await go();
     if (!r.ok){
@@ -798,48 +911,51 @@ async function callAPI(o){
   } catch(e){ if (e.name === "AbortError") aborted = true; else throw e; }
   const s = splitThink(raw);
   let text = s.text;
-  if (src.length) text += "\n\n**Nguồn**\n" + src.map(x => "- " + x.t + ": " + x.u).join("\n");
+  if (src.length) text += "\n\n**" + t("sources") + "**\n" + src.map(x => "- " + x.t + ": " + x.u).join("\n");
   return { text, think: (rs + s.think).trim(), aborted };
 }
 
-const AUTO_HOPS = 3;                       /* tự đổi tối đa bấy nhiêu model cho mỗi yêu cầu */
+const AUTO_HOPS = 3;                       /* tự đổi: tối đa bấy nhiêu model cho mỗi yêu cầu */
 const FATAL = /incorrect api key|invalid.{0,12}api.?key|api key not valid|unauthori[sz]ed|authentication/i;
 const sleep = (ms, sig) => new Promise(res => { const t = setTimeout(res, ms); if (sig) sig.addEventListener("abort", () => { clearTimeout(t); res(); }, { once: true }); });
+/* Chế độ tiết kiệm token: chỉ dẫn ẩn (system prompt) gửi kèm mỗi yêu cầu khi bật */
+const SAVER = "Token-saving mode is ON. Think only as much as needed and keep your reasoning brief. Answer as concisely as possible: no preamble, no restating the question, no repetition, no unnecessary caveats. Do not cut content the user explicitly asked for (code, documents, requested details); just avoid padding. Reply in the user's language.";
 
 /* Một lượt trả lời: hiện bong bóng, đếm giờ, hiện phần suy nghĩ; nếu bật "Tự đổi model" thì thử lại rồi đổi sang model kế bên khi lỗi */
 async function turn(o){
-  const { p, msgs, sys, label, color, ctl } = o, cfg = S.chat, list = PROVIDERS[p].models, N = cfg.auto ? cfg.n : 1;
+  const { p, msgs, label, color, ctl } = o, cfg = S.chat, list = PROVIDERS[p].models, N = cfg.auto ? cfg.n : 1;
+  const sys = [o.sys, cfg.saver ? SAVER : ""].filter(Boolean).join("\n\n");
   let model = o.model; const b = botBubble(label, color);
   let t0 = performance.now(), ttft = null, info = "";
-  const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? " · đang chờ phản hồi…" : "") + info), 100);
+  const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? t("waiting") : "") + info), 100);
   let r, err, tries = 0, hops = 0;
   for (;;){
     err = null; t0 = performance.now(); ttft = null;
     try {
       r = await callAPI({ p, model, msgs, key: S.keys[p], eff: S.eff, search: S.search && canSearch(p, model), sys, signal: ctl.signal,
-        on: (t, th) => { if (ttft == null && (t || th)) ttft = performance.now() - t0; b.set(t, th); } });
+        on: (tx, th) => { if (ttft == null && (tx || th)) ttft = performance.now() - t0; b.set(tx, th); } });
     } catch(e){ err = e; }
     if (!err || ctl.signal.aborted || !cfg.auto || FATAL.test(String(err.message))) break;
     tries++; b.set("", "");
-    if (tries < N){ info = " · ⚠️ lỗi (" + tries + "/" + N + "), thử lại…"; await sleep(800 * tries, ctl.signal); continue; }
+    if (tries < N){ info = t("retry", tries, N); await sleep(800 * tries, ctl.signal); continue; }
     if (hops >= AUTO_HOPS || list.length < 2) break;
     model = list[(list.indexOf(model) + 1) % list.length]; hops++; tries = 0;
-    info = " · 🔁 đổi sang " + model + "…";
+    info = t("switching", model);
   }
   clearInterval(tick);
   const m = { role: "assistant", content: "", ms: Math.round(performance.now() - t0), ttft: ttft == null ? null : Math.round(ttft) };
   if (err){
-    m.err = true; m.content = "Lỗi: " + (err.message === "Failed to fetch" ? "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt." : String(err.message));
-    if (cfg.auto && (hops > 0 || tries > 1)) m.content += "\n\n(Đã tự thử lại" + (hops ? " và đổi model" : "") + " nhưng vẫn lỗi.)";
+    m.err = true; m.content = t("errPrefix") + (err.message === "Failed to fetch" ? t("netErr") : String(err.message));
+    if (cfg.auto && (hops > 0 || tries > 1)) m.content += "\n\n" + t("retried", hops > 0);
     b.el.classList.add("err");
   } else {
-    m.content = r.text || (r.aborted ? "" : "(Model không trả về nội dung)");
+    m.content = r.text || (r.aborted ? "" : t("emptyReply"));
     if (r.think) m.think = r.think;
-    if (r.aborted){ m.aborted = true; m.content = (m.content ? m.content + "\n\n" : "") + "(đã dừng)"; }
+    if (r.aborted){ m.aborted = true; m.content = (m.content ? m.content + "\n\n" : "") + t("stopped"); }
     if (model !== o.model){
       m.sw = o.model + " → " + model;
       if (o.onSwitch) o.onSwitch(model);
-      toast("Đã tự đổi model: " + m.sw);
+      toast(t("switched", m.sw));
     }
   }
   b.flush(m.content, m.think); b.meta(metaText(m));
@@ -851,20 +967,27 @@ const sn = k => k === "a" ? "AI-1" : "AI-2";
 const tname = k => sn(k) + " · " + PROVIDERS[S.team[k].p].name + " · " + S.team[k].m;
 function teamSys(me, other){
   const A = S.team[me], B = S.team[other];
-  return "Bạn là " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). Bạn đang làm việc nhóm với " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") để cùng hoàn thành một nhiệm vụ do người dùng giao. Hai bạn nhắn qua lại theo lượt, mỗi lượt một người. Tin của đồng đội và của người dùng sẽ hiện dạng [Tên]: nội dung (đừng tự viết tiền tố này trong tin của bạn).\n" +
+  if (S.lang === "vi") return "Bạn là " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). Bạn đang làm việc nhóm với " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") để cùng hoàn thành một nhiệm vụ do người dùng giao. Hai bạn nhắn qua lại theo lượt, mỗi lượt một người. Tin của đồng đội và của người dùng sẽ hiện dạng [Tên]: nội dung (đừng tự viết tiền tố này trong tin của bạn).\n" +
     "Quy tắc:\n" +
     "1. Trong tin nhắn đầu tiên của bạn, hãy tự giới thiệu ngắn gọn (bạn là AI nào, model gì, điểm mạnh) để đồng đội biết bạn, rồi vào việc luôn.\n" +
     "2. Thống nhất cách chia việc, mỗi người làm phần của mình, đọc và góp ý, sửa cho nhau. Giữ tin nhắn gọn, không lặp lại điều đã nói.\n" +
     "3. Kết quả cuối cùng phải được viết đầy đủ trong tin nhắn, vì người dùng chỉ đọc cuộc trò chuyện này.\n" +
     "4. Khi bạn thấy nhiệm vụ đã hoàn thành tốt và đồng ý với kết quả hiện tại, hãy kết thúc tin nhắn bằng đúng cụm “Đã Xong”. Chỉ viết cụm này khi bạn thật sự hài lòng; còn thiếu hoặc còn sai thì tiếp tục làm và không viết cụm này. Cuộc trò chuyện chỉ dừng khi cả hai cùng nói “Đã Xong”.\n" +
     "5. Trả lời bằng ngôn ngữ của người dùng.";
+  return "You are " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). You are working in a team with " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") to complete a task given by the user. You take turns messaging, one at a time. Messages from your teammate and the user appear as [Name]: content (don't write this prefix yourself).\n" +
+    "Rules:\n" +
+    "1. In your first message, briefly introduce yourself (which AI and model you are, your strengths) so your teammate gets to know you, then get to work right away.\n" +
+    "2. Agree on how to split the work, each do your part, read and give feedback, and fix each other's work. Keep messages concise and don't repeat what has already been said.\n" +
+    "3. The final result must be written out in full in a message, because the user only reads this conversation.\n" +
+    "4. When you believe the task is done well and you agree with the current result, end your message with exactly the phrase “Đã Xong” (Vietnamese for “Done”). Only write it when you are truly satisfied; if something is missing or wrong, keep working and don't write it. The conversation stops only when both of you have said “Đã Xong”.\n" +
+    "5. Reply in the user's language.";
 }
 function teamView(conv, k){      /* cuộc trò chuyện nhìn từ phía AI k, gộp các tin cùng vai */
   const out = [];
   conv.msgs.forEach(m => {
     if (m.err || m.role === "note") return;
     let role, content;
-    if (m.role === "user"){ role = "user"; content = "[Người dùng]: " + m.content; }
+    if (m.role === "user"){ role = "user"; content = "[" + t("userTag") + "]: " + m.content; }
     else if (m.who === k){ role = "assistant"; content = m.content; }
     else { role = "user"; content = "[" + sn(m.who) + "]: " + m.content; }
     const last = out[out.length - 1];
@@ -874,24 +997,25 @@ function teamView(conv, k){      /* cuộc trò chuyện nhìn từ phía AI k, 
   return out;
 }
 async function runTeam(conv, ctl){
-  const flag = { a: false, b: false }; let n = 0, ok = false;
-  for (; n < TEAM_MAX && !ctl.signal.aborted; n++){
+  const MAX = S.chat.tmax, flag = { a: false, b: false }; let n = 0, ok = false;
+  for (; n < MAX && !ctl.signal.aborted; n++){
     const k = n % 2 ? "b" : "a", o = k === "a" ? "b" : "a", T = S.team[k];
     const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, k), sys: teamSys(k, o), label: tname(k), color: PROVIDERS[T.p].color, ctl,
       onSwitch: nm => { T.m = nm; store.set("mc_team", S.team); renderTeam(); lockUI(true); } });
     m.who = k; m.lbl = tname(k); m.col = PROVIDERS[T.p].color;
     conv.msgs.push(m); conv.t = Date.now(); persist();
-    if (m.err){ if (!ctl.signal.aborted) notifyDone("Team gặp lỗi", m.content); return; }
+    if (m.err){ if (!ctl.signal.aborted) notifyDone(t("notifTeamErr"), m.content); return; }
     flag[k] = !m.aborted && DONE.test(m.content.normalize("NFC"));
     if (flag.a && flag.b){ ok = true; break; }
   }
-  const note = ok ? "✅ Cả hai AI đã nói “Đã Xong”." : ctl.signal.aborted ? "⏹ Đã dừng." : "⚠️ Đã đạt giới hạn " + TEAM_MAX + " lượt mà chưa đủ cả hai cùng nói “Đã Xong”. Bạn có thể nhắn thêm để hai AI làm tiếp.";
-  conv.msgs.push({ role: "note", content: note }); persist(); bubble("note", note);
-  if (!ctl.signal.aborted) notifyDone("Team", note);
+  const note = { role: "note", nk: ok ? "noteDone" : ctl.signal.aborted ? "noteStop" : "noteMax", np: ok || ctl.signal.aborted ? [] : [MAX] };
+  conv.msgs.push(note); persist();
+  const txt = t(note.nk, ...note.np); bubble("note", txt);
+  if (!ctl.signal.aborted) notifyDone(t("notifTeam"), txt);
 }
 
 function setBusy(b){
-  S.busy = b; const s = $("send"); s.textContent = b ? "Dừng" : "Gửi"; s.classList.toggle("stop", b);
+  S.busy = b; const s = $("send"); s.textContent = b ? t("stop") : t("send"); s.classList.toggle("stop", b);
   lockUI(b);
 }
 async function send(){
@@ -900,11 +1024,11 @@ async function send(){
   const p = S.p, team = p === "team";
   if (team){
     const { a, b } = S.team;
-    if (!S.keys[a.p] || !S.keys[b.p]){ toast("Cần nhập API key cho cả 2 AI (" + PROVIDERS[a.p].name + ", " + PROVIDERS[b.p].name + ")"); openSet(); return; }
-  } else if (!S.keys[p]){ toast("Hãy nhập API key của " + PROVIDERS[p].name); openSet(); return; }
+    if (!S.keys[a.p] || !S.keys[b.p]){ toast(t("needKeys", PROVIDERS[a.p].name, PROVIDERS[b.p].name)); openSet(); return; }
+  } else if (!S.keys[p]){ toast(t("needKey", PROVIDERS[p].name)); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
-    const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : "Hình ảnh";
+    const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : t("imageTitle");
     conv = { id: uid(), title: ti, msgs: [], t: Date.now() };
     S.convs[p].unshift(conv); S.cur[p] = conv.id;
   }
@@ -921,7 +1045,7 @@ async function send(){
       const m = await turn({ p, model: S.model[p], msgs: conv.msgs, sys: "", label: PROVIDERS[p].name, color: PROVIDERS[p].color, ctl,
         onSwitch: nm => { S.model[p] = nm; store.set("mc_model", S.model); if (S.p === p){ renderModels(); lockUI(true); } } });
       conv.msgs.push(m);
-      if (!ctl.signal.aborted) notifyDone(PROVIDERS[p].name + (m.err ? " gặp lỗi" : " đã trả lời xong"), m.content);
+      if (!ctl.signal.aborted) notifyDone(t(m.err ? "notifErr" : "notifDone", PROVIDERS[p].name), m.content);
     }
   } finally { setBusy(false); S.abort = null; persist(); ta.focus(); }
 }
@@ -935,7 +1059,7 @@ function openSet(){
 function closeSet(){ $("modal").classList.remove("show"); if (S.busy) renderProvs(); else renderAll(); }
 function syncTog(){
   const c = document.body.classList.contains("collapsed") && !matchMedia("(max-width:760px)").matches;
-  $("tog").textContent = c ? "»" : "«"; $("tog").setAttribute("aria-expanded", String(!c)); $("tog").title = c ? "Mở rộng thanh bên" : "Thu gọn thanh bên";
+  $("tog").textContent = c ? "»" : "«"; $("tog").setAttribute("aria-expanded", String(!c)); $("tog").title = c ? t("togExpand") : t("togCollapse");
 }
 function toggleSide(){
   if (matchMedia("(max-width:760px)").matches) $("side").classList.toggle("open");
@@ -943,7 +1067,7 @@ function toggleSide(){
   syncTog();
 }
 
-$("keys").innerHTML = ids.map(i => '<label class="key">' + PROVIDERS[i].name + ' API key<input type="password" id="k_' + i + '" placeholder="Dán API key của ' + PROVIDERS[i].name + '" autocomplete="off" spellcheck="false"></label>').join("");
+$("keys").innerHTML = ids.map(i => '<label class="key">' + PROVIDERS[i].name + ' API key<input type="password" id="k_' + i + '" placeholder="" autocomplete="off" spellcheck="false"></label>').join("");
 ids.forEach(i => $("k_" + i).addEventListener("input", () => {
   const v = $("k_" + i).value.trim();
   if (v) S.keys[i] = v; else delete S.keys[i];
@@ -952,7 +1076,7 @@ ids.forEach(i => $("k_" + i).addEventListener("input", () => {
 $("show").onchange = e => ids.forEach(i => { $("k_" + i).type = e.target.checked ? "text" : "password"; });
 document.querySelectorAll("#themeSeg button").forEach(b => b.onclick = () => setTheme(b.dataset.t));
 document.querySelectorAll("#uiSeg button").forEach(b => b.onclick = () => setUI(b.dataset.u));
-$("apply").onclick = async () => { await saveKeys(); closeSet(); toast(S.vaultErr ? "Không lưu được key vào trình duyệt" : "Đã lưu cài đặt"); };
+$("apply").onclick = async () => { await saveKeys(); closeSet(); toast(S.vaultErr ? t("saveFail") : t("saved")); };
 $("close").onclick = closeSet;
 $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
@@ -965,16 +1089,19 @@ document.querySelectorAll("#setTabs button").forEach(b => b.onclick = () => setT
 $("c_notify").onchange = async e => {
   const el = e.target;
   if (el.checked){
-    if (!("Notification" in window)){ el.checked = false; toast("Trình duyệt này không hỗ trợ thông báo"); return; }
+    if (!("Notification" in window)){ el.checked = false; toast(t("notifUnsupported")); return; }
     let perm = Notification.permission;
     if (perm === "default"){ try { perm = await Notification.requestPermission(); } catch(x){ perm = "denied"; } }
     if (perm !== "granted"){ el.checked = false; S.chat.notify = false; saveChat(); $("notiWarn").hidden = false; return; }
-    try { new Notification("MultiChat", { body: "Thông báo đã được bật." }); } catch(x){}
+    try { new Notification("MultiChat", { body: t("notifOn") }); } catch(x){}
   }
   S.chat.notify = el.checked; saveChat(); if (el.checked) $("notiWarn").hidden = true;
 };
 $("c_auto").onchange = e => { S.chat.auto = e.target.checked; $("c_n_row").hidden = !S.chat.auto; saveChat(); };
 $("c_n").onchange = e => { S.chat.n = +e.target.value; saveChat(); };
+$("c_tmax").onchange = e => { S.chat.tmax = +e.target.value; saveChat(); };
+$("c_saver").onchange = e => { S.chat.saver = e.target.checked; saveChat(); };
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => setLang(b.dataset.l));
 document.addEventListener("click", () => ddCloseAll());
 $("menu").onclick = e => { e.stopPropagation(); toggleSide(); };
 window.addEventListener("resize", syncTog);
@@ -989,7 +1116,7 @@ $("input").addEventListener("input", e => { e.target.style.height = "auto"; e.ta
 $("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].filter(x => x.type.startsWith("image/")); if (f.length){ e.preventDefault(); addFiles(f); } });
 
 if (store.get("mc_col", false)) document.body.classList.add("collapsed");
-setTheme(S.theme); setUI(S.ui); syncTog();
+setTheme(S.theme); setUI(S.ui); dd($("c_n")); dd($("c_tmax")); applyLang();
 renderAll();
 loadKeys().then(renderAll);
 </script>
