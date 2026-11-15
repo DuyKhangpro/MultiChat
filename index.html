@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MultiChat</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <script>try{var d=document.documentElement,u=JSON.parse(localStorage.getItem("mc_ui")),t=JSON.parse(localStorage.getItem("mc_theme"));d.dataset.ui=u||"new";if(t)d.dataset.theme=t}catch(e){}</script>
 <style>
 :root{--bg:#f3f5f9;--panel:#fff;--side:#e9edf5;--ink:#172033;--mute:#6b7690;--line:#d9dfec;--user:#1f3a8a;--userink:#fff;--bot:#fff;--code:#eef1f8;--acc:#1f3a8a;--shadow:0 6px 24px rgba(23,32,51,.08)}
@@ -254,6 +256,24 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
 #p_models{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:400;resize:vertical;line-height:1.5;max-height:240px}
 #p_models:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .row .danger{color:#d9534f;border-color:#d9534f}
+.prov.team.grp{margin-top:4px}
+.hcode{margin:8px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.hbar{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;background:var(--code);font-size:12px;flex-wrap:wrap}
+.hl{font-weight:700;letter-spacing:.3px}
+.hs{color:var(--mute);flex:1;min-width:0}
+.hbtns{display:flex;gap:4px;margin-left:auto}
+.hbtns button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:3px 9px;font-size:12px;font-weight:600}
+.hbtns button.on{border-color:var(--acc);color:var(--acc)}
+.hbtns button:hover{border-color:var(--acc)}
+.hcode pre{margin:0;border-radius:0;max-height:340px;overflow:auto}
+.hprev iframe{display:block;width:100%;height:380px;border:0;background:#fff}
+.mdp[hidden]{display:none}
+.fsbox{width:min(1100px,100%);height:90vh;max-height:90vh;display:flex;flex-direction:column;padding:12px}
+.fsh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.fsh h2{margin:0}
+#fs_close{padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:600}
+.fsb{flex:1;display:flex;min-height:0}
+.fsb iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff}
 </style>
 </head>
 <body>
@@ -367,6 +387,12 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
     <div class="row"><button type="button" id="p_del" class="danger" data-i="pDelete" hidden></button><span class="grow"></span><button type="button" id="p_cancel" data-i="cancel"></button><button type="button" id="p_save" class="pri" data-i="save"></button></div>
   </div>
 </div>
+<div class="modal" id="fsmodal">
+  <div class="box fsbox" role="dialog" aria-labelledby="fst">
+    <div class="fsh"><h2 id="fst" data-i="fsTitle"></h2><button type="button" id="fs_close" data-i="close"></button></div>
+    <div class="fsb" id="fs_body"></div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -375,7 +401,7 @@ const PROVIDERS = {
   chatgpt: { name: "ChatGPT", color: "#10a37f", models: [ "gpt-6-luna","gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-5.6-sol","gpt-5.6-terra","gpt-5.6-luna", "gpt-5.5-pro-2026-04-23", "gpt-5.2-pro-2025-12-11", "gpt-5.2-2025-12-11", "gpt-5.4-mini-2026-03-17", "gpt-5.4-pro-2026-03-05", "gpt-5.5-2026-04-23", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4o", "o4-mini"] },
   claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-2", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
   gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-carbon", "gemini-4-argon", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
-  grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4", "grok-3", "grok-3-mini", "grok-code-fast-1"] },
+  grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20"] },
   groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] },
   openrouter: { name: "OpenRouter", color: "#6467f2", models: [ "openrouter/auto", "google/gemini-4-carbon", "openai/gpt-6.1-sol-pro", "anthropic/claude-fable-5.2", "anthropic/claude-fable-5.2:batch", "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3.5-embed-8b:free", "nvidia/nemotron-3.5-embed-1b:free", "openai/gpt-5", "openai/gpt-5-mini", "anthropic/claude-sonnet-4.5", "anthropic/claude-opus-4.1", "google/gemini-2.5-pro", "google/gemini-2.5-flash", "x-ai/grok-4", "deepseek/deepseek-chat-v3.1", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen3-235b-a22b", "moonshotai/kimi-k2", "mistralai/mistral-large", "openai/gpt-oss-120b", "openai/gpt-oss-20b:free", "meta-llama/llama-3.3-70b-instruct:free"] }
 };
@@ -394,8 +420,8 @@ const CPAL = ["#e0a100", "#d6409f", "#0ea5a5", "#8b5cf6", "#ef4444", "#22a06b", 
 const regCustom = c => { PROVIDERS[c.id] = { name: c.name, color: c.color, models: c.models, custom: true, fmt: c.fmt, url: c.url }; };
 customs = customs.filter(c => c && c.id && c.name && c.url && Array.isArray(c.models) && c.models.length && !PROVIDERS[c.id]);
 customs.forEach(regCustom);
-let ids = Object.keys(PROVIDERS), ALL = [...ids, "team"];
-const refreshIds = () => { ids = Object.keys(PROVIDERS); ALL = [...ids, "team"]; ALL.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; }); };
+let ids = Object.keys(PROVIDERS), ALL = [...ids, "team", "group"];
+const refreshIds = () => { ids = Object.keys(PROVIDERS); ALL = [...ids, "team", "group"]; ALL.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; }); };
 const S = {
   p: store.get("mc_p", "chatgpt"),
   model: store.get("mc_model", {}),
@@ -410,17 +436,23 @@ const S = {
   vaultErr: false,
   busy: false
 };
-if (!PROVIDERS[S.p] && S.p !== "team") S.p = ids[0];
+if (!PROVIDERS[S.p] && !isMulti(S.p)) S.p = ids[0];
 S.team = store.get("mc_team", null) || {};
 S.chat = { notify: false, auto: false, n: 3, tmax: 12, saver: false, ...store.get("mc_chat", {}) };
 if (!Number.isInteger(S.chat.tmax) || S.chat.tmax < 2 || S.chat.tmax > 100) S.chat.tmax = 12;
 if (!Number.isInteger(S.chat.n) || S.chat.n < 1 || S.chat.n > 20) S.chat.n = 3;
 S.lang = store.get("mc_lang", "en"); if (S.lang !== "en" && S.lang !== "vi") S.lang = "en";
+const KS = { team: ["a", "b"], group: ["a", "b", "c", "d"] };      /* Team = 2 AI, Group = 4 AI */
+function isMulti(p){ return p === "team" || p === "group"; }
+S.group = store.get("mc_group", null) || {};
 function fixTeam(){
-  ["a", "b"].forEach((k, n) => {
-    const T = S.team[k] = S.team[k] || {};
-    if (!PROVIDERS[T.p]) T.p = ids[Math.min(n + 1, ids.length - 1)];
-    if (!PROVIDERS[T.p].models.includes(T.m)) T.m = PROVIDERS[T.p].models[0];
+  ["team", "group"].forEach(kind => {
+    const P = S[kind] = S[kind] || {};
+    KS[kind].forEach((k, n) => {
+      const T = P[k] = P[k] || {};
+      if (!PROVIDERS[T.p]) T.p = ids[(n + 1) % ids.length];
+      if (!PROVIDERS[T.p].models.includes(T.m)) T.m = PROVIDERS[T.p].models[0];
+    });
   });
 }
 fixTeam();
@@ -440,7 +472,7 @@ const I18N = {
     hNotif: "Notifications", notifT: "Notify when the AI finishes replying", notifS: "Only shown when you're on another tab or window. Requires notification permission from the browser.",
     notiWarn: "The browser didn't grant notification permission. Allow notifications for this page in your browser settings. If you opened the file directly (file://), Chrome usually blocks notifications; run it through a local server such as http://localhost instead.",
     hAuto: "Auto-switch model", autoT: "Switch to the next model when a model keeps failing", autoS: "Same AI, moves down to the next model in its list. Off by default.", autoN: "Consecutive errors before switching",
-    hTeam: "Team", tmaxT: "Turn limit", tmaxS: "Maximum number of alternating messages between the two AIs per request. Default 12.",
+    hTeam: "Team", tmaxT: "Turn limit", tmaxS: "Maximum number of alternating messages between the two AIs per request. Default 12. Group mode is locked at 48.",
     hSaver: "Token saving", saverT: "Token saver mode", saverS: "Adds a hidden instruction asking the AI to think less and answer more briefly.",
     srchOn: "Let the AI search the web (Search Grounding)", srchOff: "This model doesn't support search",
     busy: "The AI is replying. Press Stop or wait until it finishes.", noKey: "no key", provider: "Provider", model: "Model",
@@ -458,14 +490,19 @@ const I18N = {
     userTag: "User", noteDone: "✅ Both AIs said “Đã Xong”.", noteStop: "⏹ Stopped.",
     noteMax: n => "⚠️ Reached the limit of " + n + " turns without both AIs saying “Đã Xong”. Send another message to let them continue.",
     notifTeam: "Team", notifTeamErr: "Team hit an error", notifDone: n => n + " finished replying", notifErr: n => n + " hit an error",
-    needKeys: (a, b) => "API keys are needed for both AIs (" + a + ", " + b + ")", needKey: n => "Please enter the API key for " + n, imageTitle: "Image",
+    needKeys: n => "API keys are needed for all selected AIs (" + n + ")", needKey: n => "Please enter the API key for " + n, imageTitle: "Image",
     decErr: "Couldn't decrypt the saved API keys, please enter them again", saveFail: "Couldn't save the keys in the browser", saved: "Settings saved",
     notifUnsupported: "This browser doesn't support notifications", notifOn: "Notifications are on.", pasteKey: n => "Paste your " + n + " API key",
     custom: "Custom", numAria: "Custom value", addProv: "Add provider", editProv: "Edit provider", pTitleNew: "Add custom provider", pTitleEdit: "Edit custom provider",
     pName: "Provider name", pEndpoint: "Endpoint (API base URL)", pFmt: "API format", pKey: "API key", pKeyPh: "Optional for local servers", pModels: "Models (one per line, or separated by commas)",
     pHint: "Endpoint is the API base URL, e.g. https://api.example.com/v1. OpenAI-compatible calls …/chat/completions, Anthropic Messages calls …/v1/messages, Google Gemini calls …/models/{model}:streamGenerateContent. A full URL ending in /chat/completions or /messages also works. The server must allow requests from the browser (CORS). Search isn't available for custom providers, and Effort is ignored for the OpenAI-compatible format.",
     pDelete: "Delete provider", cancel: "Cancel", save: "Save", pErrName: "Enter a provider name", pErrUrl: "Enter a valid endpoint URL starting with http:// or https://", pErrModels: "Add at least one model",
-    pDelConfirm: n => "Delete provider “" + n + "” and its conversations?", pSaved: "Provider saved", pDeleted: "Provider deleted"
+    pDelConfirm: n => "Delete provider “" + n + "” and its conversations?", pSaved: "Provider saved", pDeleted: "Provider deleted",
+    emptyGroupTitle: "Group: 4 AIs working on one task", allAIs: "all 4 selected AIs",
+    emptyGroupHint: "Pick 4 AIs above, then type your request below. The AIs introduce themselves, split the work and take turns until all four say “Đã Xong” (Vietnamese for “Done”). A request stops after at most 48 messages.",
+    noteDoneG: "✅ All 4 AIs said “Đã Xong”.", noteMaxG: n => "⚠️ Reached the limit of " + n + " messages without all 4 AIs saying “Đã Xong”. Send another message to let them continue.",
+    notifGroup: "Group", notifGroupErr: "Group hit an error",
+    htmlCode: "Code", htmlPrev: "Preview", htmlFs: "Fullscreen preview", htmlDl: "Download .html", htmlWriting: "Writing HTML…", htmlReady: "HTML ready", fsTitle: "HTML preview"
   },
   vi: {
     convs: "Cuộc trò chuyện", settings: "Cài đặt", togAria: "Thu gọn hoặc mở rộng thanh bên", togCollapse: "Thu gọn thanh bên", togExpand: "Mở rộng thanh bên", menuT: "Thu gọn / mở thanh bên",
@@ -480,7 +517,7 @@ const I18N = {
     hNotif: "Thông báo", notifT: "Thông báo khi AI trả lời xong", notifS: "Chỉ hiện khi bạn đang ở tab hoặc cửa sổ khác. Cần cấp quyền thông báo cho trình duyệt.",
     notiWarn: "Trình duyệt không cấp quyền thông báo. Hãy cho phép thông báo cho trang này trong cài đặt trình duyệt. Nếu bạn mở file trực tiếp (file://), Chrome thường chặn thông báo; khi đó hãy chạy qua máy chủ cục bộ như http://localhost.",
     hAuto: "Tự đổi model", autoT: "Tự đổi sang model kế bên khi bị lỗi nhiều", autoS: "Cùng một AI, chuyển xuống model tiếp theo trong danh sách. Mặc định tắt.", autoN: "Số lần lỗi liên tiếp trước khi đổi",
-    hTeam: "Team", tmaxT: "Giới hạn số lần chat lần lượt", tmaxS: "Số tin nhắn tối đa hai AI thay phiên nhau cho mỗi yêu cầu. Mặc định 12.",
+    hTeam: "Team", tmaxT: "Giới hạn số lần chat lần lượt", tmaxS: "Số tin nhắn tối đa hai AI thay phiên nhau cho mỗi yêu cầu. Mặc định 12. Chế độ Group bị khóa ở mức 48.",
     hSaver: "Tiết kiệm token", saverT: "Chế độ tiết kiệm token", saverS: "Thêm một chỉ dẫn ẩn để AI suy nghĩ ít và trả lời ngắn gọn hơn.",
     srchOn: "Cho AI tìm kiếm trên web (Search Grounding)", srchOff: "Model này không hỗ trợ tìm kiếm",
     busy: "AI đang trả lời, hãy bấm Dừng hoặc chờ xong", noKey: "chưa có key", provider: "Nhà cung cấp", model: "Model",
@@ -498,14 +535,19 @@ const I18N = {
     userTag: "Người dùng", noteDone: "✅ Cả hai AI đã nói “Đã Xong”.", noteStop: "⏹ Đã dừng.",
     noteMax: n => "⚠️ Đã đạt giới hạn " + n + " lượt mà chưa đủ cả hai cùng nói “Đã Xong”. Bạn có thể nhắn thêm để hai AI làm tiếp.",
     notifTeam: "Team", notifTeamErr: "Team gặp lỗi", notifDone: n => n + " đã trả lời xong", notifErr: n => n + " gặp lỗi",
-    needKeys: (a, b) => "Cần nhập API key cho cả 2 AI (" + a + ", " + b + ")", needKey: n => "Hãy nhập API key của " + n, imageTitle: "Hình ảnh",
+    needKeys: n => "Cần nhập API key cho tất cả AI đã chọn (" + n + ")", needKey: n => "Hãy nhập API key của " + n, imageTitle: "Hình ảnh",
     decErr: "Không giải mã được API key đã lưu, hãy nhập lại", saveFail: "Không lưu được key vào trình duyệt", saved: "Đã lưu cài đặt",
     notifUnsupported: "Trình duyệt này không hỗ trợ thông báo", notifOn: "Thông báo đã được bật.", pasteKey: n => "Dán API key của " + n,
     custom: "Tùy chỉnh", numAria: "Giá trị tùy chỉnh", addProv: "Thêm provider", editProv: "Sửa provider", pTitleNew: "Thêm provider tùy chỉnh", pTitleEdit: "Sửa provider tùy chỉnh",
     pName: "Tên provider", pEndpoint: "Endpoint (địa chỉ gốc của API)", pFmt: "Định dạng API", pKey: "API key", pKeyPh: "Có thể bỏ trống với máy chủ cục bộ", pModels: "Các model (mỗi dòng một model, hoặc cách nhau bằng dấu phẩy)",
     pHint: "Endpoint là địa chỉ gốc của API, ví dụ https://api.example.com/v1. Kiểu OpenAI-compatible gọi …/chat/completions, Anthropic Messages gọi …/v1/messages, Google Gemini gọi …/models/{model}:streamGenerateContent. Dán nguyên URL đầy đủ kết thúc bằng /chat/completions hoặc /messages cũng được. Máy chủ phải cho phép trình duyệt gọi (CORS). Provider tùy chỉnh không có tìm kiếm, và Effort bị bỏ qua với kiểu OpenAI-compatible.",
     pDelete: "Xóa provider", cancel: "Hủy", save: "Lưu", pErrName: "Hãy nhập tên provider", pErrUrl: "Hãy nhập endpoint hợp lệ bắt đầu bằng http:// hoặc https://", pErrModels: "Hãy thêm ít nhất một model",
-    pDelConfirm: n => "Xóa provider “" + n + "” và các cuộc trò chuyện của nó?", pSaved: "Đã lưu provider", pDeleted: "Đã xóa provider"
+    pDelConfirm: n => "Xóa provider “" + n + "” và các cuộc trò chuyện của nó?", pSaved: "Đã lưu provider", pDeleted: "Đã xóa provider",
+    emptyGroupTitle: "Group: 4 AI cùng làm một việc", allAIs: "cả 4 AI đã chọn",
+    emptyGroupHint: "Chọn 4 AI ở trên rồi nhập yêu cầu bên dưới. Các AI sẽ tự giới thiệu, chia việc và thay phiên nhau cho tới khi cả 4 cùng nói “Đã Xong”. Mỗi yêu cầu dừng sau tối đa 48 tin nhắn.",
+    noteDoneG: "✅ Cả 4 AI đã nói “Đã Xong”.", noteMaxG: n => "⚠️ Đã đạt giới hạn " + n + " tin nhắn mà chưa đủ cả 4 AI cùng nói “Đã Xong”. Bạn có thể nhắn thêm để các AI làm tiếp.",
+    notifGroup: "Group", notifGroupErr: "Group gặp lỗi",
+    htmlCode: "Code", htmlPrev: "Xem trước", htmlFs: "Xem trước toàn màn hình", htmlDl: "Tải về .html", htmlWriting: "Đang viết HTML…", htmlReady: "HTML đã xong", fsTitle: "Xem trước HTML"
   }
 };
 function t(k, ...a){ const v = (I18N[S.lang] && I18N[S.lang][k] !== undefined) ? I18N[S.lang][k] : I18N.en[k]; return typeof v === "function" ? v(...a) : v; }
@@ -609,22 +651,23 @@ function setUI(u){
 const REASON = /^(o\d|gpt-[56])/;
 const canSearch = (p, model) => PROVIDERS[p].custom ? false : p === "groq" ? /gpt-oss|compound/.test(model) : true;
 function updateTools(){
-  const sup = S.p === "team" ? (canSearch(S.team.a.p, S.team.a.m) || canSearch(S.team.b.p, S.team.b.m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
+  const sup = isMulti(S.p) ? KS[S.p].some(k => canSearch(S[S.p][k].p, S[S.p][k].m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
   b.disabled = !sup; b.classList.toggle("on", S.search && sup);
   b.title = sup ? t("srchOn") : t("srchOff");
   document.querySelectorAll("#eff button").forEach(x => x.classList.toggle("on", x.dataset.e === S.eff));
 }
-const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : PROVIDERS[i];
+const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : i === "group" ? { name: "Group", color: "#e0556b" } : PROVIDERS[i];
 function busyGuard(){ if (S.busy){ toast(t("busy")); return true; } return false; }
 
 const keyOK = p => !!(PROVIDERS[p].custom || S.keys[p]);
 function renderProvs(){
   $("provs").innerHTML = "";
   ALL.forEach(i => {
-    const M = META(i), tm = i === "team", b = document.createElement("button");
-    b.className = "prov" + (i === S.p ? " on" : "") + (tm ? " team" : "");
+    const M = META(i), mu = isMulti(i), b = document.createElement("button");
+    b.className = "prov" + (i === S.p ? " on" : "") + (mu ? " team" : "") + (i === "group" ? " grp" : "");
     b.title = M.name; b.style.setProperty("--pc", M.color);
-    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + esc(M.name) + "</span>" + ((tm || keyOK(i)) ? "" : "<small>" + t("noKey") + "</small>");
+    const dot = i === "team" ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : i === "group" ? "linear-gradient(135deg,#e0556b,#8b52f0)" : M.color;
+    b.innerHTML = '<span class="dot" style="background:' + dot + '"></span><span class="nm">' + (i === "team" ? "👥 " : i === "group" ? "🧩 " : "") + esc(M.name) + "</span>" + ((mu || keyOK(i)) ? "" : "<small>" + t("noKey") + "</small>");
     b.onclick = () => { if (busyGuard()) return; S.p = i; store.set("mc_p", i); $("side").classList.remove("open"); renderAll(); };
     if (M.custom){
       const row = document.createElement("div"), ed = document.createElement("button");
@@ -645,27 +688,27 @@ function fillModels(sel, p, cur){
   if (!PROVIDERS[p].models.includes(cur)) cur = PROVIDERS[p].models[0];
   sel.value = cur; dd(sel); return cur;
 }
-function renderTeam(){
-  const bar = $("teambar"); bar.innerHTML = "";
-  ["a", "b"].forEach(k => {
-    const T = S.team[k], d = document.createElement("div");
+function renderPicks(kind){      /* ô chọn AI cho Team (2 AI) và Group (4 AI) */
+  const bar = $("teambar"); bar.innerHTML = ""; const P = S[kind];
+  KS[kind].forEach(k => {
+    const T = P[k], d = document.createElement("div");
     d.className = "tcard";
     d.innerHTML = '<b></b><select class="tp" aria-label="' + t("provider") + '"></select><select class="tm" aria-label="' + t("model") + '"></select>';
-    d.querySelector("b").textContent = k === "a" ? "AI-1" : "AI-2";
+    d.querySelector("b").textContent = sn(k);
     const sp = d.querySelector(".tp"), sm = d.querySelector(".tm");
     sp.innerHTML = ids.map(i => '<option value="' + i + '">' + esc(PROVIDERS[i].name) + "</option>").join(""); sp.value = T.p; dd(sp);
     T.m = fillModels(sm, T.p, T.m);
-    sp.onchange = () => { T.p = sp.value; T.m = fillModels(sm, T.p, ""); store.set("mc_team", S.team); updateTools(); };
-    sm.onchange = () => { T.m = sm.value; store.set("mc_team", S.team); updateTools(); };
+    sp.onchange = () => { T.p = sp.value; T.m = fillModels(sm, T.p, ""); store.set("mc_" + kind, P); updateTools(); };
+    sm.onchange = () => { T.m = sm.value; store.set("mc_" + kind, P); updateTools(); };
     bar.appendChild(d);
   });
 }
 function renderModels(){
-  const sel = $("model"), team = S.p === "team";
-  sel.hidden = team; $("teambar").hidden = !team;
+  const sel = $("model"), multi = isMulti(S.p);
+  sel.hidden = multi; $("teambar").hidden = !multi;
   $("title").textContent = META(S.p).name;
-  if (team) renderTeam(); else S.model[S.p] = fillModels(sel, S.p, S.model[S.p]);
-  if (sel._dd) sel._dd.hidden = team;
+  if (multi) renderPicks(S.p); else S.model[S.p] = fillModels(sel, S.p, S.model[S.p]);
+  if (sel._dd) sel._dd.hidden = multi;
   updateTools();
 }
 /* ====== Mục Chat: thông báo & tự đổi model ====== */
@@ -673,7 +716,7 @@ const notifOK = () => "Notification" in window && Notification.permission === "g
 function notifyDone(title, text){
   if (!S.chat.notify || !notifOK()) return;
   if (document.hasFocus() && !document.hidden) return;      /* đang xem trang thì không cần báo */
-  try { const n = new Notification(title, { body: String(text).replace(/\s+/g, " ").slice(0, 140), tag: "multichat" }); n.onclick = () => { window.focus(); n.close(); }; } catch(e){}
+  try { const n = new Notification(title, { body: String(text).replace(/\s+/g, " ").slice(0, 140), tag: "multichat", icon: "icon.png" }); n.onclick = () => { window.focus(); n.close(); }; } catch(e){}
 }
 function setTab(t){
   ["web", "chat"].forEach(x => { $("tab-" + x).hidden = x !== t; });
@@ -795,18 +838,99 @@ function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và
   }
   $("log").appendChild(d); $("log").scrollTop = $("log").scrollHeight; return d;
 }
-function botBubble(name, color, cls){
+/* ====== Xem trước HTML: khi AI viết code HTML trong khối ```html ====== */
+function isHtmlBlock(lang, code){ return lang === "html" || lang === "htm" || ((lang === "" || lang === "xml") && /^\s*<(!doctype html|html[\s>])/i.test(code)); }
+function splitParts(text){      /* tách văn bản thành đoạn markdown và khối HTML (kể cả khối chưa đóng khi đang stream) */
+  const parts = [], fence = /(^|\n)```([\w+-]*)[^\n]*(?:\n|$)/g;
+  let pos = 0, m;
+  while ((m = fence.exec(text))){
+    const fs = m.index + m[1].length, lang = (m[2] || "").toLowerCase(), bs = fence.lastIndex;
+    const cm = /(^|\n)```[ \t]*(?:\n|$)/.exec(text.slice(bs));
+    const closed = !!cm, code = closed ? text.slice(bs, bs + cm.index) : text.slice(bs), end = closed ? bs + cm.index + cm[0].length : text.length;
+    if (isHtmlBlock(lang, code)){
+      if (fs > pos) parts.push({ type: "md", text: text.slice(pos, fs) });
+      parts.push({ type: "html", code, closed });
+      pos = end;
+    }
+    if (!closed) break;
+    fence.lastIndex = end;
+  }
+  if (pos < text.length || !parts.length) parts.push({ type: "md", text: text.slice(pos) });
+  return parts;
+}
+function mdNode(){
+  const el = document.createElement("div"); el.className = "mdp";
+  return { type: "md", el, h: null, update(p){ const h = md(p.text); if (h !== this.h){ this.h = h; el.innerHTML = h; } el.hidden = !p.text.trim(); } };
+}
+function htmlWidget(){
+  const el = document.createElement("div"); el.className = "hcode";
+  el.innerHTML = '<div class="hbar"><span class="hl">HTML</span><span class="hs"></span><div class="hbtns"><button type="button" data-v="code"></button><button type="button" data-v="prev"></button><button type="button" data-a="fs">⤢</button><button type="button" data-a="dl">⬇</button></div></div><pre><code></code></pre><div class="hprev" hidden></div>';
+  const q = s => el.querySelector(s), code = q("code"), pre = q("pre"), box = q(".hprev"), st = q(".hs"), bv = v => q('[data-v="' + v + '"]');
+  const w = { type: "html", el, code: "", closed: false, view: "code", frame: null, timer: 0, last: 0, rendered: null, autoed: false };
+  bv("code").textContent = t("htmlCode"); bv("prev").textContent = t("htmlPrev");
+  q('[data-a="fs"]').title = t("htmlFs"); q('[data-a="dl"]').title = t("htmlDl");
+  w.render = force => {
+    if (w.view !== "prev" || w.rendered === w.code) return;
+    const now = Date.now();
+    if (!force && !w.closed && now - w.last < 900){ if (!w.timer) w.timer = setTimeout(() => { w.timer = 0; w.render(true); }, 900 - (now - w.last)); return; }
+    w.last = now; w.rendered = w.code;
+    if (!w.frame){
+      w.frame = document.createElement("iframe"); w.frame.setAttribute("sandbox", "allow-scripts");   /* không có allow-same-origin: code của AI không đọc được key/dữ liệu của trang */
+      w.frame.referrerPolicy = "no-referrer"; w.frame.title = t("htmlPrev"); box.appendChild(w.frame);
+    }
+    w.frame.srcdoc = w.code;
+  };
+  w.show = v => {
+    w.view = v; bv("code").classList.toggle("on", v === "code"); bv("prev").classList.toggle("on", v === "prev");
+    pre.hidden = v !== "code"; box.hidden = v !== "prev"; w.render(true);
+  };
+  w.update = (p, live) => {
+    const wasClosed = w.closed, changed = p.code !== w.code;
+    if (changed){ w.code = p.code; code.textContent = p.code; if (!p.closed) pre.scrollTop = pre.scrollHeight; }
+    w.closed = p.closed; st.textContent = p.closed ? t("htmlReady") : t("htmlWriting");
+    if (live && p.closed && !w.autoed){ w.autoed = true; w.show("prev"); }       /* vừa viết xong: tự mở bản xem trước */
+    else if (changed || (p.closed && !wasClosed)) w.render(p.closed && !wasClosed);
+  };
+  bv("code").onclick = () => w.show("code"); bv("prev").onclick = () => w.show("prev");
+  q('[data-a="fs"]').onclick = () => openFs(w.code); q('[data-a="dl"]').onclick = () => dlHtml(w.code);
+  w.show("code");
+  return w;
+}
+function paintBody(bd, text, st, live){
+  const parts = splitParts(text); let i = 0;
+  for (; i < parts.length; i++){
+    const p = parts[i]; let n = st.nodes[i];
+    if (n && n.type !== p.type){ st.nodes.splice(i).forEach(x => x.el.remove()); n = null; }
+    if (!n){ n = p.type === "html" ? htmlWidget() : mdNode(); st.nodes[i] = n; bd.appendChild(n.el); }
+    n.update(p, live);
+  }
+  st.nodes.splice(i).forEach(x => x.el.remove());
+}
+function openFs(code){
+  const box = $("fs_body"); box.innerHTML = "";
+  const f = document.createElement("iframe"); f.setAttribute("sandbox", "allow-scripts"); f.referrerPolicy = "no-referrer"; f.title = t("fsTitle"); f.srcdoc = code;
+  box.appendChild(f); $("fsmodal").classList.add("show");
+}
+function closeFs(){ $("fsmodal").classList.remove("show"); $("fs_body").innerHTML = ""; }
+function dlHtml(code){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([code], { type: "text/html" })); a.download = "preview.html";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function botBubble(name, color, cls, live){
   const d = document.createElement("div"); d.className = "msg bot" + (cls ? " " + cls : ""); d.style.setProperty("--pc", color);
   d.innerHTML = '<div class="who"></div><details class="think" hidden><summary>' + t("think") + '</summary><div class="tt"></div></details><div class="bd"></div><div class="meta"></div>';
   d.querySelector(".who").textContent = name;
   const th = d.querySelector(".think"), tt = d.querySelector(".tt"), bd = d.querySelector(".bd"), mt = d.querySelector(".meta");
   const stick0 = nearBottom(); $("log").appendChild(d); if (stick0) $("log").scrollTop = $("log").scrollHeight;
   let pend = false, T = "", R = "", opened = false, closed = false;
+  const st = { nodes: [], on: false };
   const paint = () => {
     pend = false; const stick = nearBottom();
     if (R){ th.hidden = false; tt.textContent = R; if (!opened){ th.open = true; opened = true; } tt.scrollTop = tt.scrollHeight; }
     if (T && R && !closed){ th.open = false; closed = true; }
-    bd.innerHTML = (T || R) ? md(T) : '<span class="typing"><span></span><span></span><span></span></span>';
+    if (!(T || R)){ bd.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>'; st.nodes = []; st.on = false; }
+    else { if (!st.on){ bd.innerHTML = ""; st.nodes = []; st.on = true; } paintBody(bd, T, st, live); }
     if (stick) $("log").scrollTop = $("log").scrollHeight;
   };
   return {
@@ -818,12 +942,14 @@ function botBubble(name, color, cls){
 }
 function renderLog(){
   const log = $("log"); log.innerHTML = "";
-  const conv = getConv(S.p), chat = conv ? conv.msgs : [], team = S.p === "team";
+  const conv = getConv(S.p), chat = conv ? conv.msgs : [], multi = isMulti(S.p), grp = S.p === "group";
   if (!chat.length){
-    const noKey = team ? !(keyOK(S.team.a.p) && keyOK(S.team.b.p)) : !keyOK(S.p);
-    log.innerHTML = '<div class="empty"><b>' + (team ? t("emptyTeamTitle") : t("emptyTitle", esc(PROVIDERS[S.p].name))) + "</b>" +
-      (noKey ? t("needKeyHint", team ? t("bothAIs") : esc(PROVIDERS[S.p].name)) + "<br><button id='goSet'>" + t("goKey") + "</button>"
-             : (team ? t("emptyTeamHint") : t("emptyHint"))) + "</div>";
+    const noKey = multi ? !KS[S.p].every(k => keyOK(S[S.p][k].p)) : !keyOK(S.p);
+    const title = multi ? t(grp ? "emptyGroupTitle" : "emptyTeamTitle") : t("emptyTitle", esc(PROVIDERS[S.p].name));
+    const who = multi ? t(grp ? "allAIs" : "bothAIs") : esc(PROVIDERS[S.p].name);
+    log.innerHTML = '<div class="empty"><b>' + title + "</b>" +
+      (noKey ? t("needKeyHint", who) + "<br><button id='goSet'>" + t("goKey") + "</button>"
+             : (multi ? t(grp ? "emptyGroupHint" : "emptyTeamHint") : t("emptyHint"))) + "</div>";
     if (noKey) $("goSet").onclick = openSet;
     return;
   }
@@ -1012,7 +1138,7 @@ const SAVER = "Token-saving mode is ON. Think only as much as needed and keep yo
 async function turn(o){
   const { p, msgs, label, color, ctl } = o, cfg = S.chat, list = PROVIDERS[p].models, N = cfg.auto ? cfg.n : 1;
   const sys = [o.sys, cfg.saver ? SAVER : ""].filter(Boolean).join("\n\n");
-  let model = o.model; const b = botBubble(label, color);
+  let model = o.model; const b = botBubble(label, color, "", true);
   let t0 = performance.now(), ttft = null, info = "";
   const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? t("waiting") : "") + info), 100);
   let r, err, tries = 0, hops = 0;
@@ -1049,27 +1175,33 @@ async function turn(o){
   return m;
 }
 
-/* ====== Team: 2 AI cùng làm một việc ====== */
-const sn = k => k === "a" ? "AI-1" : "AI-2";
-const tname = k => sn(k) + " · " + PROVIDERS[S.team[k].p].name + " · " + S.team[k].m;
-function teamSys(me, other){
-  const A = S.team[me], B = S.team[other];
-  if (S.lang === "vi") return "Bạn là " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). Bạn đang làm việc nhóm với " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") để cùng hoàn thành một nhiệm vụ do người dùng giao. Hai bạn nhắn qua lại theo lượt, mỗi lượt một người. Tin của đồng đội và của người dùng sẽ hiện dạng [Tên]: nội dung (đừng tự viết tiền tố này trong tin của bạn).\n" +
+/* ====== Team (2 AI) & Group (4 AI): cùng làm một việc ====== */
+const GROUP_MAX = 48;                       /* Group bị khóa tối đa 48 lượt chat cho mỗi yêu cầu */
+const sn = k => "AI-" + (k.charCodeAt(0) - 96);
+const tname = (kind, k) => sn(k) + " · " + PROVIDERS[S[kind][k].p].name + " · " + S[kind][k].m;
+function teamSys(kind, me){
+  const P = S[kind], ks = KS[kind], n = ks.length, others = ks.filter(k => k !== me);
+  const d = k => sn(k) + " (" + PROVIDERS[P[k].p].name + ", model " + P[k].m + ")", order = ks.map(sn).join(" → ");
+  if (S.lang === "vi") return "Bạn là " + d(me) + ". Bạn đang làm việc nhóm với " + others.map(d).join(", ") + " để cùng hoàn thành một nhiệm vụ do người dùng giao. " +
+    (n === 2 ? "Hai bạn nhắn qua lại theo lượt, mỗi lượt một người." : "Cả nhóm " + n + " AI nhắn lần lượt theo thứ tự " + order + " rồi quay lại từ đầu, mỗi lượt một người.") +
+    " Tin của đồng đội và của người dùng sẽ hiện dạng [Tên]: nội dung (đừng tự viết tiền tố này trong tin của bạn).\n" +
     "Quy tắc:\n" +
-    "1. Trong tin nhắn đầu tiên của bạn, hãy tự giới thiệu ngắn gọn (bạn là AI nào, model gì, điểm mạnh) để đồng đội biết bạn, rồi vào việc luôn.\n" +
+    "1. Trong tin nhắn đầu tiên của bạn, hãy tự giới thiệu ngắn gọn (bạn là AI nào, model gì, điểm mạnh) để " + (n === 2 ? "đồng đội" : "các đồng đội") + " biết bạn, rồi vào việc luôn.\n" +
     "2. Thống nhất cách chia việc, mỗi người làm phần của mình, đọc và góp ý, sửa cho nhau. Giữ tin nhắn gọn, không lặp lại điều đã nói.\n" +
     "3. Kết quả cuối cùng phải được viết đầy đủ trong tin nhắn, vì người dùng chỉ đọc cuộc trò chuyện này.\n" +
-    "4. Khi bạn thấy nhiệm vụ đã hoàn thành tốt và đồng ý với kết quả hiện tại, hãy kết thúc tin nhắn bằng đúng cụm “Đã Xong”. Chỉ viết cụm này khi bạn thật sự hài lòng; còn thiếu hoặc còn sai thì tiếp tục làm và không viết cụm này. Cuộc trò chuyện chỉ dừng khi cả hai cùng nói “Đã Xong”.\n" +
+    "4. Khi bạn thấy nhiệm vụ đã hoàn thành tốt và đồng ý với kết quả hiện tại, hãy kết thúc tin nhắn bằng đúng cụm “Đã Xong”. Chỉ viết cụm này khi bạn thật sự hài lòng; còn thiếu hoặc còn sai thì tiếp tục làm và không viết cụm này. Cuộc trò chuyện chỉ dừng khi " + (n === 2 ? "cả hai" : "cả " + n + " AI") + " cùng nói “Đã Xong”.\n" +
     "5. Trả lời bằng ngôn ngữ của người dùng.";
-  return "You are " + sn(me) + " (" + PROVIDERS[A.p].name + ", model " + A.m + "). You are working in a team with " + sn(other) + " (" + PROVIDERS[B.p].name + ", model " + B.m + ") to complete a task given by the user. You take turns messaging, one at a time. Messages from your teammate and the user appear as [Name]: content (don't write this prefix yourself).\n" +
+  return "You are " + d(me) + ". You are working in a team with " + others.map(d).join(", ") + " to complete a task given by the user. " +
+    (n === 2 ? "You take turns messaging, one at a time." : "All " + n + " of you take turns messaging in the order " + order + ", then back to the start, one at a time.") +
+    " Messages from your teammates and the user appear as [Name]: content (don't write this prefix yourself).\n" +
     "Rules:\n" +
-    "1. In your first message, briefly introduce yourself (which AI and model you are, your strengths) so your teammate gets to know you, then get to work right away.\n" +
+    "1. In your first message, briefly introduce yourself (which AI and model you are, your strengths) so your " + (n === 2 ? "teammate gets" : "teammates get") + " to know you, then get to work right away.\n" +
     "2. Agree on how to split the work, each do your part, read and give feedback, and fix each other's work. Keep messages concise and don't repeat what has already been said.\n" +
     "3. The final result must be written out in full in a message, because the user only reads this conversation.\n" +
-    "4. When you believe the task is done well and you agree with the current result, end your message with exactly the phrase “Đã Xong” (Vietnamese for “Done”). Only write it when you are truly satisfied; if something is missing or wrong, keep working and don't write it. The conversation stops only when both of you have said “Đã Xong”.\n" +
+    "4. When you believe the task is done well and you agree with the current result, end your message with exactly the phrase “Đã Xong” (Vietnamese for “Done”). Only write it when you are truly satisfied; if something is missing or wrong, keep working and don't write it. The conversation stops only when " + (n === 2 ? "both of you have" : "all " + n + " of you have") + " said “Đã Xong”.\n" +
     "5. Reply in the user's language.";
 }
-function teamView(conv, k){      /* cuộc trò chuyện nhìn từ phía AI k, gộp các tin cùng vai */
+function teamView(conv, kind, k){      /* cuộc trò chuyện nhìn từ phía AI k, gộp các tin cùng vai */
   const out = [];
   conv.msgs.forEach(m => {
     if (m.err || m.role === "note") return;
@@ -1083,22 +1215,23 @@ function teamView(conv, k){      /* cuộc trò chuyện nhìn từ phía AI k, 
   });
   return out;
 }
-async function runTeam(conv, ctl){
-  const MAX = S.chat.tmax, flag = { a: false, b: false }; let n = 0, ok = false;
+async function runTeam(conv, ctl, kind){
+  const ks = KS[kind], P = S[kind], grp = kind === "group", MAX = grp ? GROUP_MAX : S.chat.tmax, flag = {}; let n = 0, ok = false;
   for (; n < MAX && !ctl.signal.aborted; n++){
-    const k = n % 2 ? "b" : "a", o = k === "a" ? "b" : "a", T = S.team[k];
-    const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, k), sys: teamSys(k, o), label: tname(k), color: PROVIDERS[T.p].color, ctl,
-      onSwitch: nm => { T.m = nm; store.set("mc_team", S.team); renderTeam(); lockUI(true); } });
-    m.who = k; m.lbl = tname(k); m.col = PROVIDERS[T.p].color;
+    const k = ks[n % ks.length], T = P[k];
+    const m = await turn({ p: T.p, model: T.m, msgs: teamView(conv, kind, k), sys: teamSys(kind, k), label: tname(kind, k), color: PROVIDERS[T.p].color, ctl,
+      onSwitch: nm => { T.m = nm; store.set("mc_" + kind, P); renderPicks(kind); lockUI(true); } });
+    m.who = k; m.lbl = tname(kind, k); m.col = PROVIDERS[T.p].color;
     conv.msgs.push(m); conv.t = Date.now(); persist();
-    if (m.err){ if (!ctl.signal.aborted) notifyDone(t("notifTeamErr"), m.content); return; }
+    if (m.err){ if (!ctl.signal.aborted) notifyDone(t(grp ? "notifGroupErr" : "notifTeamErr"), m.content); return; }
     flag[k] = !m.aborted && DONE.test(m.content.normalize("NFC"));
-    if (flag.a && flag.b){ ok = true; break; }
+    if (ks.every(x => flag[x])){ ok = true; break; }
   }
-  const note = { role: "note", nk: ok ? "noteDone" : ctl.signal.aborted ? "noteStop" : "noteMax", np: ok || ctl.signal.aborted ? [] : [MAX] };
+  const nk = ok ? (grp ? "noteDoneG" : "noteDone") : ctl.signal.aborted ? "noteStop" : (grp ? "noteMaxG" : "noteMax");
+  const note = { role: "note", nk, np: (ok || ctl.signal.aborted) ? [] : [MAX] };
   conv.msgs.push(note); persist();
   const txt = t(note.nk, ...note.np); bubble("note", txt);
-  if (!ctl.signal.aborted) notifyDone(t("notifTeam"), txt);
+  if (!ctl.signal.aborted) notifyDone(t(grp ? "notifGroup" : "notifTeam"), txt);
 }
 
 function setBusy(b){
@@ -1108,10 +1241,10 @@ function setBusy(b){
 async function send(){
   const ta = $("input"), text = ta.value.trim(), imgs = S.pending;
   if ((!text && !imgs.length) || S.busy) return;
-  const p = S.p, team = p === "team";
+  const p = S.p, team = isMulti(p);
   if (team){
-    const { a, b } = S.team;
-    if (!keyOK(a.p) || !keyOK(b.p)){ toast(t("needKeys", PROVIDERS[a.p].name, PROVIDERS[b.p].name)); openSet(); return; }
+    const miss = KS[p].filter(k => !keyOK(S[p][k].p));
+    if (miss.length){ toast(t("needKeys", [...new Set(miss.map(k => PROVIDERS[S[p][k].p].name))].join(", "))); openSet(); return; }
   } else if (!keyOK(p)){ toast(t("needKey", PROVIDERS[p].name)); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
@@ -1127,7 +1260,7 @@ async function send(){
   bubble("user", text, "", um.imgs);
   const ctl = new AbortController(); S.abort = ctl; setBusy(true); persist(); renderConvs();
   try {
-    if (team) await runTeam(conv, ctl);
+    if (team) await runTeam(conv, ctl, p);
     else {
       const m = await turn({ p, model: S.model[p], msgs: conv.msgs, sys: "", label: PROVIDERS[p].name, color: PROVIDERS[p].color, ctl,
         onSwitch: nm => { S.model[p] = nm; store.set("mc_model", S.model); if (S.p === p){ renderModels(); lockUI(true); } } });
@@ -1196,7 +1329,7 @@ async function saveProv(){
   let c = editId ? customs.find(x => x.id === editId) : null;
   if (!c){ c = { id: "c_" + uid(), color: CPAL[customs.length % CPAL.length] }; customs.push(c); }
   Object.assign(c, { name, url, fmt, models });
-  regCustom(c); refreshIds(); fixTeam(); store.set("mc_team", S.team);
+  regCustom(c); refreshIds(); fixTeam(); store.set("mc_team", S.team); store.set("mc_group", S.group);
   if (key) S.keys[c.id] = key; else delete S.keys[c.id];
   store.set("mc_custom", customs); await saveKeys();
   closeProv(); buildKeys(); S.p = c.id; store.set("mc_p", c.id); renderAll(); toast(t("pSaved"));
@@ -1206,7 +1339,7 @@ function delProv(){
   const id = editId;
   delete PROVIDERS[id]; customs = customs.filter(x => x.id !== id);
   delete S.keys[id]; delete S.convs[id]; delete S.cur[id]; delete S.model[id];
-  refreshIds(); fixTeam(); store.set("mc_team", S.team); store.set("mc_custom", customs); store.set("mc_model", S.model); persist(); saveKeys();
+  refreshIds(); fixTeam(); store.set("mc_team", S.team); store.set("mc_group", S.group); store.set("mc_custom", customs); store.set("mc_model", S.model); persist(); saveKeys();
   if (S.p === id){ S.p = ids[0]; store.set("mc_p", S.p); }
   closeProv(); buildKeys(); renderAll(); toast(t("pDeleted"));
 }
@@ -1221,8 +1354,10 @@ $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  if ($("pmodal").classList.contains("show")) closeProv(); else if ($("modal").classList.contains("show")) closeSet();
+  if ($("fsmodal").classList.contains("show")) closeFs();
+  else if ($("pmodal").classList.contains("show")) closeProv(); else if ($("modal").classList.contains("show")) closeSet();
 });
+$("fs_close").onclick = closeFs; $("fsmodal").onclick = e => { if (e.target.id === "fsmodal") closeFs(); };
 $("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); updateTools(); };
 $("newc").onclick = () => { if (busyGuard()) return; S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
 $("tog").onclick = toggleSide;
@@ -1235,7 +1370,7 @@ $("c_notify").onchange = async e => {
     let perm = Notification.permission;
     if (perm === "default"){ try { perm = await Notification.requestPermission(); } catch(x){ perm = "denied"; } }
     if (perm !== "granted"){ el.checked = false; S.chat.notify = false; saveChat(); $("notiWarn").hidden = false; return; }
-    try { new Notification("MultiChat", { body: t("notifOn") }); } catch(x){}
+    try { new Notification("MultiChat", { body: t("notifOn"), icon: "icon.png" }); } catch(x){}
   }
   S.chat.notify = el.checked; saveChat(); if (el.checked) $("notiWarn").hidden = true;
 };
