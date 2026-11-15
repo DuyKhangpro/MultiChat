@@ -237,6 +237,23 @@ html[data-ui=new] select.has-dd{display:none}
 .opt .dd{min-width:92px;flex-shrink:0}
 .opt .dd-menu{left:auto;right:0}
 .dd.up .dd-menu{top:auto;bottom:calc(100% + 6px)}
+.prow{display:flex;align-items:center;gap:2px}
+.prow .prov{flex:1;min-width:0}
+.pedit{border:0;background:none;color:var(--mute);padding:6px 8px;border-radius:8px;opacity:0;flex-shrink:0}
+.prow:hover .pedit,.pedit:focus-visible{opacity:1}
+.pedit:hover{background:var(--panel);color:var(--ink)}
+@media(hover:none){.pedit{opacity:.7}}
+@media(min-width:761px){body.collapsed .pedit{display:none}}
+.prov .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.prov.add{margin-top:6px;border:1px dashed var(--line);color:var(--mute)}
+.prov.add .plus{width:12px;text-align:center;font-weight:700;flex-shrink:0}
+.ctl{display:flex;align-items:center;gap:8px}
+.num{width:84px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
+.key .dd{margin-top:4px}
+#p_models{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:400;resize:vertical;line-height:1.5;max-height:240px}
+#p_models:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.row .danger{color:#d9534f;border-color:#d9534f}
 </style>
 </head>
 <body>
@@ -276,6 +293,7 @@ html[data-ui=new] select.has-dd{display:none}
           <button type="button" data-e="low">Low</button>
           <button type="button" data-e="medium">Medium</button>
           <button type="button" data-e="high">High</button>
+          <button type="button" data-e="xhigh">Extra High</button>
         </div>
       </div>
       <input type="file" id="file" accept="image/*" multiple hidden>
@@ -323,9 +341,9 @@ html[data-ui=new] select.has-dd{display:none}
       <p class="hint bad" id="notiWarn" data-i="notiWarn" hidden></p>
       <h3 data-i="hAuto"></h3>
       <label class="sw"><input type="checkbox" id="c_auto"><span class="sl"></span><span class="st"><b data-i="autoT"></b><small data-i="autoS"></small></span></label>
-      <div class="opt sub" id="c_n_row" hidden><span class="ot" data-i="autoN"></span><select id="c_n" data-ia="autoN"><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="opt sub" id="c_n_row" hidden><span class="ot" data-i="autoN"></span><div class="ctl"><input type="number" class="num" id="c_n_num" min="1" max="20" step="1" data-ia="numAria" hidden><select id="c_n" data-ia="autoN"><option>2</option><option>3</option><option>4</option><option>5</option><option value="custom" data-i="custom"></option></select></div></div>
       <h3 data-i="hTeam"></h3>
-      <div class="opt"><span class="ot"><b data-i="tmaxT"></b><small data-i="tmaxS"></small></span><select id="c_tmax" data-ia="tmaxT"><option>4</option><option>8</option><option>12</option><option>16</option><option>20</option><option>24</option></select></div>
+      <div class="opt"><span class="ot"><b data-i="tmaxT"></b><small data-i="tmaxS"></small></span><div class="ctl"><input type="number" class="num" id="c_tmax_num" min="2" max="100" step="1" data-ia="numAria" hidden><select id="c_tmax" data-ia="tmaxT"><option>4</option><option>8</option><option>12</option><option>16</option><option>20</option><option>24</option><option value="custom" data-i="custom"></option></select></div></div>
       <h3 data-i="hSaver"></h3>
       <label class="sw"><input type="checkbox" id="c_saver"><span class="sl"></span><span class="st"><b data-i="saverT"></b><small data-i="saverS"></small></span></label>
     </div>
@@ -334,6 +352,19 @@ html[data-ui=new] select.has-dd{display:none}
       <button id="close" data-i="close"></button>
       <button id="apply" class="pri" data-i="apply"></button>
     </div>
+  </div>
+</div>
+<div class="modal" id="pmodal">
+  <div class="box" role="dialog" aria-labelledby="pmt">
+    <h2 id="pmt"></h2>
+    <label class="key"><span data-i="pName"></span><input id="p_name" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="My provider"></label>
+    <label class="key"><span data-i="pEndpoint"></span><input id="p_url" type="url" autocomplete="off" spellcheck="false" placeholder="https://api.example.com/v1"></label>
+    <div class="key"><span data-i="pFmt"></span><select id="p_fmt" data-ia="pFmt"><option value="openai">OpenAI-compatible</option><option value="claude">Anthropic Messages</option><option value="gemini">Google Gemini</option></select></div>
+    <label class="key"><span data-i="pKey"></span><input id="p_key" type="password" autocomplete="off" spellcheck="false" data-ip="pKeyPh"></label>
+    <label class="key"><span data-i="pModels"></span><textarea id="p_models" rows="4" spellcheck="false" placeholder="model-a&#10;model-b"></textarea></label>
+    <p class="hint" data-i="pHint"></p>
+    <p class="hint bad" id="p_err" hidden></p>
+    <div class="row"><button type="button" id="p_del" class="danger" data-i="pDelete" hidden></button><span class="grow"></span><button type="button" id="p_cancel" data-i="cancel"></button><button type="button" id="p_save" class="pri" data-i="save"></button></div>
   </div>
 </div>
 <div id="toast"></div>
@@ -357,7 +388,14 @@ const store = {
 };
 store.ok = (() => { try { localStorage.setItem("mc_t", "1"); localStorage.removeItem("mc_t"); return true; } catch(e){ return false; } })();
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const ids = Object.keys(PROVIDERS), ALL = [...ids, "team"];
+/* Custom Providers: lưu trong localStorage (không kèm API key, key nằm trong kho mã hóa) */
+let customs = store.get("mc_custom", []); if (!Array.isArray(customs)) customs = [];
+const CPAL = ["#e0a100", "#d6409f", "#0ea5a5", "#8b5cf6", "#ef4444", "#22a06b", "#f97316", "#3b82f6"];
+const regCustom = c => { PROVIDERS[c.id] = { name: c.name, color: c.color, models: c.models, custom: true, fmt: c.fmt, url: c.url }; };
+customs = customs.filter(c => c && c.id && c.name && c.url && Array.isArray(c.models) && c.models.length && !PROVIDERS[c.id]);
+customs.forEach(regCustom);
+let ids = Object.keys(PROVIDERS), ALL = [...ids, "team"];
+const refreshIds = () => { ids = Object.keys(PROVIDERS); ALL = [...ids, "team"]; ALL.forEach(i => { if (!Array.isArray(S.convs[i])) S.convs[i] = []; }); };
 const S = {
   p: store.get("mc_p", "chatgpt"),
   model: store.get("mc_model", {}),
@@ -375,13 +413,17 @@ const S = {
 if (!PROVIDERS[S.p] && S.p !== "team") S.p = ids[0];
 S.team = store.get("mc_team", null) || {};
 S.chat = { notify: false, auto: false, n: 3, tmax: 12, saver: false, ...store.get("mc_chat", {}) };
-if (![4, 8, 12, 16, 20, 24].includes(S.chat.tmax)) S.chat.tmax = 12;
+if (!Number.isInteger(S.chat.tmax) || S.chat.tmax < 2 || S.chat.tmax > 100) S.chat.tmax = 12;
+if (!Number.isInteger(S.chat.n) || S.chat.n < 1 || S.chat.n > 20) S.chat.n = 3;
 S.lang = store.get("mc_lang", "en"); if (S.lang !== "en" && S.lang !== "vi") S.lang = "en";
-["a", "b"].forEach((k, n) => {
-  const t = S.team[k] = S.team[k] || {};
-  if (!PROVIDERS[t.p]) t.p = ids[Math.min(n + 1, ids.length - 1)];
-  if (!PROVIDERS[t.p].models.includes(t.m)) t.m = PROVIDERS[t.p].models[0];
-});
+function fixTeam(){
+  ["a", "b"].forEach((k, n) => {
+    const T = S.team[k] = S.team[k] || {};
+    if (!PROVIDERS[T.p]) T.p = ids[Math.min(n + 1, ids.length - 1)];
+    if (!PROVIDERS[T.p].models.includes(T.m)) T.m = PROVIDERS[T.p].models[0];
+  });
+}
+fixTeam();
 
 /* ====== Ngôn ngữ / Language: thêm hoặc sửa chữ ở đây ====== */
 const I18N = {
@@ -418,7 +460,12 @@ const I18N = {
     notifTeam: "Team", notifTeamErr: "Team hit an error", notifDone: n => n + " finished replying", notifErr: n => n + " hit an error",
     needKeys: (a, b) => "API keys are needed for both AIs (" + a + ", " + b + ")", needKey: n => "Please enter the API key for " + n, imageTitle: "Image",
     decErr: "Couldn't decrypt the saved API keys, please enter them again", saveFail: "Couldn't save the keys in the browser", saved: "Settings saved",
-    notifUnsupported: "This browser doesn't support notifications", notifOn: "Notifications are on.", pasteKey: n => "Paste your " + n + " API key"
+    notifUnsupported: "This browser doesn't support notifications", notifOn: "Notifications are on.", pasteKey: n => "Paste your " + n + " API key",
+    custom: "Custom", numAria: "Custom value", addProv: "Add provider", editProv: "Edit provider", pTitleNew: "Add custom provider", pTitleEdit: "Edit custom provider",
+    pName: "Provider name", pEndpoint: "Endpoint (API base URL)", pFmt: "API format", pKey: "API key", pKeyPh: "Optional for local servers", pModels: "Models (one per line, or separated by commas)",
+    pHint: "Endpoint is the API base URL, e.g. https://api.example.com/v1. OpenAI-compatible calls …/chat/completions, Anthropic Messages calls …/v1/messages, Google Gemini calls …/models/{model}:streamGenerateContent. A full URL ending in /chat/completions or /messages also works. The server must allow requests from the browser (CORS). Search isn't available for custom providers, and Effort is ignored for the OpenAI-compatible format.",
+    pDelete: "Delete provider", cancel: "Cancel", save: "Save", pErrName: "Enter a provider name", pErrUrl: "Enter a valid endpoint URL starting with http:// or https://", pErrModels: "Add at least one model",
+    pDelConfirm: n => "Delete provider “" + n + "” and its conversations?", pSaved: "Provider saved", pDeleted: "Provider deleted"
   },
   vi: {
     convs: "Cuộc trò chuyện", settings: "Cài đặt", togAria: "Thu gọn hoặc mở rộng thanh bên", togCollapse: "Thu gọn thanh bên", togExpand: "Mở rộng thanh bên", menuT: "Thu gọn / mở thanh bên",
@@ -453,7 +500,12 @@ const I18N = {
     notifTeam: "Team", notifTeamErr: "Team gặp lỗi", notifDone: n => n + " đã trả lời xong", notifErr: n => n + " gặp lỗi",
     needKeys: (a, b) => "Cần nhập API key cho cả 2 AI (" + a + ", " + b + ")", needKey: n => "Hãy nhập API key của " + n, imageTitle: "Hình ảnh",
     decErr: "Không giải mã được API key đã lưu, hãy nhập lại", saveFail: "Không lưu được key vào trình duyệt", saved: "Đã lưu cài đặt",
-    notifUnsupported: "Trình duyệt này không hỗ trợ thông báo", notifOn: "Thông báo đã được bật.", pasteKey: n => "Dán API key của " + n
+    notifUnsupported: "Trình duyệt này không hỗ trợ thông báo", notifOn: "Thông báo đã được bật.", pasteKey: n => "Dán API key của " + n,
+    custom: "Tùy chỉnh", numAria: "Giá trị tùy chỉnh", addProv: "Thêm provider", editProv: "Sửa provider", pTitleNew: "Thêm provider tùy chỉnh", pTitleEdit: "Sửa provider tùy chỉnh",
+    pName: "Tên provider", pEndpoint: "Endpoint (địa chỉ gốc của API)", pFmt: "Định dạng API", pKey: "API key", pKeyPh: "Có thể bỏ trống với máy chủ cục bộ", pModels: "Các model (mỗi dòng một model, hoặc cách nhau bằng dấu phẩy)",
+    pHint: "Endpoint là địa chỉ gốc của API, ví dụ https://api.example.com/v1. Kiểu OpenAI-compatible gọi …/chat/completions, Anthropic Messages gọi …/v1/messages, Google Gemini gọi …/models/{model}:streamGenerateContent. Dán nguyên URL đầy đủ kết thúc bằng /chat/completions hoặc /messages cũng được. Máy chủ phải cho phép trình duyệt gọi (CORS). Provider tùy chỉnh không có tìm kiếm, và Effort bị bỏ qua với kiểu OpenAI-compatible.",
+    pDelete: "Xóa provider", cancel: "Hủy", save: "Lưu", pErrName: "Hãy nhập tên provider", pErrUrl: "Hãy nhập endpoint hợp lệ bắt đầu bằng http:// hoặc https://", pErrModels: "Hãy thêm ít nhất một model",
+    pDelConfirm: n => "Xóa provider “" + n + "” và các cuộc trò chuyện của nó?", pSaved: "Đã lưu provider", pDeleted: "Đã xóa provider"
   }
 };
 function t(k, ...a){ const v = (I18N[S.lang] && I18N[S.lang][k] !== undefined) ? I18N[S.lang][k] : I18N.en[k]; return typeof v === "function" ? v(...a) : v; }
@@ -463,7 +515,7 @@ function applyLang(){
   document.querySelectorAll("[data-ip]").forEach(e => { e.placeholder = t(e.dataset.ip); });
   document.querySelectorAll("[data-it]").forEach(e => { e.title = t(e.dataset.it); });
   document.querySelectorAll("[data-ia]").forEach(e => { e.setAttribute("aria-label", t(e.dataset.ia)); });
-  ids.forEach(i => { $("k_" + i).placeholder = t("pasteKey", PROVIDERS[i].name); });
+  document.querySelectorAll("#keys input").forEach(inp => { inp.placeholder = t("pasteKey", PROVIDERS[inp.dataset.id].name); });
   $("send").textContent = S.busy ? t("stop") : t("send");
   document.querySelectorAll("#langSeg button").forEach(b => b.classList.toggle("on", b.dataset.l === S.lang));
   document.querySelectorAll("select.has-dd").forEach(dd);
@@ -555,7 +607,7 @@ function setUI(u){
 
 /* ====== Hỗ trợ tính năng theo nhà cung cấp ====== */
 const REASON = /^(o\d|gpt-[56])/;
-const canSearch = (p, model) => p === "groq" ? /gpt-oss|compound/.test(model) : true;
+const canSearch = (p, model) => PROVIDERS[p].custom ? false : p === "groq" ? /gpt-oss|compound/.test(model) : true;
 function updateTools(){
   const sup = S.p === "team" ? (canSearch(S.team.a.p, S.team.a.m) || canSearch(S.team.b.p, S.team.b.m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
   b.disabled = !sup; b.classList.toggle("on", S.search && sup);
@@ -565,19 +617,31 @@ function updateTools(){
 const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : PROVIDERS[i];
 function busyGuard(){ if (S.busy){ toast(t("busy")); return true; } return false; }
 
+const keyOK = p => !!(PROVIDERS[p].custom || S.keys[p]);
 function renderProvs(){
   $("provs").innerHTML = "";
   ALL.forEach(i => {
     const M = META(i), tm = i === "team", b = document.createElement("button");
     b.className = "prov" + (i === S.p ? " on" : "") + (tm ? " team" : "");
     b.title = M.name; b.style.setProperty("--pc", M.color);
-    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + M.name + "</span>" + ((tm || S.keys[i]) ? "" : "<small>" + t("noKey") + "</small>");
+    b.innerHTML = '<span class="dot" style="background:' + (tm ? "linear-gradient(135deg,#5b5ef4,#e0a100)" : M.color) + '"></span><span class="nm">' + (tm ? "👥 " : "") + esc(M.name) + "</span>" + ((tm || keyOK(i)) ? "" : "<small>" + t("noKey") + "</small>");
     b.onclick = () => { if (busyGuard()) return; S.p = i; store.set("mc_p", i); $("side").classList.remove("open"); renderAll(); };
-    $("provs").appendChild(b);
+    if (M.custom){
+      const row = document.createElement("div"), ed = document.createElement("button");
+      row.className = "prow"; ed.type = "button"; ed.className = "pedit"; ed.textContent = "✎";
+      ed.title = t("editProv"); ed.setAttribute("aria-label", t("editProv") + ": " + M.name);
+      ed.onclick = e => { e.stopPropagation(); openProv(i); };
+      row.append(b, ed); $("provs").appendChild(row);
+    } else $("provs").appendChild(b);
   });
+  const add = document.createElement("button");
+  add.className = "prov add"; add.title = t("addProv");
+  add.innerHTML = '<span class="plus">＋</span><span class="nm">' + esc(t("addProv")) + "</span>";
+  add.onclick = () => openProv(null);
+  $("provs").appendChild(add);
 }
 function fillModels(sel, p, cur){
-  sel.innerHTML = PROVIDERS[p].models.map(m => '<option value="' + m + '">' + m + "</option>").join("");
+  sel.innerHTML = PROVIDERS[p].models.map(m => '<option value="' + esc(m) + '">' + esc(m) + "</option>").join("");
   if (!PROVIDERS[p].models.includes(cur)) cur = PROVIDERS[p].models[0];
   sel.value = cur; dd(sel); return cur;
 }
@@ -589,7 +653,7 @@ function renderTeam(){
     d.innerHTML = '<b></b><select class="tp" aria-label="' + t("provider") + '"></select><select class="tm" aria-label="' + t("model") + '"></select>';
     d.querySelector("b").textContent = k === "a" ? "AI-1" : "AI-2";
     const sp = d.querySelector(".tp"), sm = d.querySelector(".tm");
-    sp.innerHTML = ids.map(i => '<option value="' + i + '">' + PROVIDERS[i].name + "</option>").join(""); sp.value = T.p; dd(sp);
+    sp.innerHTML = ids.map(i => '<option value="' + i + '">' + esc(PROVIDERS[i].name) + "</option>").join(""); sp.value = T.p; dd(sp);
     T.m = fillModels(sm, T.p, T.m);
     sp.onchange = () => { T.p = sp.value; T.m = fillModels(sm, T.p, ""); store.set("mc_team", S.team); updateTools(); };
     sm.onchange = () => { T.m = sm.value; store.set("mc_team", S.team); updateTools(); };
@@ -615,9 +679,24 @@ function setTab(t){
   ["web", "chat"].forEach(x => { $("tab-" + x).hidden = x !== t; });
   document.querySelectorAll("#setTabs button").forEach(b => { b.classList.toggle("on", b.dataset.tab === t); b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
 }
+const PRESET = { n: [2, 3, 4, 5], tmax: [4, 8, 12, 16, 20, 24] };
+function syncNum(key, selId, numId){      /* ô chọn có mục Custom + ô nhập số */
+  const v = S.chat[key], pre = PRESET[key].includes(v), sel = $(selId), num = $(numId);
+  sel.value = pre ? String(v) : "custom"; dd(sel);
+  num.hidden = pre; num.value = pre ? "" : String(v);
+}
+function bindNum(key, selId, numId, min, max){
+  const sel = $(selId), num = $(numId);
+  sel.onchange = () => {
+    if (sel.value === "custom"){ num.hidden = false; num.value = String(S.chat[key]); setTimeout(() => { num.focus(); num.select(); }, 0); }
+    else { num.hidden = true; S.chat[key] = +sel.value; saveChat(); }
+  };
+  num.oninput = () => { const v = Math.round(+num.value); if (num.value !== "" && isFinite(v) && v >= min && v <= max){ S.chat[key] = v; saveChat(); } };
+  num.onchange = () => { let v = Math.round(+num.value); if (!isFinite(v) || num.value === "") v = S.chat[key]; v = Math.min(max, Math.max(min, v)); num.value = String(v); S.chat[key] = v; saveChat(); };
+}
 function syncChat(){
   $("c_notify").checked = S.chat.notify && notifOK(); $("c_auto").checked = S.chat.auto; $("c_saver").checked = S.chat.saver;
-  $("c_n").value = String(S.chat.n); dd($("c_n")); $("c_tmax").value = String(S.chat.tmax); dd($("c_tmax"));
+  syncNum("n", "c_n", "c_n_num"); syncNum("tmax", "c_tmax", "c_tmax_num");
   $("c_n_row").hidden = !S.chat.auto; $("notiWarn").hidden = true;
 }
 function lockUI(b){      /* khóa ô chọn AI/model khi AI đang trả lời */
@@ -741,9 +820,9 @@ function renderLog(){
   const log = $("log"); log.innerHTML = "";
   const conv = getConv(S.p), chat = conv ? conv.msgs : [], team = S.p === "team";
   if (!chat.length){
-    const noKey = team ? !(S.keys[S.team.a.p] && S.keys[S.team.b.p]) : !S.keys[S.p];
-    log.innerHTML = '<div class="empty"><b>' + (team ? t("emptyTeamTitle") : t("emptyTitle", PROVIDERS[S.p].name)) + "</b>" +
-      (noKey ? t("needKeyHint", team ? t("bothAIs") : PROVIDERS[S.p].name) + "<br><button id='goSet'>" + t("goKey") + "</button>"
+    const noKey = team ? !(keyOK(S.team.a.p) && keyOK(S.team.b.p)) : !keyOK(S.p);
+    log.innerHTML = '<div class="empty"><b>' + (team ? t("emptyTeamTitle") : t("emptyTitle", esc(PROVIDERS[S.p].name))) + "</b>" +
+      (noKey ? t("needKeyHint", team ? t("bothAIs") : esc(PROVIDERS[S.p].name)) + "<br><button id='goSet'>" + t("goKey") + "</button>"
              : (team ? t("emptyTeamHint") : t("emptyHint"))) + "</div>";
     if (noKey) $("goSet").onclick = openSet;
     return;
@@ -799,6 +878,13 @@ const toClaude = m => hasImg(m) ? { role: m.role, content: [...m.imgs.map(i => (
 /* giới hạn lượt của Team: S.chat.tmax (chọn trong Cài đặt > Chat) */
 const DONE = /(đã|da)\s*xong/i;
 
+const fmtOf = p => PROVIDERS[p].custom ? PROVIDERS[p].fmt : (p === "claude" ? "claude" : p === "gemini" ? "gemini" : "openai");
+const trimU = u => u.trim().replace(/\/+$/, "");
+const chatUrl = p => { if (!PROVIDERS[p].custom) return BASE[p] + "/chat/completions"; const u = trimU(PROVIDERS[p].url); return /\/chat\/completions$/.test(u) ? u : u + "/chat/completions"; };
+const claudeUrl = p => { if (!PROVIDERS[p].custom) return "https://api.anthropic.com/v1/messages"; const u = trimU(PROVIDERS[p].url); return /\/messages$/.test(u) ? u : /\/v1$/.test(u) ? u + "/messages" : u + "/v1/messages"; };
+const geminiUrl = (p, m) => { const u = PROVIDERS[p].custom ? trimU(PROVIDERS[p].url).replace(/\/models$/, "") : "https://generativelanguage.googleapis.com/v1beta"; return u + "/models/" + encodeURIComponent(m) + ":streamGenerateContent?alt=sse"; };
+const xhEff = m => /^gpt-(5\.([2-9]|\d\d)|[6-9])/.test(m) ? "xhigh" : "high";   /* Extra High: model cũ không có xhigh thì dùng high */
+
 async function readSSE(res, fn){
   const rd = res.body.getReader(), dec = new TextDecoder(); let buf = "";
   for (;;){
@@ -823,17 +909,18 @@ function splitThink(raw){      /* một số model (qwen, deepseek…) trả suy
 async function callAPI(o){
   const { p, model, key, eff, search, sys, signal, on } = o, ms = o.msgs.filter(m => !m.err);
   const headers = { "Content-Type": "application/json" };
+  const f = fmtOf(p), XH = eff === "xhigh";
   let url, body, ev, fb = null, raw = "", rs = "", aborted = false;
   const src = [], addSrc = (u, t) => { if (u && !src.some(s => s.u === u)) src.push({ u, t: t || u }); };
   const emit = () => { const s = splitThink(raw); on(s.text, (rs + s.think).trim()); };
   const T = d => { raw += d; emit(); }, R = d => { rs += d; emit(); };
-  if (BASE[p]){
-    headers.Authorization = "Bearer " + key;
+  if (f === "openai"){
+    if (key) headers.Authorization = "Bearer " + key;
     if (search && (p === "chatgpt" || p === "grok")){            /* ChatGPT & Grok: Responses API + web_search */
       url = BASE[p] + "/responses";
       body = { model, input: ms.map(toResp), tools: [{ type: "web_search" }], stream: true };
       if (sys) body.instructions = sys;
-      if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: eff };
+      if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: XH ? xhEff(model) : eff };
       fb = j => j.output_text || (j.output || []).filter(x => x.type === "message").flatMap(x => x.content || []).map(c => c.text || "").join("");
       ev = j => {
         const ty = j.type || "";
@@ -844,12 +931,12 @@ async function callAPI(o){
         else if (ty === "response.failed") throw new Error((j.response && j.response.error && j.response.error.message) || t("failed"));
       };
     } else {
-      url = BASE[p] + "/chat/completions";
+      url = chatUrl(p);
       body = { model, messages: [...(sys ? [{ role: "system", content: sys }] : []), ...ms.map(toOAI)], stream: true };
       if (eff !== "auto"){
-        if (p === "chatgpt" && REASON.test(model)) body.reasoning_effort = eff;
-        if (p === "grok" && /grok-3-mini/.test(model)) body.reasoning_effort = eff === "high" ? "high" : "low";
-        if (p === "groq" && /gpt-oss/.test(model)) body.reasoning_effort = eff;
+        if (p === "chatgpt" && REASON.test(model)) body.reasoning_effort = XH ? xhEff(model) : eff;
+        if (p === "grok" && /grok-3-mini/.test(model)) body.reasoning_effort = (eff === "high" || XH) ? "high" : "low";
+        if (p === "groq" && /gpt-oss/.test(model)) body.reasoning_effort = XH ? "high" : eff;
         if (p === "openrouter") body.reasoning = { effort: eff };
       }
       if (search && p === "groq" && /gpt-oss/.test(model)) body.tools = [{ type: "browser_search" }];
@@ -864,10 +951,10 @@ async function callAPI(o){
         (d.annotations || []).forEach(a => a.url_citation && addSrc(a.url_citation.url, a.url_citation.title));
       };
     }
-  } else if (p === "claude"){
-    url = "https://api.anthropic.com/v1/messages";
-    headers["x-api-key"] = key; headers["anthropic-version"] = "2023-06-01"; headers["anthropic-dangerous-direct-browser-access"] = "true";
-    const bud = { low: 1024, medium: 4096, high: 12000 }[eff];
+  } else if (f === "claude"){
+    url = claudeUrl(p);
+    if (key) headers["x-api-key"] = key; headers["anthropic-version"] = "2023-06-01"; headers["anthropic-dangerous-direct-browser-access"] = "true";
+    const bud = { low: 1024, medium: 4096, high: 12000, xhigh: 24000 }[eff];
     body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(toClaude), stream: true };
     if (sys) body.system = sys;
     if (bud) body.thinking = { type: "enabled", budget_tokens: bud };
@@ -878,15 +965,15 @@ async function callAPI(o){
       else if (j.type === "error") throw new Error((j.error && j.error.message) || t("err"));
     };
   } else {
-    url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":streamGenerateContent?alt=sse";
-    headers["x-goog-api-key"] = key;
+    url = geminiUrl(p, model);
+    if (key) headers["x-goog-api-key"] = key;
     body = { contents: ms.map(m => ({ role: m.role === "user" ? "user" : "model", parts: [...(m.imgs || []).map(i => ({ inline_data: { mime_type: i.m, data: i.d } })), ...(m.content ? [{ text: m.content }] : [])] })) };
     if (sys) body.systemInstruction = { parts: [{ text: sys }] };
     const tc = {};
     if (/gemini-(2\.5|3|4)/.test(model)) tc.includeThoughts = true;
     if (eff !== "auto"){
-      if (/gemini-(3|4)/.test(model)) tc.thinkingLevel = (/pro/.test(model) && eff === "medium") ? "high" : eff;
-      else if (/gemini-2\.5/.test(model)) tc.thinkingBudget = { low: 1024, medium: 8192, high: 24576 }[eff];
+      if (/gemini-(3|4)/.test(model)) tc.thinkingLevel = (XH || (/pro/.test(model) && eff === "medium")) ? "high" : eff;
+      else if (/gemini-2\.5/.test(model)) tc.thinkingBudget = { low: 1024, medium: 8192, high: 24576, xhigh: /pro/.test(model) ? 32768 : 24576 }[eff];
     }
     if (Object.keys(tc).length) body.generationConfig = { thinkingConfig: tc };
     if (search) body.tools = [{ google_search: {} }];
@@ -1024,8 +1111,8 @@ async function send(){
   const p = S.p, team = p === "team";
   if (team){
     const { a, b } = S.team;
-    if (!S.keys[a.p] || !S.keys[b.p]){ toast(t("needKeys", PROVIDERS[a.p].name, PROVIDERS[b.p].name)); openSet(); return; }
-  } else if (!S.keys[p]){ toast(t("needKey", PROVIDERS[p].name)); openSet(); return; }
+    if (!keyOK(a.p) || !keyOK(b.p)){ toast(t("needKeys", PROVIDERS[a.p].name, PROVIDERS[b.p].name)); openSet(); return; }
+  } else if (!keyOK(p)){ toast(t("needKey", PROVIDERS[p].name)); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
     const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : t("imageTitle");
@@ -1052,7 +1139,7 @@ async function send(){
 
 /* ====== Cài đặt & giao diện ====== */
 function openSet(){
-  ids.forEach(i => { $("k_" + i).value = S.keys[i] || ""; });
+  document.querySelectorAll("#keys input").forEach(inp => { inp.value = S.keys[inp.dataset.id] || ""; });
   $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block";
   setTheme(S.theme); setUI(S.ui); setTab("web"); syncChat(); $("modal").classList.add("show");
 }
@@ -1067,20 +1154,75 @@ function toggleSide(){
   syncTog();
 }
 
-$("keys").innerHTML = ids.map(i => '<label class="key">' + PROVIDERS[i].name + ' API key<input type="password" id="k_' + i + '" placeholder="" autocomplete="off" spellcheck="false"></label>').join("");
-ids.forEach(i => $("k_" + i).addEventListener("input", () => {
-  const v = $("k_" + i).value.trim();
-  if (v) S.keys[i] = v; else delete S.keys[i];
-  saveKeys().then(() => { $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block"; });
-}));
-$("show").onchange = e => ids.forEach(i => { $("k_" + i).type = e.target.checked ? "text" : "password"; });
+/* ====== API key của mọi provider (kể cả provider tùy chỉnh) ====== */
+function buildKeys(){
+  const box = $("keys"); box.innerHTML = "";
+  ids.forEach(i => {
+    const l = document.createElement("label"), s = document.createElement("span"), inp = document.createElement("input");
+    l.className = "key"; s.textContent = PROVIDERS[i].name + " API key";
+    inp.type = $("show").checked ? "text" : "password"; inp.id = "k_" + i; inp.dataset.id = i; inp.autocomplete = "off"; inp.spellcheck = false;
+    inp.value = S.keys[i] || ""; inp.placeholder = t("pasteKey", PROVIDERS[i].name);
+    inp.addEventListener("input", () => {
+      const v = inp.value.trim();
+      if (v) S.keys[i] = v; else delete S.keys[i];
+      saveKeys().then(() => { $("warn").style.display = (store.ok && !S.vaultErr) ? "none" : "block"; });
+    });
+    l.append(s, inp); box.appendChild(l);
+  });
+}
+buildKeys();
+$("show").onchange = e => document.querySelectorAll("#keys input").forEach(x => { x.type = e.target.checked ? "text" : "password"; });
+
+/* ====== Custom Providers: tạo / sửa / xóa ngay trên giao diện ====== */
+let editId = null;
+function parseModels(s){ return [...new Set(s.split(/[\n,;]+/).map(x => x.trim()).filter(Boolean))]; }
+function openProv(id){
+  if (busyGuard()) return;
+  editId = id; const c = id ? customs.find(x => x.id === id) : null;
+  $("pmt").textContent = t(id ? "pTitleEdit" : "pTitleNew");
+  $("p_name").value = c ? c.name : ""; $("p_url").value = c ? c.url : "";
+  $("p_fmt").value = c ? c.fmt : "openai"; dd($("p_fmt"));
+  $("p_key").value = c ? (S.keys[id] || "") : ""; $("p_models").value = c ? c.models.join("\n") : "";
+  $("p_err").hidden = true; $("p_del").hidden = !id; $("pmodal").classList.add("show"); $("p_name").focus();
+}
+function closeProv(){ $("pmodal").classList.remove("show"); ddCloseAll(); }
+async function saveProv(){
+  const name = $("p_name").value.trim(), url = $("p_url").value.trim(), fmt = $("p_fmt").value, key = $("p_key").value.trim(), models = parseModels($("p_models").value);
+  const bad = k => { $("p_err").textContent = t(k); $("p_err").hidden = false; };
+  if (!name) return bad("pErrName");
+  let okUrl = false; try { const u = new URL(url); okUrl = u.protocol === "http:" || u.protocol === "https:"; } catch(e){}
+  if (!okUrl) return bad("pErrUrl");
+  if (!models.length) return bad("pErrModels");
+  let c = editId ? customs.find(x => x.id === editId) : null;
+  if (!c){ c = { id: "c_" + uid(), color: CPAL[customs.length % CPAL.length] }; customs.push(c); }
+  Object.assign(c, { name, url, fmt, models });
+  regCustom(c); refreshIds(); fixTeam(); store.set("mc_team", S.team);
+  if (key) S.keys[c.id] = key; else delete S.keys[c.id];
+  store.set("mc_custom", customs); await saveKeys();
+  closeProv(); buildKeys(); S.p = c.id; store.set("mc_p", c.id); renderAll(); toast(t("pSaved"));
+}
+function delProv(){
+  if (!editId || !confirm(t("pDelConfirm", PROVIDERS[editId].name))) return;
+  const id = editId;
+  delete PROVIDERS[id]; customs = customs.filter(x => x.id !== id);
+  delete S.keys[id]; delete S.convs[id]; delete S.cur[id]; delete S.model[id];
+  refreshIds(); fixTeam(); store.set("mc_team", S.team); store.set("mc_custom", customs); store.set("mc_model", S.model); persist(); saveKeys();
+  if (S.p === id){ S.p = ids[0]; store.set("mc_p", S.p); }
+  closeProv(); buildKeys(); renderAll(); toast(t("pDeleted"));
+}
+$("p_save").onclick = saveProv; $("p_del").onclick = delProv; $("p_cancel").onclick = closeProv;
+$("pmodal").onclick = e => { if (e.target.id === "pmodal") closeProv(); };
+
 document.querySelectorAll("#themeSeg button").forEach(b => b.onclick = () => setTheme(b.dataset.t));
 document.querySelectorAll("#uiSeg button").forEach(b => b.onclick = () => setUI(b.dataset.u));
 $("apply").onclick = async () => { await saveKeys(); closeSet(); toast(S.vaultErr ? t("saveFail") : t("saved")); };
 $("close").onclick = closeSet;
 $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
-document.addEventListener("keydown", e => { if (e.key === "Escape" && $("modal").classList.contains("show")) closeSet(); });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if ($("pmodal").classList.contains("show")) closeProv(); else if ($("modal").classList.contains("show")) closeSet();
+});
 $("model").onchange = e => { S.model[S.p] = e.target.value; store.set("mc_model", S.model); updateTools(); };
 $("newc").onclick = () => { if (busyGuard()) return; S.cur[S.p] = null; persist(); renderConvs(); renderLog(); $("input").focus(); };
 $("tog").onclick = toggleSide;
@@ -1098,8 +1240,7 @@ $("c_notify").onchange = async e => {
   S.chat.notify = el.checked; saveChat(); if (el.checked) $("notiWarn").hidden = true;
 };
 $("c_auto").onchange = e => { S.chat.auto = e.target.checked; $("c_n_row").hidden = !S.chat.auto; saveChat(); };
-$("c_n").onchange = e => { S.chat.n = +e.target.value; saveChat(); };
-$("c_tmax").onchange = e => { S.chat.tmax = +e.target.value; saveChat(); };
+bindNum("n", "c_n", "c_n_num", 1, 20); bindNum("tmax", "c_tmax", "c_tmax_num", 2, 100);
 $("c_saver").onchange = e => { S.chat.saver = e.target.checked; saveChat(); };
 document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => setLang(b.dataset.l));
 document.addEventListener("click", () => ddCloseAll());
@@ -1116,7 +1257,7 @@ $("input").addEventListener("input", e => { e.target.style.height = "auto"; e.ta
 $("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].filter(x => x.type.startsWith("image/")); if (f.length){ e.preventDefault(); addFiles(f); } });
 
 if (store.get("mc_col", false)) document.body.classList.add("collapsed");
-setTheme(S.theme); setUI(S.ui); dd($("c_n")); dd($("c_tmax")); applyLang();
+setTheme(S.theme); setUI(S.ui); dd($("c_n")); dd($("c_tmax")); dd($("p_fmt")); applyLang();
 renderAll();
 loadKeys().then(renderAll);
 </script>
