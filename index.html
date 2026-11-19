@@ -274,6 +274,45 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
 #fs_close{padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:600}
 .fsb{flex:1;display:flex;min-height:0}
 .fsb iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff}
+.plusw{position:relative}
+#plus{width:34px;height:34px;padding:0;border-radius:50%;font-size:20px;line-height:1}
+.pmenu{position:absolute;bottom:calc(100% + 8px);left:0;min-width:240px;padding:6px;border-radius:14px;border:1px solid var(--line);background:var(--solid,var(--panel));box-shadow:var(--shadow);z-index:35;display:flex;flex-direction:column;gap:2px;animation:pmIn .16s cubic-bezier(.2,.8,.2,1)}
+@keyframes pmIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+.pmenu button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:10px;background:transparent;text-align:left;font-weight:600;font-size:14px}
+.pmenu button:hover:not(:disabled){background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.pmenu button:disabled{opacity:.45;cursor:not-allowed}
+.pmenu button.on::after{content:"✓";margin-left:auto;color:var(--acc)}
+.mi{width:20px;text-align:center}
+.fchip{display:inline-flex;align-items:center;gap:6px;max-width:230px;padding:5px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:13px}
+.fchip .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fchip .fz{color:var(--mute);font-size:12px;flex-shrink:0}
+.fchip.warn{border-color:#d9a000}
+.fchip button{border:0;background:none;color:var(--mute);font-size:16px;line-height:1;padding:0 2px}
+.msg .fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.msg.user .fchip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);color:inherit}
+.msg.user .fchip .fz{color:inherit;opacity:.8}
+.deck{padding:10px}
+.dview{max-width:600px;margin:0 auto}
+.sld{aspect-ratio:16/9;container-type:inline-size;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sld .si{width:100%;height:100%;padding:4.5cqw 5cqw;display:flex;flex-direction:column;gap:1.6cqw;font-size:2.5cqw;line-height:1.35;color:var(--tx);overflow:hidden}
+.sld .si.cover{justify-content:center;border-left:2.2cqw solid var(--ac)}
+.sld .stt{font-size:4.4cqw;font-weight:700;color:var(--ac);line-height:1.2}
+.sld .si.cover .stt{font-size:7cqw}
+.sld .ssub{font-size:3.2cqw}
+.sld ul{margin:0;padding-left:3cqw}
+.sld p{margin:0}
+.sld .scol{display:grid;gap:3cqw}
+.sld .sh{font-weight:700;color:var(--ac);margin-bottom:.8cqw;font-size:3cqw}
+.sld table{border-collapse:collapse;width:100%}
+.sld th{background:var(--ac);color:#fff;text-align:left}
+.sld th,.sld td{padding:.8cqw 1.4cqw;border:1px solid rgba(100,116,139,.35)}
+.sld img{max-width:100%;max-height:70%;object-fit:contain;align-self:center}
+.sld .crow{display:flex;align-items:center;gap:1.6cqw}
+.sld .cl{width:14cqw;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sld .cbs{flex:1}
+.sld .cb{display:block;height:1.3cqw;background:var(--ac);border-radius:.5cqw;margin:.3cqw 0}
+.dnav{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px;font-size:13px;color:var(--mute)}
+.dnav button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:3px 12px;font-weight:700}
 </style>
 </head>
 <body>
@@ -304,8 +343,16 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
   <footer>
     <div id="prev"></div>
     <div class="tools">
-      <button type="button" class="chip" id="attach" data-it="attachT" data-i="attach"></button>
-      <button type="button" class="chip" id="srch" data-i="search"></button>
+      <div class="plusw">
+        <button type="button" class="chip" id="plus" aria-haspopup="menu" aria-expanded="false" data-ia="plusT" data-it="plusT">＋</button>
+        <div class="pmenu" id="plusmenu" role="menu" hidden>
+          <button type="button" role="menuitem" id="attach" data-it="attachT"><span class="mi">📎</span><span data-i="mFile"></span></button>
+          <button type="button" role="menuitem" id="srch"><span class="mi">🌐</span><span data-i="mSearch"></span></button>
+          <button type="button" role="menuitem" id="sl" data-it="slidesT"><span class="mi">📊</span><span data-i="mSlides"></span></button>
+        </div>
+      </div>
+      <button type="button" class="chip on" id="spill" hidden></button>
+      <button type="button" class="chip on" id="slpill" hidden></button>
       <div class="effg" data-it="effT">
         <span>Effort</span>
         <div class="seg2" id="eff">
@@ -316,7 +363,7 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
           <button type="button" data-e="xhigh">Extra High</button>
         </div>
       </div>
-      <input type="file" id="file" accept="image/*" multiple hidden>
+      <input type="file" id="file" multiple hidden>
     </div>
     <form id="form">
       <textarea id="input" rows="1" data-ip="ph"></textarea>
@@ -400,9 +447,9 @@ html[data-ui=new] .num{border-radius:12px;padding:8px 10px}
 const PROVIDERS = {
   chatgpt: { name: "ChatGPT", color: "#10a37f", models: [ "gpt-6-luna","gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-5.6-sol","gpt-5.6-terra","gpt-5.6-luna", "gpt-5.5-pro-2026-04-23", "gpt-5.2-pro-2025-12-11", "gpt-5.2-2025-12-11", "gpt-5.4-mini-2026-03-17", "gpt-5.4-pro-2026-03-05", "gpt-5.5-2026-04-23", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4o", "o4-mini"] },
   claude:  { name: "Claude",  color: "#c96442", models: [ "claude-fable-5-2", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-sonnet-4-6"] },
-  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-carbon", "gemini-4-argon", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
+  gemini:  { name: "Gemini",  color: "#4285f4", models: [ "gemini-4-neon", "gemini-4-carbon", "gemini-4-argon", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-3-flash-preview"] },
   grok:    { name: "Grok",    color: "#555a66", models: [ "grok-4.7", "grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20"] },
-  groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] },
+  groq:    { name: "Groq",    color: "#f55036", models: [ "openai/gpt-oss-safeguard-20b", "meta-llama/llama-prompt-guard-2-86m", "meta-llama/llama-prompt-guard-2-22m", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "meta-llama/llama-4-scout-17b-16e-instruct", "qwen/qwen3-32b", "moonshotai/kimi-k2-instruct"] },
   openrouter: { name: "OpenRouter", color: "#6467f2", models: [ "openrouter/auto", "google/gemini-4-carbon", "openai/gpt-6.1-sol-pro", "anthropic/claude-fable-5.2", "anthropic/claude-fable-5.2:batch", "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3.5-embed-8b:free", "nvidia/nemotron-3.5-embed-1b:free", "openai/gpt-5", "openai/gpt-5-mini", "anthropic/claude-sonnet-4.5", "anthropic/claude-opus-4.1", "google/gemini-2.5-pro", "google/gemini-2.5-flash", "x-ai/grok-4", "deepseek/deepseek-chat-v3.1", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen3-235b-a22b", "moonshotai/kimi-k2", "mistralai/mistral-large", "openai/gpt-oss-120b", "openai/gpt-oss-20b:free", "meta-llama/llama-3.3-70b-instruct:free"] }
 };
 /* ============================================================================= */
@@ -431,6 +478,7 @@ const S = {
   theme: store.get("mc_theme", "light"),
   eff: store.get("mc_eff", "auto"),
   search: store.get("mc_search", false),
+  slides: store.get("mc_slides", false),
   ui: store.get("mc_ui", "new"),
   pending: [],
   vaultErr: false,
@@ -461,9 +509,10 @@ fixTeam();
 const I18N = {
   en: {
     convs: "Conversations", settings: "Settings", togAria: "Collapse or expand the sidebar", togCollapse: "Collapse sidebar", togExpand: "Expand sidebar", menuT: "Collapse / open sidebar",
-    newcT: "New conversation", pickModel: "Choose model", attachT: "Attach images (up to 4)", attach: "📎 Images", search: "🌐 Search",
+    newcT: "New conversation", pickModel: "Choose model", attachT: "Attach files or images (up to 8)", attach: "📎 Upload file", search: "🌐 Search",
+    mFile: "Upload file", mSearch: "Web search", mSlides: "PowerPoint slides", plusT: "More options", slidesT: "The AI makes PowerPoint slides you can preview and download", slidesPill: "📊 Slides",
     effT: "AI reasoning level. Models that don't support it ignore it or return an error from the provider.",
-    ph: "Type a message… (Enter to send, Shift+Enter for a new line, paste images)", send: "Send", stop: "Stop",
+    ph: "Type a message… (Enter to send, Shift+Enter for a new line, paste or drop files)", send: "Send", stop: "Stop",
     tabsAria: "Settings sections", hColor: "Color mode", light: "Light", dark: "Dark", hUI: "UI mode",
     uiHint: "Classic: the original look, no animations. New: a modern look with animations.", hLang: "Language",
     keysHint: "Keys are encrypted with AES-GCM before being stored in the browser and saved as you type, so F5 won't lose them. This is browser-side encryption; it doesn't replace keeping your device and browser secure.",
@@ -482,7 +531,7 @@ const I18N = {
     emptyTitle: n => "Chat with " + n, emptyTeamTitle: "Team: 2 AIs working on one task", needKeyHint: w => "You need to enter the API key for " + w + " before starting.", bothAIs: "both selected AIs", goKey: "Enter API key",
     emptyHint: "Pick a model at the top right, then type a message below.",
     emptyTeamHint: "Pick 2 AIs above, then type your request below. The two AIs will introduce themselves, split the work and talk until both say “Đã Xong” (Vietnamese for “Done”).",
-    maxImgs: "Up to 4 images per message", imgFail: "Couldn't read the image", prevAlt: "Image to send", rmImg: "Remove image",
+    maxImgs: "Up to 8 attachments per message", imgFail: "Couldn't read the file", prevAlt: "Image to send", rmImg: "Remove attachment",
     err: "Error", failed: "Failed", sources: "Sources",
     waiting: " · waiting for a response…", retry: (i, n) => " · ⚠️ error (" + i + "/" + n + "), retrying…", switching: m => " · 🔁 switching to " + m + "…",
     errPrefix: "Error: ", netErr: "Couldn't connect. Check your network and API key, or the provider may block access from the browser.",
@@ -502,13 +551,17 @@ const I18N = {
     emptyGroupHint: "Pick 4 AIs above, then type your request below. The AIs introduce themselves, split the work and take turns until all four say “Đã Xong” (Vietnamese for “Done”). A request stops after at most 48 messages.",
     noteDoneG: "✅ All 4 AIs said “Đã Xong”.", noteMaxG: n => "⚠️ Reached the limit of " + n + " messages without all 4 AIs saying “Đã Xong”. Send another message to let them continue.",
     notifGroup: "Group", notifGroupErr: "Group hit an error",
-    htmlCode: "Code", htmlPrev: "Preview", htmlFs: "Fullscreen preview", htmlDl: "Download .html", htmlWriting: "Writing HTML…", htmlReady: "HTML ready", fsTitle: "HTML preview"
+    htmlCode: "Code", htmlPrev: "Preview", htmlFs: "Fullscreen preview", htmlDl: "Download .html", htmlWriting: "Writing HTML…", htmlReady: "HTML ready", fsTitle: "HTML preview",
+    copy: "Copy", copied: "Copied", download: "Download", pptxDl: "Download .pptx", slidesBtn: "Slides", slidesWriting: "Writing slides…", slidesReady: n => n + (n === 1 ? " slide ready" : " slides ready"),
+    slidesBad: "Couldn't read the slide data", slidesBuilding: "Building…", slidesFail: "Couldn't build the .pptx. It needs an internet connection to load the PowerPoint library.", sPrev: "Previous slide", sNext: "Next slide",
+    fileBin: n => "Can't read this file type, only its name will be sent: " + n
   },
   vi: {
     convs: "Cuộc trò chuyện", settings: "Cài đặt", togAria: "Thu gọn hoặc mở rộng thanh bên", togCollapse: "Thu gọn thanh bên", togExpand: "Mở rộng thanh bên", menuT: "Thu gọn / mở thanh bên",
-    newcT: "Cuộc trò chuyện mới", pickModel: "Chọn model", attachT: "Đính kèm ảnh (tối đa 4)", attach: "📎 Ảnh", search: "🌐 Tìm kiếm",
+    newcT: "Cuộc trò chuyện mới", pickModel: "Chọn model", attachT: "Đính kèm file hoặc ảnh (tối đa 8)", attach: "📎 Tải file lên", search: "🌐 Tìm kiếm",
+    mFile: "Tải file lên", mSearch: "Tìm kiếm web", mSlides: "Làm slide PowerPoint", plusT: "Thêm tùy chọn", slidesT: "AI tạo slide PowerPoint để bạn xem trước và tải về", slidesPill: "📊 Slide",
     effT: "Mức suy luận của AI. Model nào không hỗ trợ sẽ bỏ qua hoặc báo lỗi từ nhà cung cấp.",
-    ph: "Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng, dán ảnh được)", send: "Gửi", stop: "Dừng",
+    ph: "Nhập tin nhắn… (Enter để gửi, Shift+Enter xuống dòng, dán hoặc thả file vào được)", send: "Gửi", stop: "Dừng",
     tabsAria: "Mục cài đặt", hColor: "Chế độ màu", light: "Sáng", dark: "Tối", hUI: "Chế độ UI",
     uiHint: "Classic: giao diện cũ, không hiệu ứng. New: giao diện mới hiện đại, có hiệu ứng.", hLang: "Ngôn ngữ",
     keysHint: "Key được mã hóa AES-GCM trước khi lưu vào trình duyệt, tự lưu khi bạn nhập nên F5 không bị mất. Đây là mã hóa phía trình duyệt, không thay thế việc giữ máy và trình duyệt của bạn an toàn.",
@@ -527,7 +580,7 @@ const I18N = {
     emptyTitle: n => "Trò chuyện với " + n, emptyTeamTitle: "Team: 2 AI cùng làm một việc", needKeyHint: w => "Bạn cần nhập API key của " + w + " trước khi bắt đầu.", bothAIs: "cả 2 AI đã chọn", goKey: "Nhập API key",
     emptyHint: "Chọn model ở góc trên bên phải rồi gõ tin nhắn bên dưới.",
     emptyTeamHint: "Chọn 2 AI ở trên rồi nhập yêu cầu bên dưới. Hai AI sẽ tự giới thiệu, chia việc và trao đổi cho tới khi cả hai cùng nói “Đã Xong”.",
-    maxImgs: "Tối đa 4 ảnh mỗi tin nhắn", imgFail: "Không đọc được ảnh", prevAlt: "Ảnh sẽ gửi", rmImg: "Bỏ ảnh",
+    maxImgs: "Tối đa 8 tệp đính kèm mỗi tin nhắn", imgFail: "Không đọc được tệp", prevAlt: "Ảnh sẽ gửi", rmImg: "Bỏ tệp đính kèm",
     err: "Lỗi", failed: "Thất bại", sources: "Nguồn",
     waiting: " · đang chờ phản hồi…", retry: (i, n) => " · ⚠️ lỗi (" + i + "/" + n + "), thử lại…", switching: m => " · 🔁 đổi sang " + m + "…",
     errPrefix: "Lỗi: ", netErr: "Không kết nối được. Kiểm tra mạng, API key, hoặc nhà cung cấp chặn truy cập từ trình duyệt.",
@@ -547,7 +600,10 @@ const I18N = {
     emptyGroupHint: "Chọn 4 AI ở trên rồi nhập yêu cầu bên dưới. Các AI sẽ tự giới thiệu, chia việc và thay phiên nhau cho tới khi cả 4 cùng nói “Đã Xong”. Mỗi yêu cầu dừng sau tối đa 48 tin nhắn.",
     noteDoneG: "✅ Cả 4 AI đã nói “Đã Xong”.", noteMaxG: n => "⚠️ Đã đạt giới hạn " + n + " tin nhắn mà chưa đủ cả 4 AI cùng nói “Đã Xong”. Bạn có thể nhắn thêm để các AI làm tiếp.",
     notifGroup: "Group", notifGroupErr: "Group gặp lỗi",
-    htmlCode: "Code", htmlPrev: "Xem trước", htmlFs: "Xem trước toàn màn hình", htmlDl: "Tải về .html", htmlWriting: "Đang viết HTML…", htmlReady: "HTML đã xong", fsTitle: "Xem trước HTML"
+    htmlCode: "Code", htmlPrev: "Xem trước", htmlFs: "Xem trước toàn màn hình", htmlDl: "Tải về .html", htmlWriting: "Đang viết HTML…", htmlReady: "HTML đã xong", fsTitle: "Xem trước HTML",
+    copy: "Sao chép", copied: "Đã chép", download: "Tải về", pptxDl: "Tải .pptx", slidesBtn: "Slide", slidesWriting: "Đang viết slide…", slidesReady: n => n + " slide đã xong",
+    slidesBad: "Không đọc được dữ liệu slide", slidesBuilding: "Đang tạo…", slidesFail: "Không tạo được .pptx. Cần có mạng để tải thư viện PowerPoint.", sPrev: "Slide trước", sNext: "Slide sau",
+    fileBin: n => "Không đọc được loại file này, chỉ gửi tên file: " + n
   }
 };
 function t(k, ...a){ const v = (I18N[S.lang] && I18N[S.lang][k] !== undefined) ? I18N[S.lang][k] : I18N.en[k]; return typeof v === "function" ? v(...a) : v; }
@@ -621,7 +677,7 @@ function persist(){
   if (store.set("mc_convs", S.convs)) return;
   /* đầy bộ nhớ: lưu bản không kèm ảnh và phần suy nghĩ */
   const lite = {};
-  ALL.forEach(i => lite[i] = S.convs[i].map(c => ({ ...c, msgs: c.msgs.map(m => { const r = { ...m }; delete r.think; if (m.imgs){ delete r.imgs; r.imgN = m.imgs.length; } return r; }) })));
+  ALL.forEach(i => lite[i] = S.convs[i].map(c => ({ ...c, msgs: c.msgs.map(m => { const r = { ...m }; delete r.think; if (m.imgs){ delete r.imgs; r.imgN = m.imgs.length; } if (m.files){ r.fmeta = m.files.map(f => ({ name: f.name, size: f.size, kind: f.kind })); delete r.files; } return r; }) })));
   store.set("mc_convs", lite);
 }
 
@@ -654,6 +710,9 @@ function updateTools(){
   const sup = isMulti(S.p) ? KS[S.p].some(k => canSearch(S[S.p][k].p, S[S.p][k].m)) : canSearch(S.p, S.model[S.p]), b = $("srch");
   b.disabled = !sup; b.classList.toggle("on", S.search && sup);
   b.title = sup ? t("srchOn") : t("srchOff");
+  $("sl").classList.toggle("on", S.slides);
+  $("spill").hidden = !(S.search && sup); $("spill").textContent = t("search") + " ✕";
+  $("slpill").hidden = !S.slides; $("slpill").textContent = t("slidesPill") + " ✕";
   document.querySelectorAll("#eff button").forEach(x => x.classList.toggle("on", x.dataset.e === S.eff));
 }
 const META = i => i === "team" ? { name: "Team", color: "#8b52f0" } : i === "group" ? { name: "Group", color: "#e0556b" } : PROVIDERS[i];
@@ -824,7 +883,7 @@ const du = i => "data:" + i.m + ";base64," + i.d;
 const fmtT = ms => (ms / 1000).toFixed(1) + t("sec");
 const metaText = m => m.ms ? "⏱ " + fmtT(m.ms) + (m.ttft != null ? t("ttft") + fmtT(m.ttft) : "") + (m.sw ? t("swapped") + m.sw : "") : "";
 function nearBottom(){ const l = $("log"); return l.scrollHeight - l.scrollTop - l.clientHeight < 90; }
-function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và ghi chú */
+function bubble(role, text, cls, imgs, imgN, files){   /* tin nhắn người dùng và ghi chú */
   const d = document.createElement("div");
   d.className = "msg " + role + (cls ? " " + cls : "");
   d.textContent = text;
@@ -836,24 +895,51 @@ function bubble(role, text, cls, imgs, imgN){   /* tin nhắn người dùng và
     const n = document.createElement("div"); n.className = "imgn";
     n.textContent = t("imgN", imgN); d.appendChild(n);
   }
+  if (files && files.length){
+    const fl = mk("div", "fl");
+    files.forEach(f => { const c = mk("span", "fchip"); c.append(mk("span", "fi", f.kind === "pdf" ? "📕" : f.kind === "bin" ? "⚠️" : "📄"), mk("span", "fn", f.name), mk("span", "fz", fmtSize(f.size || 0))); fl.appendChild(c); });
+    d.appendChild(fl);
+  }
   $("log").appendChild(d); $("log").scrollTop = $("log").scrollHeight; return d;
 }
-/* ====== Xem trước HTML: khi AI viết code HTML trong khối ```html ====== */
+/* ====== Khối code của AI: nút Tải về/Sao chép cho mọi file, xem trước HTML, slide PowerPoint ====== */
+const EXT = { html: "html", htm: "html", css: "css", scss: "scss", js: "js", javascript: "js", mjs: "mjs", ts: "ts", typescript: "ts", tsx: "tsx", jsx: "jsx", json: "json", py: "py", python: "py", java: "java", c: "c", h: "h", cpp: "cpp", "c++": "cpp", cs: "cs", "c#": "cs", csharp: "cs", go: "go", rs: "rs", rust: "rs", php: "php", rb: "rb", ruby: "rb", swift: "swift", kt: "kt", kotlin: "kt", sh: "sh", bash: "sh", shell: "sh", zsh: "sh", sql: "sql", yaml: "yaml", yml: "yml", xml: "xml", md: "md", markdown: "md", txt: "txt", text: "txt", csv: "csv", toml: "toml", ini: "ini", ps1: "ps1", powershell: "ps1", bat: "bat", lua: "lua", r: "r", dart: "dart", scala: "scala", vue: "vue", svelte: "svelte", svg: "svg", diff: "diff", tex: "tex", latex: "tex", dockerfile: "Dockerfile" };
+const MIME = { html: "text/html", htm: "text/html", json: "application/json", css: "text/css", js: "text/javascript", mjs: "text/javascript", svg: "image/svg+xml", csv: "text/csv", xml: "application/xml", md: "text/markdown" };
+const SLIDE_LANGS = ["pptx", "slides", "powerpoint"];
+const PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
 function isHtmlBlock(lang, code){ return lang === "html" || lang === "htm" || ((lang === "" || lang === "xml") && /^\s*<(!doctype html|html[\s>])/i.test(code)); }
-function splitParts(text){      /* tách văn bản thành đoạn markdown và khối HTML (kể cả khối chưa đóng khi đang stream) */
-  const parts = [], fence = /(^|\n)```([\w+-]*)[^\n]*(?:\n|$)/g;
+function fname(lang, rest, code){      /* tên file: lấy từ dòng ``` (title=, :app.py) hoặc dòng chú thích đầu "// file: app.py", không có thì đặt theo ngôn ngữ */
+  let n = (rest.match(/(?:title|file(?:name)?|path)\s*=\s*["']?([^\s"']+)/i) || rest.match(/([\w@.\/-]+\.[A-Za-z0-9]{1,8})\b/) || [])[1];
+  if (!n){ const c = code.match(/^\s*(?:\/\/|#|\/\*|<!--|--|;)\s*(?:file(?:name)?|path)\s*[:=]\s*([\w@.\/-]+\.[A-Za-z0-9]{1,8})/i); n = c && c[1]; }
+  if (!n){ const e = EXT[lang]; n = (lang === "html" || lang === "htm") ? "index.html" : e === "Dockerfile" ? "Dockerfile" : "code." + (e || (/^[a-z0-9]{1,6}$/.test(lang) ? lang : "txt")); }
+  return n.split(/[\\/]/).pop().replace(/[^\w.@ -]/g, "_") || "code.txt";
+}
+function dlBlob(name, blob){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function dlText(name, text){ const ext = (name.split(".").pop() || "").toLowerCase(); dlBlob(name, new Blob([text], { type: (MIME[ext] || "text/plain") + ";charset=utf-8" })); }
+function copyText(text, btn){
+  const done = () => { const o = btn.textContent; btn.textContent = t("copied"); setTimeout(() => { btn.textContent = o; }, 1200); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => {});
+  else { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch(e){} ta.remove(); }
+}
+const b64Blob = (data, type) => { const s = atob(data), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return new Blob([u], { type }); };
+
+function splitParts(text){      /* tách văn bản thành đoạn markdown và các khối code (kể cả khối chưa đóng khi đang stream) */
+  const parts = [], fence = /(^|\n)```([\w+#.-]*)([^\n]*)\n/g;
   let pos = 0, m;
   while ((m = fence.exec(text))){
-    const fs = m.index + m[1].length, lang = (m[2] || "").toLowerCase(), bs = fence.lastIndex;
+    const fs = m.index + m[1].length, lang = (m[2] || "").toLowerCase(), rest = m[3] || "", bs = fence.lastIndex;
     const cm = /(^|\n)```[ \t]*(?:\n|$)/.exec(text.slice(bs));
     const closed = !!cm, code = closed ? text.slice(bs, bs + cm.index) : text.slice(bs), end = closed ? bs + cm.index + cm[0].length : text.length;
-    if (isHtmlBlock(lang, code)){
-      if (fs > pos) parts.push({ type: "md", text: text.slice(pos, fs) });
-      parts.push({ type: "html", code, closed });
-      pos = end;
-    }
+    if (fs > pos) parts.push({ type: "md", text: text.slice(pos, fs) });
+    const type = SLIDE_LANGS.includes(lang) ? "pptx" : isHtmlBlock(lang, code) ? "html" : "code";
+    parts.push({ type, lang, code, closed, name: fname(lang, rest, code) });
+    pos = end;
     if (!closed) break;
-    fence.lastIndex = end;
+    fence.lastIndex = end - (text[end - 1] === "\n" ? 1 : 0);      /* trả lại dấu xuống dòng để khối code liền kề vẫn được nhận */
   }
   if (pos < text.length || !parts.length) parts.push({ type: "md", text: text.slice(pos) });
   return parts;
@@ -862,15 +948,174 @@ function mdNode(){
   const el = document.createElement("div"); el.className = "mdp";
   return { type: "md", el, h: null, update(p){ const h = md(p.text); if (h !== this.h){ this.h = h; el.innerHTML = h; } el.hidden = !p.text.trim(); } };
 }
-function htmlWidget(){
-  const el = document.createElement("div"); el.className = "hcode";
-  el.innerHTML = '<div class="hbar"><span class="hl">HTML</span><span class="hs"></span><div class="hbtns"><button type="button" data-v="code"></button><button type="button" data-v="prev"></button><button type="button" data-a="fs">⤢</button><button type="button" data-a="dl">⬇</button></div></div><pre><code></code></pre><div class="hprev" hidden></div>';
-  const q = s => el.querySelector(s), code = q("code"), pre = q("pre"), box = q(".hprev"), st = q(".hs"), bv = v => q('[data-v="' + v + '"]');
-  const w = { type: "html", el, code: "", closed: false, view: "code", frame: null, timer: 0, last: 0, rendered: null, autoed: false };
-  bv("code").textContent = t("htmlCode"); bv("prev").textContent = t("htmlPrev");
-  q('[data-a="fs"]').title = t("htmlFs"); q('[data-a="dl"]').title = t("htmlDl");
-  w.render = force => {
-    if (w.view !== "prev" || w.rendered === w.code) return;
+
+/* --- Slide PowerPoint: đọc JSON, xem trước, tạo file .pptx --- */
+const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const hex = (c, d) => { const h = String(c || "").replace(/[^0-9a-fA-F]/g, ""); return h.length === 3 ? h.split("").map(x => x + x).join("") : h.length === 6 ? h : d; };
+const isCover = (s, i) => s.type === "title" || (i === 0 && !(s.bullets || s.text || s.columns || s.table || s.chart || s.image));
+function parseSpec(code){
+  let s = null;
+  try { s = JSON.parse(code); } catch(e){ try { s = JSON.parse(code.replace(/,\s*([}\]])/g, "$1")); } catch(e2){} }
+  return (s && Array.isArray(s.slides) && s.slides.length) ? s : null;
+}
+function themeOf(spec){
+  const x = spec.theme || {};
+  return { bg: hex(x.bg, "FFFFFF"), text: hex(x.text, "1F2937"), accent: hex(x.accent, "5B5EF4"), font: String(x.font || "Calibri").replace(/[^\w \-]/g, "") || "Calibri" };
+}
+function chartEl(c){
+  const box = mk("div", "chart"), labels = (c.labels || []).map(String), ser = (c.series || []).slice(0, 4);
+  const max = Math.max(1, ...ser.flatMap(s => (s.values || []).map(Number).filter(isFinite)));
+  box.appendChild(mk("div", "sh", String(c.type || "bar") + (ser.length ? " · " + ser.map(s => s.name || "").filter(Boolean).join(", ") : "")));
+  labels.slice(0, 12).forEach((lb, i) => {
+    const row = mk("div", "crow"), bars = mk("div", "cbs"); row.appendChild(mk("span", "cl", lb));
+    ser.forEach((s, k) => { const v = Number((s.values || [])[i]) || 0, b = mk("i", "cb"); b.style.width = Math.max(1, Math.abs(v) / max * 100) + "%"; b.style.opacity = String(1 - k * 0.22); b.title = (s.name || "") + ": " + v; bars.appendChild(b); });
+    row.appendChild(bars); box.appendChild(row);
+  });
+  return box;
+}
+function slideEl(s, th, idx){
+  const sld = mk("div", "sld"), el = mk("div", "si" + (isCover(s, idx) ? " cover" : ""));
+  sld.style.cssText = "--ac:#" + th.accent + ";--tx:#" + th.text + ";background:#" + hex(s.bg, th.bg) + ";font-family:'" + th.font + "',sans-serif";
+  sld.appendChild(el);
+  const list = (items, parent) => {
+    const ul = mk("ul");
+    (items || []).forEach(b => { const o = typeof b === "string" ? { text: b } : (b || {}), li = mk("li", "", String(o.text || "")); if (o.level) li.style.marginLeft = Math.min(3, +o.level || 0) * 2.6 + "cqw"; ul.appendChild(li); });
+    parent.appendChild(ul);
+  };
+  if (s.title) el.appendChild(mk("div", "stt", String(s.title)));
+  if (s.subtitle) el.appendChild(mk("div", "ssub", String(s.subtitle)));
+  if (s.columns && s.columns.length){
+    const g = mk("div", "scol"); g.style.gridTemplateColumns = "repeat(" + Math.min(3, s.columns.length) + ",1fr)";
+    s.columns.slice(0, 3).forEach(c => { const d = mk("div"); if (c.heading) d.appendChild(mk("div", "sh", String(c.heading))); if (c.bullets) list(c.bullets, d); else if (c.text) d.appendChild(mk("p", "", String(c.text))); g.appendChild(d); });
+    el.appendChild(g);
+  } else if (s.table && s.table.rows){
+    const tb = mk("table"), hd = s.table.header || [];
+    if (hd.length){ const tr = mk("tr"); hd.forEach(c => tr.appendChild(mk("th", "", String(c)))); tb.appendChild(tr); }
+    s.table.rows.slice(0, 12).forEach(r => { const tr = mk("tr"); (r || []).forEach(c => tr.appendChild(mk("td", "", String(c)))); tb.appendChild(tr); });
+    el.appendChild(tb);
+  } else if (s.chart && s.chart.series) el.appendChild(chartEl(s.chart));
+  else if (s.image && /^(https?:|data:image\/)/i.test(String(s.image.url || ""))){ const im = mk("img"); im.src = s.image.url; im.alt = s.caption || ""; im.referrerPolicy = "no-referrer"; el.appendChild(im); }
+  else if (s.bullets) list(s.bullets, el);
+  else if (s.text) el.appendChild(mk("p", "", String(s.text)));
+  return sld;
+}
+function deckEl(spec){
+  const th = themeOf(spec), wrap = mk("div", "deck"), view = mk("div", "dview"), nav = mk("div", "dnav");
+  const bp = mk("button", "", "‹"), bn = mk("button", "", "›"), dc = mk("span");
+  bp.type = bn.type = "button"; bp.title = t("sPrev"); bn.title = t("sNext"); nav.append(bp, dc, bn);
+  const slides = spec.slides.map((s, i) => slideEl(s || {}, th, i)); slides.forEach(x => view.appendChild(x));
+  let cur = 0;
+  const show = i => { cur = (i + slides.length) % slides.length; slides.forEach((x, k) => { x.hidden = k !== cur; }); dc.textContent = (cur + 1) + " / " + slides.length; };
+  bp.onclick = () => show(cur - 1); bn.onclick = () => show(cur + 1); show(0);
+  wrap.append(view, nav); return wrap;
+}
+
+/* Tạo .pptx: thư viện PptxGenJS (tải từ CDN) chạy trong iframe sandbox tách biệt, không đọc được API key của trang */
+function pptxBuilder(){
+  const post = o => parent.postMessage(o, "*");
+  const URLS = ["https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js", "https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"];
+  const load = i => {
+    if (i >= URLS.length){ post({ fatal: "load" }); return; }
+    const s = document.createElement("script"); s.src = URLS[i];
+    s.onload = () => { if (window.PptxGenJS) post({ ready: true }); else load(i + 1); };
+    s.onerror = () => load(i + 1); document.head.appendChild(s);
+  };
+  const hex = (c, d) => { const h = String(c || "").replace(/[^0-9a-fA-F]/g, ""); return h.length === 3 ? h.split("").map(x => x + x).join("") : h.length === 6 ? h : d; };
+  const build = async spec => {
+    const P = new PptxGenJS(); P.layout = "LAYOUT_WIDE";
+    P.title = String(spec.title || "Presentation"); if (spec.author) P.author = String(spec.author);
+    const x = spec.theme || {}, th = { bg: hex(x.bg, "FFFFFF"), text: hex(x.text, "1F2937"), accent: hex(x.accent, "5B5EF4"), font: String(x.font || "Calibri").replace(/[^\w \-]/g, "") || "Calibri" };
+    const bl = list => (list || []).map(b => { const o = typeof b === "string" ? { text: b } : (b || {}); return { text: String(o.text || ""), options: { bullet: true, indentLevel: Math.min(3, +o.level || 0), breakLine: true } }; });
+    const area = { x: 0.7, y: 1.6, w: 11.9, h: 5.3 };
+    spec.slides.forEach((s, i) => {
+      s = s || {};
+      const sl = P.addSlide(); sl.background = { color: hex(s.bg, th.bg) };
+      const cover = s.type === "title" || (i === 0 && !(s.bullets || s.text || s.columns || s.table || s.chart || s.image));
+      if (cover){
+        sl.addShape("rect", { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: th.accent }, line: { color: th.accent } });
+        sl.addText(String(s.title || spec.title || ""), { x: 0.9, y: 2.2, w: 11.5, h: 1.6, fontSize: 44, bold: true, color: th.accent, fontFace: th.font, valign: "bottom", fit: "shrink" });
+        if (s.subtitle) sl.addText(String(s.subtitle), { x: 0.9, y: 3.95, w: 11.5, h: 1.0, fontSize: 22, color: th.text, fontFace: th.font, valign: "top" });
+      } else {
+        sl.addText(String(s.title || ""), { x: 0.6, y: 0.35, w: 12.1, h: 0.9, fontSize: 30, bold: true, color: th.accent, fontFace: th.font, valign: "middle", fit: "shrink" });
+        sl.addShape("rect", { x: 0.6, y: 1.28, w: 1.2, h: 0.06, fill: { color: th.accent }, line: { color: th.accent } });
+        const txt = { color: th.text, fontFace: th.font, valign: "top" };
+        if (s.columns && s.columns.length){
+          const n = Math.min(3, s.columns.length), gap = 0.4, cw = (area.w - gap * (n - 1)) / n;
+          s.columns.slice(0, n).forEach((c, k) => {
+            c = c || {}; const cx = area.x + k * (cw + gap); let y = area.y;
+            if (c.heading){ sl.addText(String(c.heading), { x: cx, y, w: cw, h: 0.6, fontSize: 22, bold: true, color: th.accent, fontFace: th.font }); y += 0.7; }
+            if (c.bullets) sl.addText(bl(c.bullets), { x: cx, y, w: cw, h: area.h - (y - area.y), fontSize: 18, ...txt });
+            else if (c.text) sl.addText(String(c.text), { x: cx, y, w: cw, h: area.h - (y - area.y), fontSize: 18, ...txt });
+          });
+        } else if (s.table && s.table.rows){
+          const hd = (s.table.header || []).map(c => ({ text: String(c), options: { bold: true, color: "FFFFFF", fill: { color: th.accent } } }));
+          const rows = s.table.rows.map(r => (r || []).map(c => ({ text: String(c), options: { color: th.text } })));
+          sl.addTable(hd.length ? [hd, ...rows] : rows, { x: area.x, y: area.y, w: area.w, fontSize: 16, fontFace: th.font, border: { type: "solid", color: "CBD5E1", pt: 1 }, valign: "middle" });
+        } else if (s.chart && s.chart.series){
+          const c = s.chart, labels = (c.labels || []).map(String), ty = ({ line: "line", pie: "pie" })[c.type] || "bar";
+          sl.addChart(ty, c.series.map(se => ({ name: String(se.name || ""), labels, values: (se.values || []).map(Number) })), { x: area.x, y: area.y, w: area.w, h: area.h, showLegend: c.series.length > 1 || ty === "pie", legendPos: "b", legendFontSize: 14, catAxisLabelFontSize: 14, valAxisLabelFontSize: 14, chartColors: [th.accent, "F59E0B", "10B981", "EF4444", "8B5CF6", "06B6D4", "EC4899", "84CC16"] });
+        } else if (s.image && s.image.url){
+          const u = String(s.image.url), o = { x: 1.5, y: 1.6, w: 10.3, h: 4.8, sizing: { type: "contain", w: 10.3, h: 4.8 } };
+          if (/^data:/i.test(u)) o.data = u; else o.path = u;
+          sl.addImage(o);
+          if (s.caption) sl.addText(String(s.caption), { x: 1.5, y: 6.5, w: 10.3, h: 0.5, fontSize: 14, italic: true, align: "center", color: "64748B", fontFace: th.font });
+        } else if (s.bullets) sl.addText(bl(s.bullets), { ...area, fontSize: 22, paraSpaceAfter: 8, ...txt });
+        else if (s.text) sl.addText(String(s.text), { ...area, fontSize: 22, ...txt });
+      }
+      if (s.notes) sl.addNotes(String(s.notes));
+      sl.slideNumber = { x: 12.4, y: 7.0, fontSize: 11, color: "94A3B8" };
+    });
+    return await P.write({ outputType: "base64" });
+  };
+  window.addEventListener("message", async e => {
+    const d = e.data; if (!d || !d.spec) return;
+    try { const data = await Promise.race([build(d.spec), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 50000))]); post({ id: d.id, ok: true, data }); }
+    catch (err) { post({ id: d.id, error: String((err && err.message) || err) }); }
+  });
+  load(0);
+}
+const PPTX_FRAME = "<!doctype html><html><head><meta charset=\"utf-8\"></head><body><scr" + "ipt>(" + pptxBuilder.toString() + ")();</scr" + "ipt></body></html>";
+let pf = null, pfReady = null;
+function pptxFrame(){
+  if (pf && pfReady) return pfReady;
+  const f = pf = document.createElement("iframe");
+  f.setAttribute("sandbox", "allow-scripts"); f.style.display = "none"; f.referrerPolicy = "no-referrer";
+  pfReady = new Promise((res, rej) => {
+    const h = e => {
+      if (e.source !== f.contentWindow || !e.data) return;
+      if (e.data.ready){ removeEventListener("message", h); res(f); }
+      else if (e.data.fatal){ removeEventListener("message", h); f.remove(); pf = null; pfReady = null; rej(new Error(e.data.fatal)); }
+    };
+    addEventListener("message", h);
+  });
+  f.srcdoc = PPTX_FRAME; document.body.appendChild(f);
+  return pfReady;
+}
+async function buildPptx(spec){
+  const f = await pptxFrame();
+  return new Promise((res, rej) => {
+    const id = uid(), to = setTimeout(() => { removeEventListener("message", h); rej(new Error("timeout")); }, 60000);
+    const h = e => { if (e.source !== f.contentWindow || !e.data || e.data.id !== id) return; clearTimeout(to); removeEventListener("message", h); if (e.data.ok) res(e.data); else rej(new Error(e.data.error || "error")); };
+    addEventListener("message", h); f.contentWindow.postMessage({ id, spec }, "*");
+  });
+}
+
+/* --- Widget cho từng khối code: code thường | html (xem trước) | pptx (slide) --- */
+function codeWidget(kind){
+  const el = mk("div", "hcode");
+  el.innerHTML = '<div class="hbar"><span class="hl"></span><span class="hs"></span><div class="hbtns">' +
+    (kind === "code" ? "" : '<button type="button" data-v="code"></button><button type="button" data-v="prev"></button>') +
+    (kind === "html" ? '<button type="button" data-a="fs">⤢</button>' : "") +
+    '<button type="button" data-a="cp"></button><button type="button" data-a="dl"></button></div></div><pre><code></code></pre><div class="hprev" hidden></div>';
+  const q = s => el.querySelector(s), bv = v => q('[data-v="' + v + '"]'), pre = q("pre"), code = q("code"), box = q(".hprev"), st = q(".hs"), hl = q(".hl"), cp = q('[data-a="cp"]'), dl = q('[data-a="dl"]');
+  const w = { type: kind, el, code: "", name: "", closed: false, view: "code", frame: null, timer: 0, last: 0, rendered: null, autoed: false, spec: null, pname: "presentation.pptx" };
+  cp.textContent = t("copy"); dl.textContent = kind === "pptx" ? "⬇ .pptx" : "⬇ " + t("download");
+  cp.title = t("copy"); dl.title = kind === "pptx" ? t("pptxDl") : t("download");
+  if (kind !== "code"){ bv("code").textContent = t("htmlCode"); bv("prev").textContent = kind === "pptx" ? t("slidesBtn") : t("htmlPrev"); }
+  if (kind === "pptx") bv("prev").hidden = true;
+  if (kind === "html"){ const fs = q('[data-a="fs"]'); fs.title = t("htmlFs"); fs.onclick = () => openFs(w.code); }
+  w.render = force => {                 /* xem trước HTML: iframe sandbox, cập nhật tối đa ~1 giây/lần khi đang viết */
+    if (kind !== "html" || w.view !== "prev" || w.rendered === w.code) return;
     const now = Date.now();
     if (!force && !w.closed && now - w.last < 900){ if (!w.timer) w.timer = setTimeout(() => { w.timer = 0; w.render(true); }, 900 - (now - w.last)); return; }
     w.last = now; w.rendered = w.code;
@@ -881,19 +1126,40 @@ function htmlWidget(){
     w.frame.srcdoc = w.code;
   };
   w.show = v => {
-    w.view = v; bv("code").classList.toggle("on", v === "code"); bv("prev").classList.toggle("on", v === "prev");
+    w.view = v; if (kind === "code") return;
+    bv("code").classList.toggle("on", v === "code"); bv("prev").classList.toggle("on", v === "prev");
     pre.hidden = v !== "code"; box.hidden = v !== "prev"; w.render(true);
   };
+  w.deck = () => { box.innerHTML = ""; box.appendChild(deckEl(w.spec)); };
   w.update = (p, live) => {
     const wasClosed = w.closed, changed = p.code !== w.code;
+    w.name = p.name; hl.textContent = kind === "pptx" ? "PowerPoint" : (p.lang || "text").toUpperCase();
     if (changed){ w.code = p.code; code.textContent = p.code; if (!p.closed) pre.scrollTop = pre.scrollHeight; }
-    w.closed = p.closed; st.textContent = p.closed ? t("htmlReady") : t("htmlWriting");
-    if (live && p.closed && !w.autoed){ w.autoed = true; w.show("prev"); }       /* vừa viết xong: tự mở bản xem trước */
-    else if (changed || (p.closed && !wasClosed)) w.render(p.closed && !wasClosed);
+    w.closed = p.closed;
+    if (kind === "html"){
+      st.textContent = p.name + " · " + (p.closed ? t("htmlReady") : t("htmlWriting"));
+      if (live && p.closed && !w.autoed){ w.autoed = true; w.show("prev"); }       /* vừa viết xong: tự mở bản xem trước */
+      else if (changed || (p.closed && !wasClosed)) w.render(p.closed && !wasClosed);
+    } else if (kind === "pptx"){
+      if (p.closed && (changed || !wasClosed)){
+        w.spec = parseSpec(p.code);
+        if (w.spec) w.pname = (String(w.spec.title || "presentation").replace(/[\\/:*?"<>|]+/g, "").trim().slice(0, 60) || "presentation") + ".pptx";
+      }
+      st.textContent = !p.closed ? t("slidesWriting") : w.spec ? t("slidesReady", w.spec.slides.length) : t("slidesBad");
+      dl.hidden = !w.spec; bv("prev").hidden = !w.spec;
+      if (p.closed && w.spec && !w.autoed){ w.autoed = true; w.deck(); w.show("prev"); }
+      else if (w.spec && changed) w.deck();
+    } else st.textContent = p.name;
   };
-  bv("code").onclick = () => w.show("code"); bv("prev").onclick = () => w.show("prev");
-  q('[data-a="fs"]').onclick = () => openFs(w.code); q('[data-a="dl"]').onclick = () => dlHtml(w.code);
-  w.show("code");
+  cp.onclick = () => copyText(w.code, cp);
+  dl.onclick = async () => {
+    if (kind !== "pptx"){ dlText(w.name, w.code); return; }
+    if (!w.spec) return;
+    const o = dl.textContent; dl.disabled = true; dl.textContent = t("slidesBuilding");
+    try { const r = await buildPptx(w.spec); dlBlob(w.pname, b64Blob(r.data, PPTX_MIME)); } catch(e){ toast(t("slidesFail")); }
+    dl.disabled = false; dl.textContent = o;
+  };
+  if (kind !== "code"){ bv("code").onclick = () => w.show("code"); bv("prev").onclick = () => w.show("prev"); w.show("code"); }
   return w;
 }
 function paintBody(bd, text, st, live){
@@ -901,7 +1167,7 @@ function paintBody(bd, text, st, live){
   for (; i < parts.length; i++){
     const p = parts[i]; let n = st.nodes[i];
     if (n && n.type !== p.type){ st.nodes.splice(i).forEach(x => x.el.remove()); n = null; }
-    if (!n){ n = p.type === "html" ? htmlWidget() : mdNode(); st.nodes[i] = n; bd.appendChild(n.el); }
+    if (!n){ n = p.type === "md" ? mdNode() : codeWidget(p.type); st.nodes[i] = n; bd.appendChild(n.el); }
     n.update(p, live);
   }
   st.nodes.splice(i).forEach(x => x.el.remove());
@@ -912,10 +1178,6 @@ function openFs(code){
   box.appendChild(f); $("fsmodal").classList.add("show");
 }
 function closeFs(){ $("fsmodal").classList.remove("show"); $("fs_body").innerHTML = ""; }
-function dlHtml(code){
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([code], { type: "text/html" })); a.download = "preview.html";
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
 
 function botBubble(name, color, cls, live){
   const d = document.createElement("div"); d.className = "msg bot" + (cls ? " " + cls : ""); d.style.setProperty("--pc", color);
@@ -954,14 +1216,19 @@ function renderLog(){
     return;
   }
   chat.forEach(m => {
-    if (m.role === "user") bubble("user", m.content, "", m.imgs, m.imgN);
+    if (m.role === "user") bubble("user", m.content, "", m.imgs, m.imgN, m.files || m.fmeta);
     else if (m.role === "note") bubble("note", m.nk ? t(m.nk, ...(m.np || [])) : m.content);
     else { const M = META(S.p), b = botBubble(m.lbl || M.name, m.col || M.color, m.err ? "err" : ""); b.flush(m.content, m.think); b.meta(metaText(m)); }
   });
 }
 function renderAll(){ renderProvs(); renderModels(); renderConvs(); renderLog(); }
 
-/* ====== Ảnh đính kèm ====== */
+/* ====== Tệp đính kèm: ảnh, PDF, văn bản/code, Word/PowerPoint/Excel, tệp bất kỳ ====== */
+const MAX_ATT = 8, TEXT_MAX = 300000, PDF_MAX = 12 * 1024 * 1024;
+const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|jsonl|xml|html?|css|scss|less|js|mjs|cjs|jsx|ts|tsx|py|java|c|h|cpp|hpp|cs|go|rs|php|rb|swift|kt|sql|sh|bat|ps1|yaml|yml|toml|ini|cfg|conf|log|svg|tex|r|lua|dart|scala|vue|svelte|env|gitignore)$/i;
+const fmtSize = n => n < 1024 ? n + " B" : n < 1048576 ? Math.round(n / 1024) + " KB" : (n / 1048576).toFixed(1) + " MB";
+const cut = s => s.length > TEXT_MAX ? s.slice(0, TEXT_MAX) + "\n[…truncated]" : s;
+function b64(buf){ const u = new Uint8Array(buf); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
 function shrink(file){
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), im = new Image();
@@ -975,31 +1242,115 @@ function shrink(file){
     im.src = url;
   });
 }
+/* đọc file .docx / .pptx / .xlsx (thực chất là zip chứa XML) ngay trong trình duyệt */
+async function unzip(buf){
+  const u = new Uint8Array(buf), dv = new DataView(buf), out = {};
+  let e = u.length - 22; while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error("zip");
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true);
+  for (let i = 0; i < n; i++){
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u.subarray(p + 46, p + 46 + nl));
+    p += 46 + nl + xl + cl;
+    const start = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true);
+    out[name] = { method, data: u.subarray(start, start + csize) };
+  }
+  return out;
+}
+async function zText(ent){
+  if (!ent) return "";
+  if (ent.method === 0) return new TextDecoder().decode(ent.data);
+  const ds = new DecompressionStream("deflate-raw"), w = ds.writable.getWriter(); w.write(ent.data); w.close();
+  return await new Response(ds.readable).text();
+}
+const xmlText = x => x.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+const numSort = (a, b) => parseInt(a.match(/(\d+)\.xml/)[1]) - parseInt(b.match(/(\d+)\.xml/)[1]);
+async function officeText(buf, ext){
+  const z = await unzip(buf);
+  if (ext === "docx") return xmlText((await zText(z["word/document.xml"])).replace(/<\/w:p>/g, "\n").replace(/<w:tab\/>/g, "\t").replace(/<w:br\/>/g, "\n")).trim();
+  if (ext === "pptx"){
+    const out = [], names = Object.keys(z).filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k)).sort(numSort);
+    for (const [i, k] of names.entries()) out.push("--- Slide " + (i + 1) + " ---\n" + xmlText((await zText(z[k])).replace(/<\/a:p>/g, "\n")).trim());
+    return out.join("\n\n");
+  }
+  const ss = (await zText(z["xl/sharedStrings.xml"])).split(/<si[ >]/).slice(1).map(s => (s.match(/<t[^>]*>[\s\S]*?<\/t>/g) || []).map(xmlText).join(""));
+  const out = [], names = Object.keys(z).filter(k => /^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort(numSort);
+  for (const [i, k] of names.entries()){
+    const rows = ((await zText(z[k])).match(/<row[\s\S]*?<\/row>/g) || []).map(r => (r.match(/<c [^>]*?(?:\/>|>[\s\S]*?<\/c>)/g) || []).map(c => {
+      const ty = (c.match(/ t="(\w+)"/) || [])[1], v = (c.match(/<v>([\s\S]*?)<\/v>/) || [])[1], is = c.match(/<t[^>]*>([\s\S]*?)<\/t>/);
+      return ty === "s" ? (ss[+v] || "") : is ? xmlText(is[1]) : xmlText(v || "");
+    }).join("\t"));
+    out.push("--- Sheet " + (i + 1) + " ---\n" + rows.join("\n"));
+  }
+  return out.join("\n\n");
+}
+async function readAtt(f){
+  const name = f.name, size = f.size, ext = ((name.match(/\.([^.]+)$/) || [])[1] || "").toLowerCase();
+  if (f.type === "application/pdf" || ext === "pdf"){
+    if (size > PDF_MAX) throw new Error("big");
+    return { name, size, kind: "pdf", d: b64(await f.arrayBuffer()) };
+  }
+  if (ext === "docx" || ext === "pptx" || ext === "xlsx"){
+    try { return { name, size, kind: "text", text: cut(await officeText(await f.arrayBuffer(), ext)) }; } catch(e){ return { name, size, kind: "bin" }; }
+  }
+  if (f.type.startsWith("text/") || TEXT_EXT.test(name) || /^(dockerfile|makefile|readme|license)$/i.test(name) || /json|xml|javascript|csv/.test(f.type)) return { name, size, kind: "text", text: cut(await f.text()) };
+  const buf = await f.arrayBuffer(), sample = new TextDecoder("utf-8").decode(buf.slice(0, 200000));      /* thử đoán: nếu giống văn bản thì đọc như văn bản */
+  const bad = (sample.match(/\uFFFD|\u0000/g) || []).length;
+  if (bad / Math.max(1, sample.length) < 0.01) return { name, size, kind: "text", text: cut(new TextDecoder().decode(buf)) };
+  return { name, size, kind: "bin" };
+}
 async function addFiles(files){
   for (const f of files){
-    if (!f.type.startsWith("image/")) continue;
-    if (S.pending.length >= 4){ toast(t("maxImgs")); break; }
-    try { S.pending.push(await shrink(f)); } catch(e){ toast(t("imgFail")); }
+    if (S.pending.length >= MAX_ATT){ toast(t("maxImgs")); break; }
+    try {
+      if (f.type.startsWith("image/") && f.type !== "image/svg+xml") S.pending.push(await shrink(f));
+      else { const a = await readAtt(f); S.pending.push(a); if (a.kind === "bin") toast(t("fileBin", f.name)); }
+    } catch(e){ toast(t("imgFail")); }
   }
   renderPrev();
 }
 function renderPrev(){
   const box = $("prev"); box.innerHTML = "";
-  S.pending.forEach((i, n) => {
-    const d = document.createElement("div"); d.className = "th";
-    d.innerHTML = '<img alt="' + t("prevAlt") + '"><button type="button" aria-label="' + t("rmImg") + '">×</button>';
-    d.querySelector("img").src = du(i);
-    d.querySelector("button").onclick = () => { S.pending.splice(n, 1); renderPrev(); };
+  S.pending.forEach((a, n) => {
+    const d = document.createElement("div"), rm = mk("button", "", "×");
+    rm.type = "button"; rm.setAttribute("aria-label", t("rmImg")); rm.onclick = () => { S.pending.splice(n, 1); renderPrev(); };
+    if (a.name){
+      d.className = "fchip" + (a.kind === "bin" ? " warn" : "");
+      d.append(mk("span", "fi", a.kind === "pdf" ? "📕" : a.kind === "bin" ? "⚠️" : "📄"), mk("span", "fn", a.name), mk("span", "fz", fmtSize(a.size)), rm);
+    } else {
+      d.className = "th"; const im = document.createElement("img"); im.alt = t("prevAlt"); im.src = du(a); d.append(im, rm);
+    }
     box.appendChild(d);
   });
 }
 
 /* ====== Gọi API ====== */
 const BASE = { chatgpt: "https://api.openai.com/v1", grok: "https://api.x.ai/v1", groq: "https://api.groq.com/openai/v1", openrouter: "https://openrouter.ai/api/v1" };
-const hasImg = m => m.imgs && m.imgs.length;
-const toOAI = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "image_url", image_url: { url: du(i) } }))] } : { role: m.role, content: m.content };
-const toResp = m => hasImg(m) ? { role: m.role, content: [...(m.content ? [{ type: "input_text", text: m.content }] : []), ...m.imgs.map(i => ({ type: "input_image", image_url: du(i) }))] } : { role: m.role, content: m.content };
-const toClaude = m => hasImg(m) ? { role: m.role, content: [...m.imgs.map(i => ({ type: "image", source: { type: "base64", media_type: i.m, data: i.d } })), ...(m.content ? [{ type: "text", text: m.content }] : [])] } : { role: m.role, content: m.content };
+const canPdf = p => ["claude", "gemini"].includes(fmtOf(p)) || p === "chatgpt" || p === "openrouter";      /* AI đọc được PDF gửi kèm trực tiếp */
+const msgTxt = (m, p) => {        /* nội dung chữ của tin nhắn, kèm các tệp văn bản đính kèm */
+  let s = m.content || "";
+  (m.files || []).forEach(f => {
+    if (f.kind === "text") s += "\n\n<file name=\"" + f.name + "\">\n" + f.text + "\n</file>";
+    else if (f.kind === "pdf" && canPdf(p)) return;
+    else s += "\n\n[Attached file: " + f.name + " (" + fmtSize(f.size || 0) + ") - " + (f.kind === "pdf" ? "this AI cannot read PDF files" : "its content could not be read") + "]";
+  });
+  (m.fmeta || []).forEach(f => { s += "\n\n[Attached file: " + f.name + " - content no longer available]"; });
+  return s;
+};
+const pdfsOf = (m, p) => canPdf(p) ? (m.files || []).filter(f => f.kind === "pdf") : [];
+const toOAI = (m, p) => {
+  const tx = msgTxt(m, p), im = m.imgs || [], pf = pdfsOf(m, p);
+  return (!im.length && !pf.length) ? { role: m.role, content: tx } : { role: m.role, content: [...(tx ? [{ type: "text", text: tx }] : []), ...im.map(i => ({ type: "image_url", image_url: { url: du(i) } })), ...pf.map(f => ({ type: "file", file: { filename: f.name, file_data: "data:application/pdf;base64," + f.d } }))] };
+};
+const toResp = (m, p) => {
+  const tx = msgTxt(m, p), im = m.imgs || [], pf = pdfsOf(m, p);
+  return (!im.length && !pf.length) ? { role: m.role, content: tx } : { role: m.role, content: [...(tx ? [{ type: "input_text", text: tx }] : []), ...im.map(i => ({ type: "input_image", image_url: du(i) })), ...pf.map(f => ({ type: "input_file", filename: f.name, file_data: "data:application/pdf;base64," + f.d }))] };
+};
+const toClaude = (m, p) => {
+  const tx = msgTxt(m, p), im = m.imgs || [], pf = pdfsOf(m, p);
+  return (!im.length && !pf.length) ? { role: m.role, content: tx } : { role: m.role, content: [...im.map(i => ({ type: "image", source: { type: "base64", media_type: i.m, data: i.d } })), ...pf.map(f => ({ type: "document", title: f.name, source: { type: "base64", media_type: "application/pdf", data: f.d } })), ...(tx ? [{ type: "text", text: tx }] : [])] };
+};
 
 /* giới hạn lượt của Team: S.chat.tmax (chọn trong Cài đặt > Chat) */
 const DONE = /(đã|da)\s*xong/i;
@@ -1044,7 +1395,7 @@ async function callAPI(o){
     if (key) headers.Authorization = "Bearer " + key;
     if (search && (p === "chatgpt" || p === "grok")){            /* ChatGPT & Grok: Responses API + web_search */
       url = BASE[p] + "/responses";
-      body = { model, input: ms.map(toResp), tools: [{ type: "web_search" }], stream: true };
+      body = { model, input: ms.map(m => toResp(m, p)), tools: [{ type: "web_search" }], stream: true };
       if (sys) body.instructions = sys;
       if (eff !== "auto" && p === "chatgpt" && REASON.test(model)) body.reasoning = { effort: XH ? xhEff(model) : eff };
       fb = j => j.output_text || (j.output || []).filter(x => x.type === "message").flatMap(x => x.content || []).map(c => c.text || "").join("");
@@ -1058,7 +1409,7 @@ async function callAPI(o){
       };
     } else {
       url = chatUrl(p);
-      body = { model, messages: [...(sys ? [{ role: "system", content: sys }] : []), ...ms.map(toOAI)], stream: true };
+      body = { model, messages: [...(sys ? [{ role: "system", content: sys }] : []), ...ms.map(m => toOAI(m, p))], stream: true };
       if (eff !== "auto"){
         if (p === "chatgpt" && REASON.test(model)) body.reasoning_effort = XH ? xhEff(model) : eff;
         if (p === "grok" && /grok-3-mini/.test(model)) body.reasoning_effort = (eff === "high" || XH) ? "high" : "low";
@@ -1081,7 +1432,7 @@ async function callAPI(o){
     url = claudeUrl(p);
     if (key) headers["x-api-key"] = key; headers["anthropic-version"] = "2023-06-01"; headers["anthropic-dangerous-direct-browser-access"] = "true";
     const bud = { low: 1024, medium: 4096, high: 12000, xhigh: 24000 }[eff];
-    body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(toClaude), stream: true };
+    body = { model, max_tokens: (bud || 0) + 4096, messages: ms.map(m => toClaude(m, p)), stream: true };
     if (sys) body.system = sys;
     if (bud) body.thinking = { type: "enabled", budget_tokens: bud };
     if (search) body.tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }];
@@ -1093,7 +1444,7 @@ async function callAPI(o){
   } else {
     url = geminiUrl(p, model);
     if (key) headers["x-goog-api-key"] = key;
-    body = { contents: ms.map(m => ({ role: m.role === "user" ? "user" : "model", parts: [...(m.imgs || []).map(i => ({ inline_data: { mime_type: i.m, data: i.d } })), ...(m.content ? [{ text: m.content }] : [])] })) };
+    body = { contents: ms.map(m => { const tx = msgTxt(m, p); return { role: m.role === "user" ? "user" : "model", parts: [...(m.imgs || []).map(i => ({ inline_data: { mime_type: i.m, data: i.d } })), ...pdfsOf(m, p).map(f => ({ inline_data: { mime_type: "application/pdf", data: f.d } })), ...(tx ? [{ text: tx }] : [])] }; }) };
     if (sys) body.systemInstruction = { parts: [{ text: sys }] };
     const tc = {};
     if (/gemini-(2\.5|3|4)/.test(model)) tc.includeThoughts = true;
@@ -1134,10 +1485,22 @@ const sleep = (ms, sig) => new Promise(res => { const t = setTimeout(res, ms); i
 /* Chế độ tiết kiệm token: chỉ dẫn ẩn (system prompt) gửi kèm mỗi yêu cầu khi bật */
 const SAVER = "Token-saving mode is ON. Think only as much as needed and keep your reasoning brief. Answer as concisely as possible: no preamble, no restating the question, no repetition, no unnecessary caveats. Do not cut content the user explicitly asked for (code, documents, requested details); just avoid padding. Reply in the user's language.";
 
+/* Chế độ slide PowerPoint: chỉ dẫn ẩn để AI trả về khối ```pptx (JSON), app sẽ xem trước và tạo file .pptx */
+const SLIDES = "PowerPoint mode is ON. If the user asks for a presentation, slides or a PowerPoint, reply with exactly ONE code block fenced as ```pptx containing only valid JSON (double quotes, no comments, no trailing commas); the app turns it into a downloadable .pptx file with a preview. Shape:\n" +
+  '{"title":"Deck title","author":"optional","theme":{"bg":"FFFFFF","text":"1F2937","accent":"5B5EF4","font":"Calibri"},"slides":[\n' +
+  ' {"type":"title","title":"…","subtitle":"…"},\n' +
+  ' {"title":"…","bullets":["point",{"text":"sub-point","level":1}],"notes":"speaker notes"},\n' +
+  ' {"title":"…","text":"short paragraph"},\n' +
+  ' {"title":"…","columns":[{"heading":"A","bullets":["…"]},{"heading":"B","bullets":["…"]}]},\n' +
+  ' {"title":"…","table":{"header":["Col 1","Col 2"],"rows":[["a","b"]]}},\n' +
+  ' {"title":"…","chart":{"type":"bar","labels":["Q1","Q2"],"series":[{"name":"Sales","values":[10,20]}]}},\n' +
+  ' {"title":"…","image":{"url":"https://… or data:image/…"},"caption":"…"}\n]}\n' +
+  "Rules: colors are 6-digit hex without #; chart type is bar, line or pie; keep text short (max 6 bullets per slide, 5-12 slides unless asked otherwise); only use image URLs the user gave you; write in the user's language; add at most one short sentence before the block and a brief note after it; do not write python-pptx or other code for slides.";
+
 /* Một lượt trả lời: hiện bong bóng, đếm giờ, hiện phần suy nghĩ; nếu bật "Tự đổi model" thì thử lại rồi đổi sang model kế bên khi lỗi */
 async function turn(o){
   const { p, msgs, label, color, ctl } = o, cfg = S.chat, list = PROVIDERS[p].models, N = cfg.auto ? cfg.n : 1;
-  const sys = [o.sys, cfg.saver ? SAVER : ""].filter(Boolean).join("\n\n");
+  const sys = [o.sys, cfg.saver ? SAVER : "", S.slides ? SLIDES : ""].filter(Boolean).join("\n\n");
   let model = o.model; const b = botBubble(label, color, "", true);
   let t0 = performance.now(), ttft = null, info = "";
   const tick = setInterval(() => b.meta("⏱ " + fmtT(performance.now() - t0) + (ttft == null ? t("waiting") : "") + info), 100);
@@ -1210,8 +1573,8 @@ function teamView(conv, kind, k){      /* cuộc trò chuyện nhìn từ phía 
     else if (m.who === k){ role = "assistant"; content = m.content; }
     else { role = "user"; content = "[" + sn(m.who) + "]: " + m.content; }
     const last = out[out.length - 1];
-    if (last && last.role === role){ last.content += "\n\n" + content; if (m.imgs) last.imgs = (last.imgs || []).concat(m.imgs); }
-    else out.push({ role, content, imgs: m.imgs ? [...m.imgs] : undefined });
+    if (last && last.role === role){ last.content += "\n\n" + content; if (m.imgs) last.imgs = (last.imgs || []).concat(m.imgs); if (m.files) last.files = (last.files || []).concat(m.files); }
+    else out.push({ role, content, imgs: m.imgs ? [...m.imgs] : undefined, files: m.files ? [...m.files] : undefined });
   });
   return out;
 }
@@ -1239,8 +1602,8 @@ function setBusy(b){
   lockUI(b);
 }
 async function send(){
-  const ta = $("input"), text = ta.value.trim(), imgs = S.pending;
-  if ((!text && !imgs.length) || S.busy) return;
+  const ta = $("input"), text = ta.value.trim(), att = S.pending, imgs = att.filter(a => !a.name), files = att.filter(a => a.name);
+  if ((!text && !att.length) || S.busy) return;
   const p = S.p, team = isMulti(p);
   if (team){
     const miss = KS[p].filter(k => !keyOK(S[p][k].p));
@@ -1248,16 +1611,16 @@ async function send(){
   } else if (!keyOK(p)){ toast(t("needKey", PROVIDERS[p].name)); openSet(); return; }
   let conv = getConv(p);
   if (!conv){
-    const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : t("imageTitle");
+    const ti = text ? (text.length > 40 ? text.slice(0, 40) + "…" : text) : (files[0] ? files[0].name : t("imageTitle"));
     conv = { id: uid(), title: ti, msgs: [], t: Date.now() };
     S.convs[p].unshift(conv); S.cur[p] = conv.id;
   }
-  const um = { role: "user", content: text }; if (imgs.length) um.imgs = imgs;
+  const um = { role: "user", content: text }; if (imgs.length) um.imgs = imgs; if (files.length) um.files = files;
   conv.msgs.push(um); conv.t = Date.now();
   S.pending = []; renderPrev();
   ta.value = ""; ta.style.height = "auto";
   if (conv.msgs.length === 1) $("log").innerHTML = "";
-  bubble("user", text, "", um.imgs);
+  bubble("user", text, "", um.imgs, 0, um.files);
   const ctl = new AbortController(); S.abort = ctl; setBusy(true); persist(); renderConvs();
   try {
     if (team) await runTeam(conv, ctl, p);
@@ -1354,7 +1717,8 @@ $("openSet").onclick = openSet;
 $("modal").onclick = e => { if (e.target.id === "modal") closeSet(); };
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  if ($("fsmodal").classList.contains("show")) closeFs();
+  if (!$("plusmenu").hidden) closePlus();
+  else if ($("fsmodal").classList.contains("show")) closeFs();
   else if ($("pmodal").classList.contains("show")) closeProv(); else if ($("modal").classList.contains("show")) closeSet();
 });
 $("fs_close").onclick = closeFs; $("fsmodal").onclick = e => { if (e.target.id === "fsmodal") closeFs(); };
@@ -1383,13 +1747,21 @@ $("menu").onclick = e => { e.stopPropagation(); toggleSide(); };
 window.addEventListener("resize", syncTog);
 document.querySelector("main").addEventListener("click", () => $("side").classList.remove("open"));
 $("attach").onclick = () => $("file").click();
+function closePlus(){ $("plusmenu").hidden = true; $("plus").setAttribute("aria-expanded", "false"); }
+$("plus").onclick = e => { e.stopPropagation(); const was = $("plusmenu").hidden; closePlus(); if (was){ $("plusmenu").hidden = false; $("plus").setAttribute("aria-expanded", "true"); } };
+document.addEventListener("click", closePlus);
+$("sl").onclick = () => { S.slides = !S.slides; store.set("mc_slides", S.slides); updateTools(); };
+$("spill").onclick = () => { S.search = false; store.set("mc_search", false); updateTools(); };
+$("slpill").onclick = () => { S.slides = false; store.set("mc_slides", false); updateTools(); };
+document.addEventListener("dragover", e => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+document.addEventListener("drop", e => { if (e.dataTransfer && e.dataTransfer.files.length){ e.preventDefault(); addFiles([...e.dataTransfer.files]); } });
 $("file").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
 $("srch").onclick = () => { S.search = !S.search; store.set("mc_search", S.search); updateTools(); };
 document.querySelectorAll("#eff button").forEach(b => b.onclick = () => { S.eff = b.dataset.e; store.set("mc_eff", S.eff); updateTools(); });
 $("form").onsubmit = e => { e.preventDefault(); if (S.busy){ if (S.abort) S.abort.abort(); return; } send(); };
 $("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); send(); } });
 $("input").addEventListener("input", e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 180) + "px"; });
-$("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].filter(x => x.type.startsWith("image/")); if (f.length){ e.preventDefault(); addFiles(f); } });
+$("input").addEventListener("paste", e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])]; if (f.length){ e.preventDefault(); addFiles(f); } });
 
 if (store.get("mc_col", false)) document.body.classList.add("collapsed");
 setTheme(S.theme); setUI(S.ui); dd($("c_n")); dd($("c_tmax")); dd($("p_fmt")); applyLang();
